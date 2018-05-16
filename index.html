@@ -232,6 +232,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://e61983.github.io/05/16/2018/dockerfile/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yuan Li">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan のノート">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/05/16/2018/dockerfile/" itemprop="url">Docker</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-16T23:06:26+08:00">
+                2018-05-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ノート/" itemprop="url" rel="index">
+                    <span itemprop="name">ノート</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="安裝Docker-Ubuntu"><a href="#安裝Docker-Ubuntu" class="headerlink" title="安裝Docker (Ubuntu)"></a>安裝Docker (Ubuntu)</h1><p>由於網路環境受到限制所以採用的是「Install from a package」的方式進行安裝。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo dpkg-i /path/to/package.deb</span><br></pre></td></tr></table></figure>
+<p>安裝完成後再新增一個群組並把使用者加進此群組即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo groupadd docker</span><br><span class="line">$ sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
+<p>重新登入。</p>
+<h1 id="設定-DNS-代理"><a href="#設定-DNS-代理" class="headerlink" title="設定 DNS 代理"></a>設定 DNS 代理</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt; /etc/docker/daemon.json</span><br><span class="line">&#123;</span><br><span class="line">    [<span class="string">"dns"</span>:<span class="string">"our dns address"</span>, <span class="string">"8.8.8.8"</span>]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">$ sudo systemctl restart docker.service</span><br></pre></td></tr></table></figure>
+<h1 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">docker build -t friendlyhello .  <span class="comment"># Create image using this directory's Dockerfile</span></span><br><span class="line">docker run -p 4000:80 friendlyhello  <span class="comment"># Run "friendlyname" mapping port 4000 to 80</span></span><br><span class="line">docker run -d -p 4000:80 friendlyhello         <span class="comment"># Same thing, but in detached mode</span></span><br><span class="line">docker container ls                                <span class="comment"># List all running containers</span></span><br><span class="line">docker container ls -a             <span class="comment"># List all containers, even those not running</span></span><br><span class="line">docker container stop &lt;<span class="built_in">hash</span>&gt;           <span class="comment"># Gracefully stop the specified container</span></span><br><span class="line">docker container <span class="built_in">kill</span> &lt;<span class="built_in">hash</span>&gt;         <span class="comment"># Force shutdown of the specified container</span></span><br><span class="line">docker container rm &lt;<span class="built_in">hash</span>&gt;        <span class="comment"># Remove specified container from this machine</span></span><br><span class="line">docker container rm $(docker container ls -a -q)         <span class="comment"># Remove all containers</span></span><br><span class="line">docker image ls -a                             <span class="comment"># List all images on this machine</span></span><br><span class="line">docker image rm &lt;image id&gt;            <span class="comment"># Remove specified image from this machine</span></span><br><span class="line">docker image rm $(docker image ls -a -q)   <span class="comment"># Remove all images from this machine</span></span><br><span class="line">docker login             <span class="comment"># Log in this CLI session using your Docker credentials</span></span><br><span class="line">docker tag &lt;image&gt; username/repository:tag  <span class="comment"># Tag &lt;image&gt; for upload to registry</span></span><br><span class="line">docker push username/repository:tag            <span class="comment"># Upload tagged image to registry</span></span><br><span class="line">docker run username/repository:tag                   <span class="comment"># Run image from a registry</span></span><br></pre></td></tr></table></figure>
+<h1 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># Use an official Python runtime as a parent image</span><br><span class="line">FROM python:2.7-slim</span><br><span class="line"></span><br><span class="line"># Set the working directory to /app</span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line"># Copy the current directory contents into the container at /app</span><br><span class="line">ADD . /app</span><br><span class="line"></span><br><span class="line"># Install any needed packages specified in requirements.txt</span><br><span class="line">RUN pip install --trusted-host pypi.python.org -r requirements.txt</span><br><span class="line"></span><br><span class="line"># Make port 80 available to the world outside this container</span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line"># Define environment variable</span><br><span class="line">ENV NAME World</span><br><span class="line"></span><br><span class="line"># Run app.py when the container launches</span><br><span class="line">CMD [&quot;python&quot;, &quot;app.py&quot;]</span><br></pre></td></tr></table></figure>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/" target="_blank" rel="noopener">Get Docker CE for Ubuntu</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://e61983.github.io/01/06/2018/LD-print-memory-usage/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -705,7 +857,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -727,7 +879,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">tags</span>
                 
               </div>
