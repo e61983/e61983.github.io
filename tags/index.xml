@@ -1,0 +1,42 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Tags - Tag - Yuan のノート</title>
+        <link>http://e61983.github.io/tags/</link>
+        <description>Tags - Tag - Yuan のノート</description>
+        <generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 26 Jul 2021 15:35:30 &#43;0800</lastBuildDate><atom:link href="http://e61983.github.io/tags/" rel="self" type="application/rss+xml" /><item>
+    <title>go</title>
+    <link>http://e61983.github.io/tags/go/</link>
+    <pubDate>Mon, 26 Jul 2021 15:35:30 &#43;0800</pubDate>
+    <author>Author</author>
+    <guid>http://e61983.github.io/tags/go/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>markdown</title>
+    <link>http://e61983.github.io/tags/markdown/</link>
+    <pubDate>Mon, 26 Jul 2021 15:35:30 &#43;0800</pubDate>
+    <author>Author</author>
+    <guid>http://e61983.github.io/tags/markdown/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>web</title>
+    <link>http://e61983.github.io/tags/web/</link>
+    <pubDate>Mon, 26 Jul 2021 15:35:30 &#43;0800</pubDate>
+    <author>Author</author>
+    <guid>http://e61983.github.io/tags/web/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>linker</title>
+    <link>http://e61983.github.io/tags/linker/</link>
+    <pubDate>Tue, 06 Feb 2018 23:31:12 &#43;0800</pubDate>
+    <author>Author</author>
+    <guid>http://e61983.github.io/tags/linker/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>c11</title>
+    <link>http://e61983.github.io/tags/c11/</link>
+    <pubDate>Wed, 18 Oct 2017 00:25:49 &#43;0800</pubDate>
+    <author>Author</author>
+    <guid>http://e61983.github.io/tags/c11/</guid>
+    <description><![CDATA[]]></description>
+</item></channel>
+</rss>

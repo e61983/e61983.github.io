@@ -1,0 +1,15 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>go - Tag - Yuan のノート</title>
+        <link>http://e61983.github.io/tags/go/</link>
+        <description>go - Tag - Yuan のノート</description>
+        <generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 26 Jul 2021 15:35:30 &#43;0800</lastBuildDate><atom:link href="http://e61983.github.io/tags/go/" rel="self" type="application/rss+xml" /><item>
+    <title>打造自己的Blog</title>
+    <link>http://e61983.github.io/2021-07-26-first-hugo-website/</link>
+    <pubDate>Mon, 26 Jul 2021 15:35:30 &#43;0800</pubDate>
+    <author>Yuan</author>
+    <guid>http://e61983.github.io/2021-07-26-first-hugo-website/</guid>
+    <description><![CDATA[<h2 id="前言" class="headerLink"><a href="#%e5%89%8d%e8%a8%80" class="header-mark"></a>前言</h2><p>以前有使用過 hexo 建立Blog，但一直沒有好好的經營。最近又有想要開始寫 Blog 的念頭。
+希望這一次，可以持續撰寫下去。</p>]]></description>
+</item></channel>
+</rss>

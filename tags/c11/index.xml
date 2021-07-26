@@ -1,0 +1,14 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>c11 - Tag - Yuan のノート</title>
+        <link>http://e61983.github.io/tags/c11/</link>
+        <description>c11 - Tag - Yuan のノート</description>
+        <generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 18 Oct 2017 00:25:49 &#43;0800</lastBuildDate><atom:link href="http://e61983.github.io/tags/c11/" rel="self" type="application/rss+xml" /><item>
+    <title>C11 Generic Selections</title>
+    <link>http://e61983.github.io/2017-10-18-c11-generic-selections/</link>
+    <pubDate>Wed, 18 Oct 2017 00:25:49 &#43;0800</pubDate>
+    <author>Yuan</author>
+    <guid>http://e61983.github.io/2017-10-18-c11-generic-selections/</guid>
+    <description><![CDATA[<h2 id="前言" class="headerLink"><a href="#%e5%89%8d%e8%a8%80" class="header-mark"></a>前言</h2><p>Generic 在C11上出現，我們可以透過實作出物件導向中的多型。要注意的是 Generic 是在編譯時期運作的。</p>]]></description>
+</item></channel>
+</rss>
