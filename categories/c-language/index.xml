@@ -1,21 +1,88 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>c language - Category - Yuan のノート</title>
-        <link>https://e61983.github.io/categories/c-language/</link>
-        <description>c language - Category - Yuan のノート</description>
-        <generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 06 Feb 2018 23:31:12 &#43;0800</lastBuildDate><atom:link href="https://e61983.github.io/categories/c-language/" rel="self" type="application/rss+xml" /><item>
-    <title>GNU LD print memory usage</title>
-    <link>https://e61983.github.io/2018-02-06-ld-print-memory-usage/</link>
-    <pubDate>Tue, 06 Feb 2018 23:31:12 &#43;0800</pubDate>
-    <author>Yuan</author>
-    <guid>https://e61983.github.io/2018-02-06-ld-print-memory-usage/</guid>
-    <description><![CDATA[<h2 id="前言" class="headerLink"><a href="#%e5%89%8d%e8%a8%80" class="header-mark"></a>前言</h2><p>使 GNU LD 輸出總共使用的記憶體大小與程式大小。</p>]]></description>
-</item><item>
-    <title>C11 Generic Selections</title>
-    <link>https://e61983.github.io/2017-10-18-c11-generic-selections/</link>
-    <pubDate>Wed, 18 Oct 2017 00:25:49 &#43;0800</pubDate>
-    <author>Yuan</author>
-    <guid>https://e61983.github.io/2017-10-18-c11-generic-selections/</guid>
-    <description><![CDATA[<h2 id="前言" class="headerLink"><a href="#%e5%89%8d%e8%a8%80" class="header-mark"></a>前言</h2><p>Generic 在C11上出現，我們可以透過實作出物件導向中的多型。要注意的是 Generic 是在編譯時期運作的。</p>]]></description>
-</item></channel>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" 
+  xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/" 
+  xmlns:atom="http://www.w3.org/2005/Atom" 
+  xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" 
+  xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>c language on Yuan のノート</title>
+    <link>https://e61983.github.io/categories/c-language/</link>
+    <description>Recent content in c language on Yuan のノート</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-tw</language>
+    <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
+    <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
+    <copyright>©2021, All Rights Reserved</copyright>
+    <lastBuildDate>Tue, 06 Feb 2018 23:31:12 +0800</lastBuildDate>
+    
+        <atom:link href="https://e61983.github.io/categories/c-language/index.xml" rel="self" type="application/rss+xml" />
+    
+
+      
+      <item>
+        <title>GNU LD print memory usage</title>
+        <link>https://e61983.github.io/2018-02-06-ld-print-memory-usage/</link>
+        <pubDate>Tue, 06 Feb 2018 23:31:12 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Tue, 06 Feb 2018 23:31:12 +0800</atom:modified>
+        <guid>https://e61983.github.io/2018-02-06-ld-print-memory-usage/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;使 GNU LD 輸出總共使用的記憶體大小與程式大小。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>linker</category>
+            
+          
+        
+        
+          
+            
+              <category>c language</category>
+            
+          
+        
+        
+      </item>
+      
+      <item>
+        <title>C11 Generic Selections</title>
+        <link>https://e61983.github.io/2017-10-18-c11-generic-selections/</link>
+        <pubDate>Wed, 18 Oct 2017 00:25:49 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Wed, 18 Oct 2017 00:25:49 +0800</atom:modified>
+        <guid>https://e61983.github.io/2017-10-18-c11-generic-selections/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;Generic 在C11上出現，我們可以透過實作出物件導向中的多型。要注意的是 Generic 是在編譯時期運作的。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>c11</category>
+            
+          
+        
+        
+          
+            
+              <category>c language</category>
+            
+          
+        
+        
+      </item>
+      
+
+    
+  </channel>
 </rss>
