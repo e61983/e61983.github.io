@@ -26,7 +26,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/e61983.github.io\/2021-07-26-building-raspberry-pi-systems-with-yocto\/"
-        },"genre": "posts","keywords": "linux, yocto","wordCount":  97 ,
+        },"genre": "posts","keywords": "linux, yocto","wordCount":  103 ,
         "url": "https:\/\/e61983.github.io\/2021-07-26-building-raspberry-pi-systems-with-yocto\/","datePublished": "2021-07-26T17:37:57+08:00","dateModified": "2021-07-26T17:37:57+08:00","description": ""
     }
     </script><script type="application/ld+json">
@@ -126,7 +126,7 @@
                             </span><span class="post-meta-date meta-item">
                                 <span class="svg-icon icon-clock"></span><time class="timeago" datetime="2021-07-26">2021-07-26</time>
                             </span><span class="post-meta-words meta-item">
-                                <span class="svg-icon icon-pencil"></span>97 words
+                                <span class="svg-icon icon-pencil"></span>103 words
                             </span>
                             <span class="post-meta-reading meta-item">
                                 <span class="svg-icon icon-stopwatch"></span>One minute
@@ -175,20 +175,20 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>source poky/oe-init-build-env build-rpi
 </code></pre></div><p>加入 meta-raspibary 層</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>bitbake-layers add-layer ../meta-raspberrypi
-</code></pre></div><h3 id="修改配置" class="headerLink"><a href="#%e4%bf%ae%e6%94%b9%e9%85%8d%e7%bd%ae" class="header-mark"></a>修改配置</h3><p>conf/local.conf:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>sed -i <span style="color:#e6db74">&#39;s/^MACHINE.*/MACHINE ?= &#34;raspberrypi3&#34;/g&#39;</span> conf/local.conf
+</code></pre></div><h3 id="修改配置" class="headerLink"><a href="#%e4%bf%ae%e6%94%b9%e9%85%8d%e7%bd%ae" class="header-mark"></a>修改配置</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>sed -i <span style="color:#e6db74">&#39;s/^MACHINE.*/MACHINE ?= &#34;raspberrypi3&#34;/g&#39;</span> conf/local.conf
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>sed -i <span style="color:#e6db74">&#39;/^#DL_DIR ?= &#34;${TOPDIR}\/downloads&#34;/ a DL_DIR ?= \&#34;${HOME}/yocto/downloads&#34;&#39;</span> conf/local.conf
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>sed -i <span style="color:#e6db74">&#39;s/^PACKAGE_CLASSES.*/PACKAGE_CLASSES ?= &#34;package_ipk&#34;/g&#39;</span> conf/local.conf
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>echo <span style="color:#e6db74">&#39;RPI_USE_U_BOOT = &#34;1&#34;&#39;</span> &gt;&gt; conf/local.conf
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span>echo <span style="color:#e6db74">&#39;ENABLE_UART = &#34;1&#34;&#39;</span> &gt;&gt; conf/local.conf
 </code></pre></div><h3 id="開始編譯" class="headerLink"><a href="#%e9%96%8b%e5%a7%8b%e7%b7%a8%e8%ad%af" class="header-mark"></a>開始編譯</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>bitbake core-image-minimal
-</code></pre></div><h3 id="寫入-sd-card" class="headerLink"><a href="#%e5%af%ab%e5%85%a5-sd-card" class="header-mark"></a>寫入 SD Card</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>bzip -Dk wic.bz
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span> of<span style="color:#f92672">=</span>/dev/sdc bs<span style="color:#f92672">=</span><span style="color:#ae81ff">40960</span>
+</code></pre></div><h3 id="寫入-sd-card" class="headerLink"><a href="#%e5%af%ab%e5%85%a5-sd-card" class="header-mark"></a>寫入 SD Card</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>bzip -Dk core-image-minimal-raspberrypi3.wic.bz2
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>sudo dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>core-image-minimal-raspberrypi3.wic of<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>SD_CARD<span style="color:#e6db74">}</span> bs<span style="color:#f92672">=</span><span style="color:#ae81ff">40960</span>
 </code></pre></div><h2 id="小結" class="headerLink"><a href="#%e5%b0%8f%e7%b5%90" class="header-mark"></a>小結</h2><p>編譯出來的系統已可以開始，並在UART 終端機看到開始時的輸出，以及可以使用root 進入系統。</p>
 <h2 id="參考連結" class="headerLink"><a href="#%e5%8f%83%e8%80%83%e9%80%a3%e7%b5%90" class="header-mark"></a>參考連結</h2><ul>
 <li><a href="https://www.yoctoproject.org" target="_blank" rel="noopener noreffer">Yocto official</a></li>
-<li>[meta-raspberrypi][meta-rpi]</li>
+<li><a href="http://git.yoctoproject.org/cgit/cgit.cgi/meta-raspberrypi" target="_blank" rel="noopener noreffer">meta-raspberrypi</a></li>
+<li><a href="https://jumpnowtek.com/rpi/Raspberry-Pi-Systems-with-Yocto.html" target="_blank" rel="noopener noreffer">Building Raspberry Pi Systems with Yocto</a></li>
 </ul></div><footer>
                         <div class="post">
 

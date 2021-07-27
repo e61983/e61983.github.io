@@ -2,13 +2,14 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://e61983.github.io/categories/</loc><lastmod>2021-07-26T17:37:57&#43;08:00</lastmod><priority>1</priority></url><url>
-            <loc>https://e61983.github.io/categories/embedded-system/</loc><lastmod>2021-07-26T17:37:57&#43;08:00</lastmod></url><url>
-            <loc>https://e61983.github.io/tags/linux/</loc><lastmod>2021-07-26T17:37:57&#43;08:00</lastmod></url><url>
-            <loc>https://e61983.github.io/posts/</loc><lastmod>2021-07-26T17:37:57&#43;08:00</lastmod></url><url>
-            <loc>https://e61983.github.io/tags/</loc><lastmod>2021-07-26T17:37:57&#43;08:00</lastmod></url><url>
-            <loc>https://e61983.github.io/tags/yocto/</loc><lastmod>2021-07-26T17:37:57&#43;08:00</lastmod></url><url>
-            <loc>https://e61983.github.io/</loc><lastmod>2021-07-26T17:37:57&#43;08:00</lastmod></url><url>
+            <loc>https://e61983.github.io/categories/</loc><lastmod>2021-07-27T15:19:05&#43;08:00</lastmod><priority>1</priority></url><url>
+            <loc>https://e61983.github.io/categories/embedded-system/</loc><lastmod>2021-07-27T15:19:05&#43;08:00</lastmod></url><url>
+            <loc>https://e61983.github.io/tags/linux/</loc><lastmod>2021-07-27T15:19:05&#43;08:00</lastmod></url><url>
+            <loc>https://e61983.github.io/posts/</loc><lastmod>2021-07-27T15:19:05&#43;08:00</lastmod></url><url>
+            <loc>https://e61983.github.io/tags/</loc><lastmod>2021-07-27T15:19:05&#43;08:00</lastmod></url><url>
+            <loc>https://e61983.github.io/tags/yocto/</loc><lastmod>2021-07-27T15:19:05&#43;08:00</lastmod></url><url>
+            <loc>https://e61983.github.io/2021-07-27-yocto-introduction/</loc><lastmod>2021-07-27T15:19:05&#43;08:00</lastmod></url><url>
+            <loc>https://e61983.github.io/</loc><lastmod>2021-07-27T15:19:05&#43;08:00</lastmod></url><url>
             <loc>https://e61983.github.io/2021-07-26-building-raspberry-pi-systems-with-yocto/</loc><lastmod>2021-07-26T17:37:57&#43;08:00</lastmod></url><url>
             <loc>https://e61983.github.io/tags/go/</loc><lastmod>2021-07-26T15:35:30&#43;08:00</lastmod></url><url>
             <loc>https://e61983.github.io/tags/markdown/</loc><lastmod>2021-07-26T15:35:30&#43;08:00</lastmod></url><url>
