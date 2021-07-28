@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Yocto 基礎介紹 – Yuan のノート</title>
+    <title>Yocto First Layer – Yuan のノート</title>
     
 
 
@@ -653,7 +653,7 @@
     
     var baseurl = JSON.parse("\"https://e61983.github.io/\"");
     
-    var permalink = JSON.parse("\"https://e61983.github.io/2021-07-27-yocto-introduction/\"");
+    var permalink = JSON.parse("\"https://e61983.github.io/2021-07-28-yocto-first-layer/\"");
     
     var langprefix = JSON.parse("\"\"");
     var searchResults = null;
@@ -1331,24 +1331,24 @@
 
 
     
-<meta name="description" content="心之所至，隨意薍書" />
+<meta name="description" content="" />
 
 
-<meta name="keywords" content="yocto,linux">
+<meta name="keywords" content="yocto">
 
-<meta name="created" content="2021-07-27T15:19:05&#43;0800">
-<meta name="modified" content="2021-07-27T15:19:05&#43;0800">
-<meta property="article:published_time" content="2021-07-27T15:19:05&#43;0800">
+<meta name="created" content="2021-07-28T12:28:09&#43;0800">
+<meta name="modified" content="2021-07-28T12:28:09&#43;0800">
+<meta property="article:published_time" content="2021-07-28T12:28:09&#43;0800">
 
 <meta name="author" content="Yuan">
-<meta property="article:author" content="https://e61983.github.io/2021-07-27-yocto-introduction/@Yuan">
+<meta property="article:author" content="https://e61983.github.io/2021-07-28-yocto-first-layer/@Yuan">
 
 
 <meta property="og:site_name" content="Yuan のノート">
-<meta property="og:title" content="Yocto 基礎介紹">
-<meta property="og:url" content="https://e61983.github.io/2021-07-27-yocto-introduction/">
+<meta property="og:title" content="Yocto First Layer">
+<meta property="og:url" content="https://e61983.github.io/2021-07-28-yocto-first-layer/">
 <meta property="og:type" content="article">
-<meta property="og:description" content="心之所至，隨意薍書">
+<meta property="og:description" content="">
 
 <meta name="generator" content="Hugo 0.86.0" />
 <meta name="msapplication-TileColor" content="#fff">
@@ -1359,7 +1359,7 @@
 
 <meta name="apple-mobile-web-app-status-bar-style" content="#fff">
 
-<link rel="canonical" href="https://e61983.github.io/2021-07-27-yocto-introduction/">
+<link rel="canonical" href="https://e61983.github.io/2021-07-28-yocto-first-layer/">
 
 <link rel="manifest" href="/manifest.json">
 
@@ -1373,12 +1373,12 @@
   {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "headline": "Yocto 基礎介紹",
-    "datePublished": "2021-07-27T15:19:05+08:00",
-    "dateModified": "2021-07-27T15:19:05+08:00",
-    "url" : "https://e61983.github.io/2021-07-27-yocto-introduction/",
-    "description": "\u003ch2 id=\"前言\"\u003e前言\u003c/h2\u003e \u003cp\u003e先前有接觸過 buildroot 這類的 Linux Distribution 工具，但一直沒有好好的整理起來。\u003cbr /\u003e 最近剛好有機會接觸 Yocto，打算在摸索的過程中一並記錄起來。\u003c/p\u003e",
-    "keywords": ["yocto","linux"],
+    "headline": "Yocto First Layer",
+    "datePublished": "2021-07-28T12:28:09+08:00",
+    "dateModified": "2021-07-28T12:28:09+08:00",
+    "url" : "https://e61983.github.io/2021-07-28-yocto-first-layer/",
+    "description": "\u003ch2 id=\"前言\"\u003e前言\u003c/h2\u003e \u003cp\u003e在準備完開發環境之後，接下來就要開始加上我們的設定、服務或是應用了。\u003c/p\u003e",
+    "keywords": ["yocto"],
     "author": {
       "@type": "Person",
       "name": "Yuan"
@@ -1611,12 +1611,12 @@
   <div class="single hide">
     <div class="single__nojs">Please enable Javascript to view the contents</div>
     <script>document.querySelector('.single').classList.remove('hide'); document.querySelector('.single__nojs').classList.add('hide');</script>
-    <h2 class="single__title" data-ani="false">Yocto 基礎介紹</h2>
+    <h2 class="single__title" data-ani="false">Yocto First Layer</h2>
     <h3 class="single__subtitle"></h3>
     <div class="single__meta">
       
 <div class="single__infos">
-  <time class="single__info" title="建立日期">📅&nbsp;2021年07月27日 </time>
+  <time class="single__info" title="建立日期">📅&nbsp;2021年07月28日 </time>
   
   &nbsp;&middot;&nbsp; <span class="single__info" title="閱讀時間"> ☕&nbsp;2&nbsp;分鐘 </span>
   
@@ -1635,108 +1635,289 @@
 
   <li><a href="https://e61983.github.io/tags/yocto/" class="single__tag" title="yocto">#yocto</a></li>
 
-  <li><a href="https://e61983.github.io/tags/linux/" class="single__tag" title="linux">#linux</a></li>
-
 </ul>
 
     </div>
     <article class="single__contents" data-dir="ltr" data-ani="false">
       
       <h2 id="前言">前言</h2>
-<p>先前有接觸過 buildroot 這類的 Linux Distribution 工具，但一直沒有好好的整理起來。<br />
-最近剛好有機會接觸 Yocto，打算在摸索的過程中一並記錄起來。</p>
+<p>在準備完開發環境之後，接下來就要開始加上我們的設定、服務或是應用了。</p>
 <h2 id="主要內容">主要內容</h2>
-<h3 id="yocto-專案">Yocto 專案</h3>
-<p>有關於 Yocto  專案的歴史就不多做介紹了，有興趣的同學可以到它的<a href="https://www.yoctoproject.org">官網</a>看看。<br />
-<figure><img src="images/yocto.png"
-         alt="Yocto 官網畫面"/><figcaption>
-            <p>Yocto 官網畫面</p>
-        </figcaption>
-</figure>
-</p>
-<h3 id="基本觀念">基本觀念</h3>
-<figure><img src="images/workflow.png"
-         alt="Yocto 開發流程"/><figcaption>
-            <p>Yocto 開發流程</p>
-        </figcaption>
-</figure>
-
-<h4 id="machine">Machine</h4>
-<p>相關的配置會放在 <code>conf/machine/</code> 中。它用來描述與硬體有關的配置。通常包含: Kernel、Devices Tree、Bootloader。</p>
-<h4 id="distrobution">Distrobution</h4>
-<p>相關的配置會放在 <code>conf/distro/</code> 中。它作為整個配置中最底層的部份。接下來的 Layer 都會以此為基礎往上疊加。通常它也訂定了此系統的 ABI 。</p>
-<h4 id="image">Image</h4>
-<p>相關的配置會放在 <code>recipes-*/images/</code> 中。它就是 rootfs。</p>
-<h4 id="layer">Layer</h4>
-<p>是由 Recipe 所組成，根據不同用途可以定義出BSP Layer, General Layer。<br />
-一般來說我們會以 <code> meta-</code> 開頭作為 Layer 的命名。</p>
-<h4 id="recipe">Recipe</h4>
-<p>是由一系列建構 Package 的指令所組成。描述了 Package 該如何取得源始碼、如何進行配置、如何進行編譯以及安裝的步驟。</p>
-<h4 id="package">Package</h4>
-<p>在 Yocto 中 Package 是代表 Recipe 的執行結果。</p>
-<figure><img src="images/reminder.png"/>
-</figure>
-
-<h3 id="建立-yocto-環境">建立 Yocto 環境</h3>
-<p>下載 Poky。</p>
-<blockquote>
-<p>等一下&hellip; 怎麼突然就冒一個 poky 出來<br />
-這個就先請同學自行去 Yocto 的官網看了</p>
-</blockquote>
+<p>在進行下列操作前，我們需要先初始化 Yocto 環境，如果還不知道要如何進行的同學，可以參考<a href="/2021-07-27-yocto-introduction/#%E5%BB%BA%E7%AB%8B-yocto-%E7%92%B0%E5%A2%83">這邊</a>。</p>
+<h3 id="建立我們的-層">建立我們的 &ldquo;層&rdquo;</h3>
+<p>建議是將我們的 Layer 放在建置資料夾( first-build )的外面。所以我們將在它的上一層目錄建立我們的 Layer <code>meta-first-layer</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span> ..
+ls <span class="c1"># first-build poky </span>
+bitbake-layers create-layer meta-first-layer
+ls <span class="c1"># first-build meta-first-layer poky </span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="加入我們的-層">加入我們的 &ldquo;層&rdquo;</h3>
+<p>在建置資料夾( first-build ) 中執行下列指令，它會幫我們更新 <code>conf/bblayer.bb</code> 的內容。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">mkdir yocto <span class="o">&amp;&amp;</span> <span class="nb">cd</span> yocto
-git clone git://git.yoctoproject.org/poky.git
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span> first-build
+bitbake-layers add-layer ../meta-first-layer
 </code></pre></td></tr></table>
 </div>
-</div><p>輸入下列指令初始化環境，它會幫我們建立 <code>first-build</code> 資料夾。並設置好相關的環境變數。</p>
+</div><h3 id="recipes-example">Recipes-example</h3>
+<p>我們在建立 <code>meta-first-layer</code> 時，bitbake-layers 會順便幫我們建立 <code>recipes-example</code>。<br />
+我們可以透過下列指令，看到它的輸出結果。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">source</span> poky/oe-init-build-env first-build
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">bitbake example
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="開始第一個專案">開始第一個專案</h3>
-<p>輸入下列指令，就會開始進行編譯了。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">bitbake core-image-miminal
-</code></pre></td></tr></table>
-</div>
-</div><div class="notices success" data-title="提醒">
-  依照網路環境、編譯主機的不同，執行的時間會有所不同。但第一次都要蠻久的就是了。
-</div>
-<p>在編譯完成之後，使用 qemu 來看看成果。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">runqemu qemuarm core-image-miminal nographic slirp
-</code></pre></td></tr></table>
-</div>
-</div><p>使用 root 登入</p>
-<figure><img src="images/qemu.png"
-         alt="登入畫面"/><figcaption>
-            <p>登入畫面</p>
+</div><p>執行結果:<br />
+<figure><img src="images/result-example.png"
+         alt="執行結果"/><figcaption>
+            <p>執行結果</p>
         </figcaption>
+</figure>
+</p>
+<h3 id="建立我們的-recipes-hello">建立我們的 Recipes-Hello</h3>
+<p>Yocto 專案提供了許多便捷的工具，其中 recipetool 與 devtool 便是與 Recipes 較為相關。<br />
+接下來我們將會使用 recipetool 來建立我們的 Recipes。</p>
+<p>建立 recipes-hello 資料夾，並在 files 中放入我們的源始碼。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">mkdir -p recipes-hello/hello/files
+<span class="nb">cd</span> recipes-hello/hello
+</code></pre></td></tr></table>
+</div>
+</div><p>main.c:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Hello</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Makefile:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Makefile" data-lang="Makefile"><span class="nv">SRCS</span> <span class="o">:=</span> main.c
+<span class="nv">OBJS</span> <span class="o">:=</span> <span class="k">$(</span>SRCS:.c<span class="o">=</span>.o<span class="k">)</span>
+<span class="nv">bindir</span> <span class="o">?=</span> /usr/bin
+
+<span class="nv">TARGET</span> <span class="o">:=</span> hello
+
+<span class="nf">all</span><span class="o">:</span> <span class="k">$(</span><span class="nv">TARGET</span><span class="k">)</span>
+
+<span class="nf">%.o </span><span class="o">:</span> %.<span class="n">c</span>
+	<span class="k">$(</span>CC<span class="k">)</span> -c $&lt; -o <span class="nv">$@</span> <span class="si">${</span><span class="nv">LDFLAGS</span><span class="si">}</span>
+
+<span class="nf">$(TARGET) </span><span class="o">:</span> <span class="k">$(</span><span class="nv">OBJS</span><span class="k">)</span>
+	<span class="k">$(</span>CC<span class="k">)</span> $^ -o <span class="nv">$@</span> <span class="si">${</span><span class="nv">LDFLAGS</span><span class="si">}</span>
+
+<span class="nf">install</span><span class="o">:</span>
+	install -d <span class="k">$(</span>DESTDIR<span class="k">)$(</span>bindir<span class="k">)</span>
+	install -m <span class="m">755</span> <span class="k">$(</span>TARGET<span class="k">)</span> <span class="k">$(</span>DESTDIR<span class="k">)$(</span>bindir<span class="k">)</span>/
+</code></pre></td></tr></table>
+</div>
+</div><p>使用 recipetool 建立 recipe</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">recipetool create -o hello_0.1.bb files
+</code></pre></td></tr></table>
+</div>
+</div><p>修改產生出的 hello_0.1.bb</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">LICENSE</span> <span class="o">=</span> <span class="s2">&#34;CLOSED&#34;</span>
+<span class="n">LIC_FILES_CHKSUM</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+
+<span class="n">SRC_URI</span> <span class="o">=</span> <span class="s2">&#34; </span><span class="se">\
+</span><span class="se"></span><span class="s2">           file://main.c </span><span class="se">\
+</span><span class="se"></span><span class="s2">           file://Makefile </span><span class="se">\
+</span><span class="se"></span><span class="s2">           &#34;</span>
+
+<span class="n">S</span> <span class="o">=</span> <span class="s2">&#34;$</span><span class="si">{WORKDIR}</span><span class="s2">&#34;</span>
+
+<span class="n">do_configure</span> <span class="p">()</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="n">do_compile</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="n">oe_runmake</span>
+<span class="p">}</span>
+
+<span class="n">do_install</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="n">oe_runmake</span> <span class="n">install</span> <span class="s1">&#39;DESTDIR=$</span><span class="si">{D}</span><span class="s1">&#39;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>回到 first-build 進行測試</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">bitbake hello
+</code></pre></td></tr></table>
+</div>
+</div><p>可以正常的進行編譯，但在最後出現了問題。</p>
+<div class="notices error" data-title="Error">
+  <strong>ERROR</strong>: hello-0.1-r0 do_package_qa: QA Issue: File /usr/bin/hello in package hello doesn&rsquo;t have GNU_HASH (didn&rsquo;t pass LDFLAGS?) [ldflags]<br />
+<strong>ERROR</strong>: hello-0.1-r0 do_package_qa: QA run found fatal errors. Please consider fixing them.<br />
+<strong>ERROR</strong>: Logfile of failure stored in: /home/yuan/first-build/tmp/work/cortexa7t2hf-neon-vfpv4-poky-linux-gnueabi/hello/0.1-r0/temp/log.do_package_qa.2726283<br />
+<strong>ERROR</strong>: Task (/home/yuan/meta-first-layer/recipes-hello/hello/hello_0.1.bb:do_package_qa) failed with exit code &lsquo;1&rsquo;
+</div>
+<p>參考<a href="https://lynxbee.com/how-to-fix-error-do_package_qa-qa-issue-no-gnu_hash-in-the-elf-binary/">這篇文章</a>修改 hello_0.1.bb</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-diff" data-lang="diff">do_install () {
+    oe_runmake install &#39;DESTDIR=${D}&#39;
+}
+<span class="gi">+
+</span><span class="gi">+ INSANE_SKIP_${PN} = &#34;ldflags&#34;
+</span><span class="gi">+ INSANE_SKIP_${PN}-dev = &#34;ldflags&#34;
+</span><span class="gi"></span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="建立我們的-image">建立我們的 image</h3>
+<p>在 recipes-hello 中建立 images 資料夾。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">mkdir -p recipes-hello/images
+<span class="nb">cd</span> recipes-hello/images
+cp ../../../poky/meta/recipes-core/images/core-image-minimal.bb hello-image.bb
+</code></pre></td></tr></table>
+</div>
+</div><p>hello-image.bb:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">SUMMARY</span> <span class="o">=</span> <span class="s2">&#34;A hello image that just for testing our layer&#34;</span>
+
+<span class="n">LICENSE</span> <span class="o">=</span> <span class="s2">&#34;MIT&#34;</span>
+
+<span class="n">IMAGE_INSTALL</span> <span class="o">=</span> <span class="s2">&#34;packagegroup-core-boot $</span><span class="si">{CORE_IMAGE_EXTRA_INSTALL}</span><span class="s2"> hello&#34;</span>
+
+<span class="n">inherit</span> <span class="n">core</span><span class="o">-</span><span class="n">image</span>
+
+<span class="n">IMAGE_ROOTFS_SIZE</span> <span class="err">?</span><span class="o">=</span> <span class="s2">&#34;8192&#34;</span>
+<span class="n">IMAGE_ROOTFS_EXTRA_SPACE_append</span> <span class="o">=</span> <span class="s2">&#34;${@bb.utils.contains(&#34;</span><span class="n">DISTRO_FEATURES</span><span class="s2">&#34;, &#34;</span><span class="n">systemd</span><span class="s2">&#34;, &#34;</span> <span class="o">+</span> <span class="mi">4096</span><span class="s2">&#34;, &#34;&#34; ,d)}&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>回到 first-build 進行測試</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">bitbake hello-image
+runqemu hello-image nographic slirp
+</code></pre></td></tr></table>
+</div>
+</div><figure><img src="images/result-hello-image.png"/>
 </figure>
 
 <h2 id="小結">小結</h2>
-<p>本文記錄了 Yocto 開發時會需要知道的基楚資訊，未來在開發時，有發現不足的部份會再持續的補充。</p>
+<p>我們已經建立了自己的 Layer、Recipe 以及 Image。 接下來我們就可以試著建立屬於我們的 Distribution 和 Machine 了。</p>
 <h2 id="參考連結">參考連結</h2>
 <ul>
-<li><a href="https://www.yoctoproject.org">Yocto Official</a></li>
-<li><a href="https://bootlin.com/pub/conferences/2017/embedded-recipes/josserand-introduction-to-yocto-project/josserand-introduction-to-yocto-project.pdf">Bootlin - Introduction to Yocto project</a></li>
+<li><a href="https://wiki.yoctoproject.org/wiki/Building_your_own_recipes_from_first_principles">Building your own recipes from first principles</a></li>
+<li><a href="https://lynxbee.com/how-to-fix-error-do_package_qa-qa-issue-no-gnu_hash-in-the-elf-binary/">How to fix : ERROR: do_package_qa: QA Issue: No GNU_HASH in the elf binary</a></li>
 </ul>
     </article>
     
@@ -1981,6 +2162,10 @@ git clone git://git.yoctoproject.org/poky.git
     <ul class="related-ul">
         
         <li>
+          <a href="/2021-07-27-yocto-introduction/" class="related__link">Yocto 基礎介紹</a>
+        </li>
+        
+        <li>
           <a href="/2021-07-26-building-raspberry-pi-systems-with-yocto/" class="related__link">使用 Yocto 打造你的 Raspberry Pi 系統</a>
         </li>
         
@@ -1991,21 +2176,14 @@ git clone git://git.yoctoproject.org/poky.git
 <nav class="pagination-single">
   
     
-      <a href="https://e61983.github.io/2021-07-26-building-raspberry-pi-systems-with-yocto/" class="pagination-single__left">
+      <a href="https://e61983.github.io/2021-07-27-yocto-introduction/" class="pagination-single__left">
         <div class="pagination-single__icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path fill="currentColor" d="M19 11H7.83l4.88-4.88c.39-.39.39-1.03 0-1.42-.39-.39-1.02-.39-1.41 0l-6.59 6.59c-.39.39-.39 1.02 0 1.41l6.59 6.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.83 13H19c.55 0 1-.45 1-1s-.45-1-1-1z"/></svg>
         </div>
-        <div class="pagination-single__left-title">使用 Yocto 打造你的 Raspberry Pi 系統</div>      
+        <div class="pagination-single__left-title">Yocto 基礎介紹</div>      
       </a>
     
     <div class="grow"></div>
-    
-      <a href="https://e61983.github.io/2021-07-28-yocto-first-layer/" class="pagination-single__right">      
-        <div class="pagination-single__right-title">Yocto First Layer</div>
-        <div class="pagination-single__icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path fill="currentColor" d="M5 13h11.17l-4.88 4.88c-.39.39-.39 1.03 0 1.42.39.39 1.02.39 1.41 0l6.59-6.59c.39-.39.39-1.02 0-1.41l-6.58-6.6c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L16.17 11H5c-.55 0-1 .45-1 1s.45 1 1 1z"/></svg>
-        </div>
-      </a>
     
   
 </nav>
@@ -3002,19 +3180,11 @@ document.addEventListener('DOMContentLoaded', function () {
     <li><a href="#前言">前言</a></li>
     <li><a href="#主要內容">主要內容</a>
       <ul>
-        <li><a href="#yocto-專案">Yocto 專案</a></li>
-        <li><a href="#基本觀念">基本觀念</a>
-          <ul>
-            <li><a href="#machine">Machine</a></li>
-            <li><a href="#distrobution">Distrobution</a></li>
-            <li><a href="#image">Image</a></li>
-            <li><a href="#layer">Layer</a></li>
-            <li><a href="#recipe">Recipe</a></li>
-            <li><a href="#package">Package</a></li>
-          </ul>
-        </li>
-        <li><a href="#建立-yocto-環境">建立 Yocto 環境</a></li>
-        <li><a href="#開始第一個專案">開始第一個專案</a></li>
+        <li><a href="#建立我們的-層">建立我們的 &ldquo;層&rdquo;</a></li>
+        <li><a href="#加入我們的-層">加入我們的 &ldquo;層&rdquo;</a></li>
+        <li><a href="#recipes-example">Recipes-example</a></li>
+        <li><a href="#建立我們的-recipes-hello">建立我們的 Recipes-Hello</a></li>
+        <li><a href="#建立我們的-image">建立我們的 image</a></li>
       </ul>
     </li>
     <li><a href="#小結">小結</a></li>
