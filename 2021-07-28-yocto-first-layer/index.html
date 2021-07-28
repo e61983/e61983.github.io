@@ -1912,12 +1912,66 @@ runqemu hello-image nographic slirp
 </div><figure><img src="images/result-hello-image.png"/>
 </figure>
 
-<h2 id="小結">小結</h2>
+<h3 id="另一個建立-recipes-hello-的方法">另一個建立 Recipes-hello 的方法</h3>
+<figure><img src="images/devtool-add-flow.png"/>
+</figure>
+
+<p>在工作目錄 ( first-build ) 使用 devtool 加入我們寫好的 hello 至 工作目錄中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">devtool add hello ../hello
+</code></pre></td></tr></table>
+</div>
+</div><p>這個動作會幫我們在 conf/bblayer.bb 中加入 workspace 層，並建立 workspace/recipes/hello 資料夾。</p>
+<p>使用下列指令編譯 hello</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">devtool build hello
+ls 
+</code></pre></td></tr></table>
+</div>
+</div><p>可以發現它確實多了 Workspace Layer</p>
+<figure><img src="images/result-devtool-build.png"/>
+</figure>
+
+<p>使用 devtool 建立臨時測試用的 image，並使用 qemu 進行驗證。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">devtool build-image core-image-minimal
+runqemu core-image-minimal nographic slirp
+</code></pre></td></tr></table>
+</div>
+</div><figure><img src="images/result-devtool-qemu.png"/>
+</figure>
+
+<p>在測試沒有問題之後，再使用 devtool 將 hello 加入我們的 Layer</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">devtool finish hello ../meta-first-layer
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="小結">小結</h2>
 <p>我們已經建立了自己的 Layer、Recipe 以及 Image。 接下來我們就可以試著建立屬於我們的 Distribution 和 Machine 了。</p>
 <h2 id="參考連結">參考連結</h2>
 <ul>
 <li><a href="https://wiki.yoctoproject.org/wiki/Building_your_own_recipes_from_first_principles">Building your own recipes from first principles</a></li>
 <li><a href="https://lynxbee.com/how-to-fix-error-do_package_qa-qa-issue-no-gnu_hash-in-the-elf-binary/">How to fix : ERROR: do_package_qa: QA Issue: No GNU_HASH in the elf binary</a></li>
+<li><a href="https://docs.yoctoproject.org/ref-manual/devtool-reference.html">Devtool Reference</a></li>
+<li><a href="https://www.yoctoproject.org/docs/2.2/mega-manual/mega-manual.html">Yocto Manual</a></li>
 </ul>
     </article>
     
@@ -3185,6 +3239,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <li><a href="#recipes-example">Recipes-example</a></li>
         <li><a href="#建立我們的-recipes-hello">建立我們的 Recipes-Hello</a></li>
         <li><a href="#建立我們的-image">建立我們的 image</a></li>
+        <li><a href="#另一個建立-recipes-hello-的方法">另一個建立 Recipes-hello 的方法</a></li>
       </ul>
     </li>
     <li><a href="#小結">小結</a></li>
