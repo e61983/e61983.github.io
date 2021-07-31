@@ -3,8 +3,35 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://e61983.github.io/categories/</loc>
-    <lastmod>2021-07-30T16:30:09+08:00</lastmod>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
     <priority>0</priority>
+  </url><url>
+    <loc>https://e61983.github.io/tags/coscup/</loc>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/2021-07-31-coscup-2021-day-1/</loc>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/tags/gcc/</loc>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/tags/go/</loc>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/tags/linux/</loc>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/categories/note/</loc>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/posts/</loc>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/tags/</loc>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/</loc>
+    <lastmod>2021-07-31T10:10:29+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/categories/embedded-system/</loc>
     <lastmod>2021-07-30T16:30:09+08:00</lastmod>
@@ -12,19 +39,7 @@
     <loc>https://e61983.github.io/tags/kernel/</loc>
     <lastmod>2021-07-30T16:30:09+08:00</lastmod>
   </url><url>
-    <loc>https://e61983.github.io/tags/linux/</loc>
-    <lastmod>2021-07-30T16:30:09+08:00</lastmod>
-  </url><url>
-    <loc>https://e61983.github.io/posts/</loc>
-    <lastmod>2021-07-30T16:30:09+08:00</lastmod>
-  </url><url>
-    <loc>https://e61983.github.io/tags/</loc>
-    <lastmod>2021-07-30T16:30:09+08:00</lastmod>
-  </url><url>
     <loc>https://e61983.github.io/tags/yocto/</loc>
-    <lastmod>2021-07-30T16:30:09+08:00</lastmod>
-  </url><url>
-    <loc>https://e61983.github.io/</loc>
     <lastmod>2021-07-30T16:30:09+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/2021-07-30-yocto-kernel-menuconfig/</loc>
@@ -50,9 +65,6 @@
   </url><url>
     <loc>https://e61983.github.io/2021-07-26-building-raspberry-pi-systems-with-yocto/</loc>
     <lastmod>2021-07-26T17:37:57+08:00</lastmod>
-  </url><url>
-    <loc>https://e61983.github.io/tags/go/</loc>
-    <lastmod>2021-07-26T15:35:30+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/tags/markdown/</loc>
     <lastmod>2021-07-26T15:35:30+08:00</lastmod>
