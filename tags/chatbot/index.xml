@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" 
+  xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/" 
+  xmlns:atom="http://www.w3.org/2005/Atom" 
+  xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" 
+  xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>chatbot on Yuan のノート</title>
+    <link>https://e61983.github.io/tags/chatbot/</link>
+    <description>Recent content in chatbot on Yuan のノート</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-tw</language>
+    <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
+    <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
+    <copyright>©2021, All Rights Reserved</copyright>
+    <lastBuildDate>Sun, 01 Aug 2021 10:12:46 +0800</lastBuildDate>
+    
+        <atom:link href="https://e61983.github.io/tags/chatbot/index.xml" rel="self" type="application/rss+xml" />
+    
+
+      
+      <item>
+        <title>COSCUP 2021 Day 2</title>
+        <link>https://e61983.github.io/2021-08-01-coscup-2021-day-2/</link>
+        <pubDate>Sun, 01 Aug 2021 10:12:46 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Sun, 01 Aug 2021 10:12:46 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-08-01-coscup-2021-day-2/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;今年的 COSCUP 因應 COVID-19 疫情，所以以線上直播的方式進行。本篇主要是記錄大會第二天有興趣的議程以及關鍵字。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>mySQL</category>
+            
+          
+            
+              <category>ACL</category>
+            
+          
+            
+              <category>chatbot</category>
+            
+          
+            
+              <category>LIFF</category>
+            
+          
+            
+              <category>coscup</category>
+            
+          
+        
+        
+          
+            
+              <category>note</category>
+            
+          
+        
+        
+      </item>
+      
+
+    
+  </channel>
+</rss>
