@@ -14,7 +14,7 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Sun, 01 Aug 2021 10:12:46 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 04 Aug 2021 14:43:00 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -40,6 +40,45 @@
         
       
 
+      
+      <item>
+        <title>使用 Leaflet 地圖</title>
+        <link>https://e61983.github.io/2021-08-04-using-leaflet-map/</link>
+        <pubDate>Wed, 04 Aug 2021 14:43:00 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Wed, 04 Aug 2021 14:43:00 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-08-04-using-leaflet-map/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;最近剛好要更新地圖應用。先前是直接使用 Mapbox ，但覺得它的 Marker 操作起來不是很彈性。因緣際會下聽說了 Leaflet ，就來試看看吧。&lt;/p&gt;
+&lt;p&gt;維基百科是這樣說的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Leaflet是一個開源的JavaScript庫，用於構建Web地圖應用。首次發布於2011年，&lt;a href=&#34;https://docs.mapbox.com/help/troubleshooting/migrate-legacy-static-tiles-api/&#34;&gt;2&lt;/a&gt;它支持大多數移動和桌面平台，支持HTML5和CSS3。&lt;/p&gt;
+&lt;/blockquote&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>map</category>
+            
+          
+            
+              <category>leaflet</category>
+            
+          
+        
+        
+          
+            
+              <category>website</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>COSCUP 2021 Day 2</title>
