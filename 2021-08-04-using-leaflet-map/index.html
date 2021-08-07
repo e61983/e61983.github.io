@@ -1334,7 +1334,7 @@
 <meta name="description" content="" />
 
 
-<meta name="keywords" content="map,leaflet">
+<meta name="keywords" content="map,leaflet,geojson">
 
 <meta name="created" content="2021-08-04T14:43:00&#43;0800">
 <meta name="modified" content="2021-08-04T14:43:00&#43;0800">
@@ -1378,7 +1378,7 @@
     "dateModified": "2021-08-04T14:43:00+08:00",
     "url" : "https://e61983.github.io/2021-08-04-using-leaflet-map/",
     "description": "\u003ch2 id=\"前言\"\u003e前言\u003c/h2\u003e \u003cp\u003e最近剛好要更新地圖應用。先前是直接使用 Mapbox ，但覺得它的 Marker 操作起來不是很彈性。因緣際會下聽說了 Leaflet ，就來試看看吧。\u003c/p\u003e \u003cp\u003e維基百科是這樣說的。\u003c/p\u003e \u003cblockquote\u003e \u003cp\u003eLeaflet是一個開源的JavaScript庫，用於構建Web地圖應用。首次發布於2011年，\u003ca href=\"https://docs.mapbox.com/help/troubleshooting/migrate-legacy-static-tiles-api/\"\u003e2\u003c/a\u003e它支持大多數移動和桌面平台，支持HTML5和CSS3。\u003c/p\u003e \u003c/blockquote\u003e",
-    "keywords": ["map","leaflet"],
+    "keywords": ["map","leaflet","geojson"],
     "author": {
       "@type": "Person",
       "name": "Yuan"
@@ -1618,7 +1618,7 @@
 <div class="single__infos">
   <time class="single__info" title="建立日期">📅&nbsp;2021年08月04日 </time>
   
-  &nbsp;&middot;&nbsp; <span class="single__info" title="閱讀時間"> ☕&nbsp;2&nbsp;分鐘 </span>
+  &nbsp;&middot;&nbsp; <span class="single__info" title="閱讀時間"> ☕&nbsp;3&nbsp;分鐘 </span>
   
   &nbsp;&middot;&nbsp; <span class="single__info" title="作者">✍️&nbsp;Yuan</span>
   
@@ -1636,6 +1636,8 @@
   <li><a href="https://e61983.github.io/tags/map/" class="single__tag" title="map">#map</a></li>
 
   <li><a href="https://e61983.github.io/tags/leaflet/" class="single__tag" title="leaflet">#leaflet</a></li>
+
+  <li><a href="https://e61983.github.io/tags/geojson/" class="single__tag" title="geojson">#geojson</a></li>
 
 </ul>
 
@@ -1710,22 +1712,6 @@
     <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> 
     <span class="nx">attribution</span><span class="o">:</span> <span class="s1">&#39;&amp;copy; &lt;a href=&#34;https://www.openstreetmap.org/copyright&#34;&gt;OpenStreetMap&lt;/a&gt; contributors&#39;</span><span class="p">,</span>
   <span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
-</code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="nx">map</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">eachLayer</span><span class="p">((</span><span class="nx">layer</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">layer</span> <span class="k">instanceof</span> <span class="nx">L</span><span class="p">.</span><span class="nx">Marker</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">map</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">removeLayer</span><span class="p">(</span><span class="nx">layer</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">});</span>
 </code></pre></td></tr></table>
 </div>
 </div><figure><img src="images/first-map.png"
@@ -1954,14 +1940,112 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>將我們群組化後的 Layer 加入控制項中。</p>
-<pre><code class="language-javascipt" data-lang="javascipt">let controller = L.control.layers().addTo(map);
-controller.addOverlay(layer1,&quot;Marker&quot;);
-controller.addOverlay(layer2,&quot;自定的Marker&quot;);
-controller.addOverlay(layer3,&quot;封印陣&quot;);
-controller.expand();
-</code></pre><figure><img src="images/add-controller.png"
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">controller</span> <span class="o">=</span> <span class="nx">L</span><span class="p">.</span><span class="nx">control</span><span class="p">.</span><span class="nx">layers</span><span class="p">().</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+<span class="nx">controller</span><span class="p">.</span><span class="nx">addOverlay</span><span class="p">(</span><span class="nx">layer1</span><span class="p">,</span><span class="s2">&#34;Marker&#34;</span><span class="p">);</span>
+<span class="nx">controller</span><span class="p">.</span><span class="nx">addOverlay</span><span class="p">(</span><span class="nx">layer2</span><span class="p">,</span><span class="s2">&#34;自定的Marker&#34;</span><span class="p">);</span>
+<span class="nx">controller</span><span class="p">.</span><span class="nx">addOverlay</span><span class="p">(</span><span class="nx">layer3</span><span class="p">,</span><span class="s2">&#34;封印陣&#34;</span><span class="p">);</span>
+<span class="nx">controller</span><span class="p">.</span><span class="nx">expand</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><figure><img src="images/add-controller.png"
          alt="加入控制項"/><figcaption>
             <p>加入控制項</p>
+        </figcaption>
+</figure>
+
+<p>補充一下，如果想移除各個 Layer 的話可以透過下列方式，移除</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="nx">map</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">eachLayer</span><span class="p">((</span><span class="nx">layer</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">layer</span> <span class="k">instanceof</span> <span class="nx">L</span><span class="p">.</span><span class="nx">Marker</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">map</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">removeLayer</span><span class="p">(</span><span class="nx">layer</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+
+<span class="c1">// or 
+</span><span class="c1"></span>
+<span class="nx">layer1</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="20210808-新增---geojson-layer">20210808 新增 - geoJSON Layer</h3>
+<p>測試資料可以到<a href="https://data.gov.tw/dataset/7438">政府開放資料平台</a>取得。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript">
+<span class="kd">let</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;type&#34;</span><span class="o">:</span><span class="s2">&#34;FeatureCollection&#34;</span><span class="p">,</span> <span class="s2">&#34;features&#34;</span><span class="o">:</span> <span class="p">[</span>
+<span class="s2">&#34;type&#34;</span><span class="o">:</span><span class="s2">&#34;Feature&#34;</span><span class="p">,</span><span class="s2">&#34;geometry&#34;</span><span class="o">:</span><span class="p">{</span><span class="s2">&#34;type&#34;</span><span class="o">:</span><span class="s2">&#34;Polygon&#34;</span><span class="p">,</span><span class="s2">&#34;coordinates&#34;</span><span class="o">:</span><span class="p">[[[</span><span class="mf">121.543841724</span><span class="p">,</span><span class="mf">25.0449066970000</span><span class="p">,......................</span> <span class="p">]]]</span>
+<span class="p">]}</span>
+
+<span class="kd">function</span> <span class="nx">onEachFeature</span><span class="p">(</span><span class="nx">feature</span><span class="p">,</span> <span class="nx">layer</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">feature</span><span class="p">.</span><span class="nx">properties</span> <span class="o">&amp;&amp;</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">properties</span><span class="p">.</span><span class="nx">TOWNNAME</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">layer</span><span class="p">.</span><span class="nx">bindPopup</span><span class="p">(</span><span class="nx">feature</span><span class="p">.</span><span class="nx">properties</span><span class="p">.</span><span class="nx">TOWNNAME</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">L</span><span class="p">.</span><span class="nx">geoJSON</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">onEachFeature</span><span class="o">:</span> <span class="nx">onEachFeature</span><span class="p">,</span>
+    <span class="nx">filter</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">feature</span><span class="p">,</span> <span class="nx">layer</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">properties</span><span class="p">.</span><span class="nx">TOWNNAME</span> <span class="o">==</span> <span class="s1">&#39;大安區&#39;</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">style</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="nx">feature</span><span class="p">.</span><span class="nx">properties</span><span class="p">.</span><span class="nx">TOWNNAME</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="s1">&#39;大安區&#39;</span><span class="o">:</span> <span class="k">return</span> <span class="p">{</span><span class="nx">color</span><span class="o">:</span> <span class="s2">&#34;#00ff00&#34;</span><span class="p">,</span><span class="nx">weight</span><span class="o">:</span><span class="mi">1</span><span class="p">};</span>
+            <span class="k">default</span><span class="o">:</span> <span class="k">return</span> <span class="p">{</span><span class="nx">color</span><span class="o">:</span> <span class="s2">&#34;#333333&#34;</span><span class="p">,</span><span class="nx">weight</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span><span class="nx">opacity</span><span class="o">:</span><span class="mf">0.5</span> <span class="p">};</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><figure><img src="images/add-geolayer.png"
+         alt="使用 geolayer"/><figcaption>
+            <p>使用 geolayer</p>
         </figcaption>
 </figure>
 
@@ -3233,6 +3317,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <li><a href="#加上-marker">加上 Marker</a></li>
         <li><a href="#來畫線吧">來畫線吧</a></li>
         <li><a href="#群組化並加上控制項">群組化並加上控制項</a></li>
+        <li><a href="#20210808-新增---geojson-layer">20210808 新增 - geoJSON Layer</a></li>
         <li><a href="#成果">成果</a></li>
       </ul>
     </li>
