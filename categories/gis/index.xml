@@ -6,9 +6,9 @@
   xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" 
   xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
-    <title>GIS on Yuan のノート</title>
+    <title>gis on Yuan のノート</title>
     <link>https://e61983.github.io/categories/gis/</link>
-    <description>Recent content in GIS on Yuan のノート</description>
+    <description>Recent content in gis on Yuan のノート</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
@@ -60,7 +60,7 @@
             
           
             
-              <category>GIS</category>
+              <category>gis</category>
             
           
         

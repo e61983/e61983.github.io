@@ -6,9 +6,9 @@
   xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" 
   xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
-    <title>mySQL on Yuan のノート</title>
+    <title>mysql on Yuan のノート</title>
     <link>https://e61983.github.io/tags/mysql/</link>
-    <description>Recent content in mySQL on Yuan のノート</description>
+    <description>Recent content in mysql on Yuan のノート</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
@@ -37,11 +37,11 @@
         
           
             
-              <category>mySQL</category>
+              <category>mysql</category>
             
           
             
-              <category>ACL</category>
+              <category>acl</category>
             
           
             
@@ -49,7 +49,7 @@
             
           
             
-              <category>LIFF</category>
+              <category>liff</category>
             
           
             
