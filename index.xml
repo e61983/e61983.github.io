@@ -14,7 +14,7 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Wed, 04 Aug 2021 14:43:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 11 Aug 2021 15:22:57 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -40,6 +40,45 @@
         
       
 
+      
+      <item>
+        <title>在 STM32MP1 上使用 Yocto 建置 Linux 系統</title>
+        <link>https://e61983.github.io/2021-08-11-stm32mp-with-yocto/</link>
+        <pubDate>Wed, 11 Aug 2021 15:22:57 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Wed, 11 Aug 2021 15:22:57 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-08-11-stm32mp-with-yocto/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;手邊有一片很久沒有動過的 STM32MP157。剛好最近工作上需要在 imx8 進行開發。本文會照著 Bootlin 的課程進行實作 [&lt;a href=&#34;https://wiki.st.com/stm32mpu/wiki/STM32MP1_Distribution_Package&#34;&gt;2&lt;/a&gt;],一方面了解 Yocto 要如何使用，另一方面順便藉此先練練手。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>stm32mp1</category>
+            
+          
+            
+              <category>yocto</category>
+            
+          
+            
+              <category>linux</category>
+            
+          
+        
+        
+          
+            
+              <category>embedded system</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>使用 Leaflet 地圖</title>
