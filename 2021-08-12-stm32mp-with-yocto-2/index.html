@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 – Yuan のノート</title>
+    <title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2 – Yuan のノート</title>
     
 
 
@@ -653,7 +653,7 @@
     
     var baseurl = JSON.parse("\"https://e61983.github.io/\"");
     
-    var permalink = JSON.parse("\"https://e61983.github.io/2021-08-11-stm32mp-with-yocto/\"");
+    var permalink = JSON.parse("\"https://e61983.github.io/2021-08-12-stm32mp-with-yocto-2/\"");
     
     var langprefix = JSON.parse("\"\"");
     var searchResults = null;
@@ -1336,17 +1336,17 @@
 
 <meta name="keywords" content="stm32mp1,yocto,linux">
 
-<meta name="created" content="2021-08-11T15:22:57&#43;0800">
-<meta name="modified" content="2021-08-11T15:22:57&#43;0800">
-<meta property="article:published_time" content="2021-08-11T15:22:57&#43;0800">
+<meta name="created" content="2021-08-12T09:22:34&#43;0800">
+<meta name="modified" content="2021-08-12T09:22:34&#43;0800">
+<meta property="article:published_time" content="2021-08-12T09:22:34&#43;0800">
 
 <meta name="author" content="Yuan">
-<meta property="article:author" content="https://e61983.github.io/2021-08-11-stm32mp-with-yocto/@Yuan">
+<meta property="article:author" content="https://e61983.github.io/2021-08-12-stm32mp-with-yocto-2/@Yuan">
 
 
 <meta property="og:site_name" content="Yuan のノート">
-<meta property="og:title" content="在 STM32MP1 上使用 Yocto 建置 Linux 系統">
-<meta property="og:url" content="https://e61983.github.io/2021-08-11-stm32mp-with-yocto/">
+<meta property="og:title" content="在 STM32MP1 上使用 Yocto 建置 Linux 系統 2">
+<meta property="og:url" content="https://e61983.github.io/2021-08-12-stm32mp-with-yocto-2/">
 <meta property="og:type" content="article">
 <meta property="og:description" content="">
 
@@ -1359,7 +1359,7 @@
 
 <meta name="apple-mobile-web-app-status-bar-style" content="#fff">
 
-<link rel="canonical" href="https://e61983.github.io/2021-08-11-stm32mp-with-yocto/">
+<link rel="canonical" href="https://e61983.github.io/2021-08-12-stm32mp-with-yocto-2/">
 
 <link rel="manifest" href="/manifest.json">
 
@@ -1373,11 +1373,11 @@
   {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "headline": "在 STM32MP1 上使用 Yocto 建置 Linux 系統",
-    "datePublished": "2021-08-11T15:22:57+08:00",
-    "dateModified": "2021-08-11T15:22:57+08:00",
-    "url" : "https://e61983.github.io/2021-08-11-stm32mp-with-yocto/",
-    "description": "\u003ch2 id=\"前言\"\u003e前言\u003c/h2\u003e \u003cp\u003e手邊有一片很久沒有動過的 STM32MP157。剛好最近工作上需要在 imx8 進行開發。本文會照著 Bootlin 的課程進行實作 [\u003ca href=\"https://wiki.st.com/stm32mpu/wiki/STM32MP1_Distribution_Package\"\u003e2\u003c/a\u003e],一方面了解 Yocto 要如何使用，另一方面順便藉此先練練手。\u003c/p\u003e",
+    "headline": "在 STM32MP1 上使用 Yocto 建置 Linux 系統 2",
+    "datePublished": "2021-08-12T09:22:34+08:00",
+    "dateModified": "2021-08-12T09:22:34+08:00",
+    "url" : "https://e61983.github.io/2021-08-12-stm32mp-with-yocto-2/",
+    "description": "\u003ch2 id=\"前言\"\u003e前言\u003c/h2\u003e \u003cp\u003e繼先前建立好基楚的系統後，我們已經可以順利開機，並從 NFS 載入 rootf filesystem。\u003cbr /\u003e 本文會接續之前建立的環境，開始加入自製的程式以及自訂的 Layer。\u003c/p\u003e",
     "keywords": ["stm32mp1","yocto","linux"],
     "author": {
       "@type": "Person",
@@ -1633,12 +1633,12 @@ if (!doNotTrack) {
   <div class="single hide">
     <div class="single__nojs">Please enable Javascript to view the contents</div>
     <script>document.querySelector('.single').classList.remove('hide'); document.querySelector('.single__nojs').classList.add('hide');</script>
-    <h2 class="single__title" data-ani="false">在 STM32MP1 上使用 Yocto 建置 Linux 系統</h2>
+    <h2 class="single__title" data-ani="false">在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</h2>
     <h3 class="single__subtitle"></h3>
     <div class="single__meta">
       
 <div class="single__infos">
-  <time class="single__info" title="建立日期">📅&nbsp;2021年08月11日 </time>
+  <time class="single__info" title="建立日期">📅&nbsp;2021年08月12日 </time>
   
   &nbsp;&middot;&nbsp; <span class="single__info" title="閱讀時間"> ☕&nbsp;4&nbsp;分鐘 </span>
   
@@ -1667,12 +1667,151 @@ if (!doNotTrack) {
     <article class="single__contents" data-dir="ltr" data-ani="false">
       
       <h2 id="前言">前言</h2>
-<p>手邊有一片很久沒有動過的 STM32MP157。剛好最近工作上需要在 imx8 進行開發。本文會照著 Bootlin 的課程進行實作 [<a href="https://wiki.st.com/stm32mpu/wiki/STM32MP1_Distribution_Package">2</a>],一方面了解 Yocto 要如何使用，另一方面順便藉此先練練手。</p>
+<p>繼先前建立好基楚的系統後，我們已經可以順利開機，並從 NFS 載入 rootf filesystem。<br />
+本文會接續之前建立的環境，開始加入自製的程式以及自訂的 Layer。</p>
 <h2 id="主要內容">主要內容</h2>
-<h3 id="環境">環境</h3>
-<p>本文的實作環境是使用 Ubuntu 20.04.2 LTS 做為 Host，使用的網段是在 10.1.100.0/24 內。</p>
-<h3 id="準備-bootlin-的課程資料">準備 Bootlin 的課程資料</h3>
-<p>下載 bootlin 課程之 Lab 資料</p>
+<h3 id="recipe">Recipe</h3>
+<p>Recipe 是以 <code>&lt;APPLICATION_NAME&gt;_&lt;VERSION&gt;.bb</code> 的方式命名。裡面會包含這個 Package 該如何「穫取源始碼、Patch、編譯、安裝」的方法、它的授權方式以及它的相依套件/Package。</p>
+<p>為了簡化 Recipe  以及避免過多的重複，我們可以將共同的部份撰寫在 <code>&lt;APPLICATION&gt;.inc</code> 並在 Recipe 中引用。</p>
+<h4 id="常見的配置項">常見的配置項</h4>
+<ul>
+<li>
+<p>DESCRIPTION<br />
+說明、介紹此 Package</p>
+</li>
+<li>
+<p>HOMEPAGE<br />
+如果此 Package 的專案有介紹網站的話，可以寫在此</p>
+</li>
+<li>
+<p>PRIORITY<br />
+預設是: optional</p>
+</li>
+<li>
+<p>SECTION<br />
+這個 Package 的分類。例: console/utils</p>
+</li>
+<li>
+<p>LICENSE<br />
+這個 Package 的授權方式</p>
+</li>
+<li>
+<p>SRC_URL<br />
+這個 Package 源始碼位置<br />
+它的格式為: <code>scheme://&lt;ur&gt;l;param1;param2</code><br />
+scheme 可以是 https, git, svn, hg, ftp, file, &hellip;</p>
+</li>
+<li>
+<p>SRC_URL[md5sum], SRC_URL[sha256sum]<br />
+源始碼的檢查碼設置。<br />
+例:</p>
+<ul>
+<li>SRC_URI = &ldquo;<a href="http://example.com/src.tar.bz2;name=tarball%22">http://example.com/src.tar.bz2;name=tarball&quot;</a><br />
+SRC_URI[tarball.md5sum] = &ldquo;97b2c3fb082241ab5c56&hellip;&rdquo;
+<ul>
+<li>git  scheme:<br />
+git:<code>&lt;url&gt;</code>;protocol=<code>&lt;protocol&gt;</code>;branch=<code>&lt;branch&gt;</code></li>
+<li>http,https,ftp:<br />
+https://<code>&lt;url&gt;</code><br />
+也可以使用一些變數來設置位置，例: ${SOURCEFORGE_MIRROR}/<code>&lt;project-name&gt;</code>/${PN}-${PV}.tar.gz<br />
+詳細資訊可以參考 <a href="https://raw.githubusercontent.com/openembedded/openembedded-core/master/meta/conf/bitbake.conf">meta/conf/bitbake.conf</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>S<br />
+獲取後、解壓縮後的源始碼路目錄。通常會配置為 <code>${WORKDIR}</code><br />
+<strong>如果是使用 git 來獲取程式碼，則一定要設置成</strong> <code>${WORKDIR}/git</code></p>
+</li>
+<li>
+<p>FILESPATH<br />
+本機檔案的搜尋路徑。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">FILESPATH = &#34;${@base_set_filespath([&#34;${FILE_DIRNAME}/${BP}&#34;,
+            &#34;${FILE_DIRNAME}/${BPN}&#34;,&#34;${FILE_DIRNAME}/files&#34;], d)}&#34;
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>FILESOVERRIDES<br />
+本機檔案的搜尋路徑。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">FILESOVERRIDES = &#34;${TRANSLATED_TARGET_ARCH}:${MACHINEOVERRIDES}:${DISTROOVERRIDES}&#34;
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>LIC_FILES_CHKSUM</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">LIC_FILES_CHKSUM = &#34;file://gpl.txt;md5=393a5ca...&#34;
+LIC_FILES_CHKSUM =  &#34;file://main.c;beginline=3;endline=21;md5=58e...&#34;
+LIC_FILES_CHKSUM =  &#34;file://${COMMON_LICENSE_DIR}/MIT;md5=083...&#34;
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>DEPENDS<br />
+在編譯時期的相依套件/Package。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">DEPENDS = &#34;recipe-b&#34;
+DEPENDS = &#34;recipe-b (&gt;= 1.2)&#34;
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>RDEPENDS<br />
+在執行時期的相依套件/Package。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">RDEPENDS_${PN} = &#34;recipe-b&#34;
+RDEPENDS_${PN} = &#34;recipe-b (&gt; 1.2)&#34;
+
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h4 id="常見的變數">常見的變數</h4>
+<ul>
+<li>PN<br />
+表示 Package Name</li>
+<li>BPN<br />
+移除 PN 的前綴與後綴。例: nativesdk- 或是 -native。</li>
+<li>PV<br />
+表示 Package Version</li>
+<li>PR<br />
+表示 Package Revision。預設是: r0</li>
+<li>BP<br />
+表示 ${BPN}-${PV}</li>
+<li>WORKDIR<br />
+表示 Recipe 工作時期的目錄</li>
+<li>D<br />
+表示安裝時的目標目錄
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1680,41 +1819,209 @@ if (!doNotTrack) {
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span> <span class="si">${</span><span class="nv">HOME</span><span class="si">}</span>
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">do_install() {
+	install -d ${D}${bindir}
+	install -m 0755 hello ${D}${bindir}
+}
 
-<span class="c1"># 下載 Lab 資料</span>
-wget https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.tar.xz
-
-<span class="c1"># 解壓縮</span>
-tar xvf yocto-stm32-labs.tar.xz
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="安裝-yocto-的相依套件">安裝 Yocto 的相依套件</h3>
+</div></li>
+</ul>
+<h4 id="task">Task</h4>
+<p>在 Recipe 中有許的預設的 task，我們可以自訂、修改它們來滿足我們的需求。</p>
+<ul>
+<li>do_fetch</li>
+<li>do_unpack</li>
+<li>do_patch</li>
+<li>do_configure</li>
+<li>do_compile</li>
+<li>do_install</li>
+<li>do_package</li>
+<li>do_rootfs</li>
+</ul>
+<div class="notices info" data-title="Info">
+  我們可以使用下列指令來顯示該 Recipe 有哪些 Task<br />
+bitbake <code>&lt;recipe&gt;</code> -c listtasks
+</div>
+<h5 id="加入自訂的-task">加入自訂的 Task</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">do_mkimage() {
+	uboot-mkimage ...
+}
+addtask do_mkimage after do_compile before do_install
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="example-recipe">Example Recipe</h4>
+<p>下列是一個 Recipe 的範例</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">DESCRIPTION = &#34;Hello world program&#34;
+HOMEPAGE = &#34;http://example.net/hello/&#34;
+PRIORITY = &#34;optional&#34;
+SECTION = &#34;examples&#34;
+LICENSE = &#34;CLOSED&#34;
+LIC_FILES_CHKSUM = &#34;&#34;
+FILESOVERRIDES_prepend := &#34;${THISDIR}/${PN}_${PV}:&#34;
+SRC_URI = &#34; \
+           file://main.c \
+           file://Makefile \
+           &#34;
+           
+S = &#34;${WORKDIR}&#34;
+
+do_configure () {
+}
+do_compile () {
+	oe_runmake
+}
+do_install () {
+    oe_runmake install &#39;DESTDIR=${D}&#39;
+}
+</code></pre></td></tr></table>
+</div>
+</div><div class="notices info" data-title="如何除錯">
+  <p>我們可以透過下列指令來看到編譯時期 pacakge 的配置。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo apt install -y bc build-essential chrpath cpio diffstat gawk git python texinfo wget gdisk
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">bitbake -e <span class="sb">`</span>&lt;package&gt;<span class="sb">`</span> 
 </code></pre></td></tr></table>
 </div>
-</div><div class="notices info" data-title="Info">
-  <p>筆者在編譯映像檔時，遇到了 <code>openssl/ssl.h' file not found</code> 的問題，所以輸入下列指令進行安裝。</p>
+</div><p>我們也可以使用下列指令來喚出編譯環境進行操作。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo apt install -y libssl-dev
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">	bitbake -c devshell <span class="sb">`</span>&lt;package&gt;<span class="sb">`</span>
 </code></pre></td></tr></table>
 </div>
 </div>
 </div>
-<h3 id="建置-yocto-環境">建置 Yocto 環境</h3>
+<h4 id="擴展-recipe">擴展 Recipe</h4>
+<p>通常不建議直接修改上游的配置，但常常我們又會遇到需要調整程式的需求。這時候我們可以使用 Recipe Extension (.bbappend)。<br />
+它的命名方式為 <code>&lt;appliction&gt;_&lt;version&gt;</code>.bbappend</p>
+<p>recipe-b_%.bbappend:</p>
+<blockquote>
+<p>這要的 % 為萬用字元，在此代表任意版本。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">FILESEXTRAPATHS_prepend := &#34;${THISDIR}/files:&#34;
+SRC_URI += &#34;file://custom-modification-0.patch \
+            file://custom-modification-1.patch \
+&#34;
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="自訂-virtual-packages">自訂 Virtual Packages</h4>
+<p>我們可以透過 <code>PROVIDES = &quot;virtual/&lt;package&gt;&quot;</code> 來表示。</p>
+<h4 id="class">Class</h4>
+<p>我們可以提出共同的配置，撰寫成 <code>.bbclass</code> 。在不同的 Recipe 要使用時，就可以以 <code>inherit &lt;class&gt;</code> 來使用它。<br />
+常見到地方有 Build System。例: cmake, make, autotools, &hellip;。更多我們可以在 <code>meta/classes</code> 中找到</p>
+<h5 id="base-class">Base Class</h5>
+<p>已包含了 fetch, unpack, compile, &hellip; 等 Task。可以使用 <code>oe_runmake</code> 並透過 <code>EXTRA_OEMAKE</code> 來指定參數。</p>
+<h5 id="kernel-class">Kernel Class</h5>
+<p>用來建置 Linux Kernel 的 Class。它已配置了 PROVIDE，並且可以使用下列幾個變數:</p>
+<ul>
+<li>KERNEL_IMAGETYPE</li>
+<li>KERNEL_EXTRA_ARGS</li>
+<li>INITRAMFS_IMAGE</li>
+</ul>
+<h5 id="useradd-class">Useradd Class</h5>
+<p>用來新增系統的使用者。在使用的時候必須指定 <strong>USERADD_PACKAGES</strong>，詳情可參考 <a href="https://git.yoctoproject.org/cgit.cgi/poky/tree/meta-skeleton/recipes-skeleton/useradd/useradd-example.bb">useradd-example.bb</a>。</p>
+<p>我們可以透過 <code>USERADD_PARAM</code> 與 <code>GROUPADD_PARAM</code> 來傳遞參數給 useradd 及 groupadd</p>
+<p>例:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">DESCRIPTION = &#34;useradd class usage example&#34;
+PRIORITY = &#34;optional&#34;
+SECTION = &#34;examples&#34;
+LICENSE = &#34;MIT&#34;
+SRC_URI = &#34;file://file0&#34;
+LIC_FILES_CHKSUM = &#34;file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bc...&#34;
+inherit useradd 
+USERADD_PACKAGES = &#34;${PN}&#34;
+USERADD_PARAM = &#34;-u 1000 -d /home/user0 -s /bin/bash user0&#34;
+do_install() {
+install -m 644 file0 ${D}/home/user0/ chown user0:user0 ${D}/home/user0/file0
+}
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="layer">Layer</h3>
+<p>Layer 是以 <code>meta-&lt;LAYER_NAME&gt;</code> 的方式命名。裡面會包含這個一個或數個 Recipe。<br />
+Bitbake 會獲取 <code>${BUILDDIR}/conf/bblayers.conf</code> 中每個 Layer 的配置，進而開始建置系統。<br />
+所以，如果我們想要加入 Layer 時，必須將其加入至 <code>BBLAYERS</code> 變數中。</p>
+<h4 id="meta-bootlinlabs">meta-bootlinlabs</h4>
+<p>建立 meta-bootlinlabs 並加入 <code>BBLAYERS</code> 中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span> <span class="si">${</span><span class="nv">BUILDDIR</span><span class="si">}</span>
+bitbake-layers create-layer -p <span class="m">7</span> ../meta-bootlinlabs
+bitbake-layers add-layer ../meta-bootlinlabs/
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="加入-recipe-ninvaders">加入 recipe-ninvaders</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1722,357 +2029,70 @@ tar xvf yocto-stm32-labs.tar.xz
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
-</span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">pushd</span> <span class="si">${</span><span class="nv">HOME</span><span class="si">}</span>/yocto-stm32-labs
-git clone -b dunfell-23.0.7 git://git.yoctoproject.org/poky.git
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">pushd</span> ../meta-bootlinlabs
+mkdir -p recipes-ninvaders/ninvaders
+recipetool create -o recipes-ninvaders/ninvaders/ninvaders_git.bb https://github.com/TheZ3ro/ninvaders
 <span class="nb">popd</span>
-git clone -b dunfell git://git.openembedded.org/meta-openembedded
-git clone -b dunfell https://github.com/STMicroelectronics/meta-st-stm32mp.git
-<span class="c1"># cd meta-st-stm32mp &amp;&amp; git checkout a95cc1ec39b60a1dc50d0902c91675935959e6d2</span>
+bitbake ninvaders
 </code></pre></td></tr></table>
 </div>
-</div><p>初始化 Yocto 環境</p>
+</div><div class="notices error" data-title="Make *** no rule to make target &#39;globals.o&#39;, needed by &#39;n invaders&#39;. stop.">
+  <p>筆者在編譯時遇到了下列錯誤，如果有同學也遇到相同的問題，可以進行下列提到的修改。</p>
+<p><strong>ERROR</strong>: ninvaders-1.0+gitAUTOINC+c6ab4117ba-r0 do_compile: oe_runmake failed<br />
+<strong>ERROR</strong>: ninvaders-1.0+gitAUTOINC+c6ab4117ba-r0 do_compile: Execution of &lsquo;/home/yuan/workspace/yocto-stm32-labs/build/tmp/work/cortexa7t2hf-neon-vfpv4-poky-linux-gnueabi/ninvaders/1.0+gitAUTOINC+c6ab4117ba-r0/temp/run.do_compile.2732811&rsquo; failed with exit code 1:<br />
+make: *** No rule to make target &lsquo;globals.o&rsquo;, needed by &lsquo;nInvaders&rsquo;.  Stop.<br />
+<strong>WARNING</strong>: exit code 1 from a shell command.</p>
+<p>ninvaders_git.bb:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span> <span class="si">${</span><span class="nv">HOME</span><span class="si">}</span>/yocto-stm32-labs
-<span class="nb">source</span> poky/oe-init-build-env
-</code></pre></td></tr></table>
-</div>
-</div><p>加入 STM32MP1 的 BSP</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># pwd </span>
-<span class="c1"># ${HOME}/yocto-stm32-labs/poky/oe-init-build-env/build</span>
-
-<span class="c1"># 加入 stm32mp 相關的層</span>
-bitbake-layers add-layer ../meta-openembedded/meta-oe
-bitbake-layers add-layer ../meta-openembedded/meta-python
-bitbake-layers add-layer ../meta-st-stm32mp
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="修改-yocto-的配置檔">修改 Yocto 的配置檔</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 修改目標機器</span>
-sed -i <span class="s1">&#39;s/^MACHINE.*/MACHINE ?= &#34;stm32mp1&#34;/g&#39;</span> conf/local.conf
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="建置映像檔">建置映像檔</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">bitbake core-image-minimal
-</code></pre></td></tr></table>
-</div>
-</div><div class="notices info" data-title="Info">
-  <p>下列是 conf/local.conf 常會配置的幾個配置項</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="c"># 下載路徑
-</span><span class="c"></span><span class="err">DL_DIR</span>
-
-<span class="c"># 編譯結果快取
-</span><span class="c"></span><span class="err">SSTATE_DIR</span>
-
-<span class="c"># Bitbake 同時跑多少個 Task
-</span><span class="c"></span><span class="err">BB_NUMBER_THREADS</span>
-
-<span class="c"># 編譯時跑多少個執行緒
-</span><span class="c"></span><span class="err">PARALLEL_MAKE</span>
-
-<span class="c"># 目標機器
-</span><span class="c"></span><span class="err">MACHINE</span>
-</code></pre></td></tr></table>
-</div>
-</div>
-</div>
-<h4 id="建置用於-sd-card-的映像檔">建置用於 SD Card 的映像檔</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="si">${</span><span class="nv">BUILDDIR</span><span class="si">}</span>/tmp/deploy/images/stm32mp1/scripts/create_sdcard_from_flashlayout.sh ../flashlayout_core-image-minimal/trusted/FlashLayout_sdcard_stm32mp157f-dk2-trusted.tsv
-
-<span class="c1"># 產生 *.raw 於 ${BUILDDIR}/tmp/deploy/images/stm32mp1</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="將映像檔寫入-sd-card-中">將映像檔寫入 SD Card 中</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 插入 SD Card 到電腦中</span>
-sudo dd <span class="k">if</span><span class="o">=</span>FlashLayout_sdcard_stm32mp157f-dk2-trusted.raw <span class="nv">of</span><span class="o">=</span>/dev/mmcblk0 <span class="nv">bs</span><span class="o">=</span>8M <span class="nv">status</span><span class="o">=</span>progress <span class="nv">conv</span><span class="o">=</span>fdatasync
-<span class="c1"># or </span>
-<span class="c1">#sudo dd if=FlashLayout_sdcard_stm32mp157f-dk2-trusted.raw | pv -s ${IMAGE_SIZE} | dd of=/dev/mmcblk0 bs=4096 &amp;&amp; sync</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="測試">測試</h4>
-<p>接上 ST-LINK 之後，在電腦開啟終端機</p>
-<figure><img src="images/st-link.jpg"
-         alt="接上 ST-Link"/><figcaption>
-            <p>接上 ST-Link</p>
-        </figcaption>
-</figure>
-
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 參考自己電腦實際認到的裝置號</span>
-screen /dev/<span class="si">${</span><span class="nv">SERIAL_PORT</span><span class="si">}</span> <span class="m">115200</span>
-
-<span class="c1"># 使用 root 登入</span>
-
-Poky <span class="o">(</span>Yocto Project Reference Distro<span class="o">)</span> 3.1.7 stm32mp1 /dev/ttySTM0
-
-<span class="c1"># 結果</span>
-<span class="c1"># stm32mp1 login: root</span>
-<span class="c1"># root@stm32mp1:~# uname -a</span>
-<span class="c1"># Linux stm32mp1 5.4.56 #1 SMP PREEMPT Wed Aug 5 07:59:52 UTC 2020 armv7l GNU/Linux</span>
-<span class="c1"># root@stm32mp1:~#</span>
-
-<span class="c1"># 使用 C-a C-k 離開</span>
-</code></pre></td></tr></table>
-</div>
-</div><figure><img src="images/result-first.png"
-         alt="在STM32MP1 第一個 Linux 系統"/><figcaption>
-            <p>在STM32MP1 第一個 Linux 系統</p>
-        </figcaption>
-</figure>
-
-<h3 id="從-nfs-載入-root-filesystem">從 NFS 載入 Root Filesystem</h3>
-<p>為了在後續的開發中，可以不用一直拔拔插插 SD Card。我們要讓系統在開機後，從 NFS Server 下載 root filesystem。</p>
-<h4 id="建置-nfs-環境">建置 NFS 環境</h4>
-<p>在我們的工作機上，安裝 NFS Server</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 安裝 NFS Server</span>
-sudo apt install -y nfs-kernel-server
-
-<span class="c1"># 建立 NFS 分享路徑</span>
-sudo mkdir /nfs_shared
-
-<span class="c1"># 配置 NFS Server 設定檔</span>
-<span class="nb">echo</span> <span class="s2">&#34;/nfs_shared    *(insecure,rw,sync,no_root_squash,subtree_check)&#34;</span> &gt;&gt; /etc/exports
-
-<span class="c1"># 啟動 NFS Server</span>
-sudo systemctl <span class="nb">enable</span> nfs-kernel-server <span class="o">&amp;&amp;</span> sudo systemctl restart nfs-kernel-server
-</code></pre></td></tr></table>
-</div>
-</div><p>解壓縮我們先前建立好的 root filesystem 到 NFS 分享目錄中。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 將先前我們建置好的 root filesystem 解壓縮至我自建立的 /nfs_shared 中</span>
-sudo tar xpf <span class="si">${</span><span class="nv">BUILDDIR</span><span class="si">}</span>/tmp/deploy/images/stm32mp1/core-image-minimal-stm32mp1.tar.xz -C /nfs_shared/
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="修改-u-boot-的開機選項">修改 U-boot 的開機選項</h4>
-<p>修改 SD Card 內 bootfs 分割區中的 mmc0_extlinux/stm32mp157f-dk2_extlinux.conf，在開機的過程中u-boot 會將參數傳遞給 kernel。有興趣的同學可以參考 <a href="https://www.kernel.org/doc/Documentation/filesystems/nfs/nfsroot.txt">nfs/nfsroot.txt</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">APPEND root=/dev/nfs rw console=ttySTM0,115200 nfsroot=${serverip}:/nfs_shared,vers=3,tcp ip=dhcp:${serverip}:${gateway}:${netmask}:${hostname}:eth0
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-diff" data-lang="diff"><span class="gd">- inherit autotools
+</span><span class="gd"></span><span class="gi">+ inherit autotools-brokensep
+</span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p>為什麼是 <strong>mmc0_extlinux/stm32mp157f-dk2_extlinux.conf</strong> 這個檔案呢 ?<br />
-筆者現階段並沒有深究，相信隨著課程的進行。<br />
-我們會知道的。</p>
+<p>The problem is most likely that you&rsquo;re not using automake but the<br />
+generated recipe (would have been useful to include that) is using the<br />
+autotools class, which assumes correct use of both autoconf and<br />
+automake.  Specifically, your hand-written Makefile doesn&rsquo;t handle<br />
+out-of-tree builds.</p>
+<p>Source: <a href="https://www.yoctoproject.org/pipermail/yocto/2018-September/042600.html">[yocto] Adding nInvaders game package recipe</a></p>
 </blockquote>
-<p>重新開機之後，系統就會從 NFS 載入 root filesystem 了。</p>
-<figure><img src="images/result-boot-from-nfs.png"
-         alt="從 NFS 載入 rootfilesystem"/><figcaption>
-            <p>從 NFS 載入 rootfilesystem</p>
-        </figcaption>
-</figure>
 
-<h3 id="使用-ssh-登入">使用 SSH 登入</h3>
-<h4 id="加入-ssh-server-至系統中">加入 SSH Server 至系統中</h4>
-<p>修改 conf/local.conf ，在裡面加上 <strong>dropbear</strong> Package</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">echo</span> <span class="s1">&#39;IMAGE_INSTALL_append = &#34; dropbear&#34;&#39;</span> &gt;&gt; <span class="si">${</span><span class="nv">BUILDDIR</span><span class="si">}</span>/conf/local.conf
-</code></pre></td></tr></table>
 </div>
-</div><p>重新編譯</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">bitbake core-image-minimal
-</code></pre></td></tr></table>
-</div>
-</div><p>依照先前的步驟，重新解壓縮剛建立好的 root filesystem 到 NFS 分享目錄中。</p>
-<h4 id="測試-1">測試</h4>
-<p>STM32MP1 重新開機後，在 Host 端使用 ssh 指令進行連接。</p>
+<h4 id="將-ninvaders-加入-root-filesystem-中">將 ninvaders 加入 root filesystem 中</h4>
+<p>重新編譯後，記得要更新 NFS 分享目錄</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">ssh root@<span class="si">${</span><span class="nv">IP</span><span class="si">}</span>
-
-<span class="c1"># 結果</span>
-<span class="c1"># ssh root@10.1.100.104</span>
-<span class="c1"># The authenticity of host &#39;10.1.100.104 (10.1.100.104)&#39; can&#39;t be established.</span>
-<span class="c1"># RSA key fingerprint is SHA256:cDpQ47v01ZUkm6GpUG29F+RPOHVV7EzfDA5z/A4bDv4.</span>
-<span class="c1"># Are you sure you want to continue connecting (yes/no/[fingerprint])? yes</span>
-<span class="c1"># Warning: Permanently added &#39;10.1.100.104&#39; (RSA) to the list of known hosts.</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">echo</span> <span class="s1">&#39;IMAGE_INSTALL_append = &#34; ninvaders&#34;&#39;</span>
+bitbake core-image-miminal
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="更多關於-conflocalconf">更多關於 conf/local.conf</h3>
-<ul>
-<li>通常會是以大寫表示，如: CONF_VERSION</li>
-<li>_append:<br />
-在原本設定的 <strong>後方</strong> 增加新的設定值，如: IMAGE_INSTALL_append = &quot; dropbear&quot;</li>
-<li>_prepend:<br />
-在原本設定的 <strong>前方</strong> 增加新的設定值，如: FILESEXTRAPATHS_prepend := &ldquo;${THISDIR}/${PN}&rdquo;</li>
-<li>_remove:<br />
-用來移除當下設定值中的值，如: IMAGE_INSTALL_remove = &ldquo;i2c-tools&rdquo;</li>
-<li>_${MACHINE}:<br />
-用來表示，如果當時的 MACHINE 與 _${MACHINE} 相符時，使用這個設定值。<br />
-如: IMAGE_INSTALL_append_beaglebone = &quot; i2c-tools&quot;，當我們的 MACHINE 是 beaglebone 時，才會生效。<br />
-如: IMAGE_INSTALL_beaglebone = &ldquo;busybox i2c-tools&rdquo;，當我們的 MACHINE 是 beaglebone 時，才會生效。</li>
-</ul>
-<p>上述的操作也可以使用符號表示</p>
-<ul>
-<li>=<br />
-使用這個變數時，會將其展開。</li>
-<li>:=<br />
-立即值。</li>
-<li>+=<br />
-與 _append 相同 (要加上空白)。 (<strong>盡量避免在 conf/local.conf 中使用</strong>)</li>
-<li>=+<br />
-與 _prepend 相同 (要加上空白)。(<strong>盡量避免在 conf/local.conf 中使用</strong>)</li>
-<li>.=<br />
-與 _append 相同 (<code>不用</code>加上空白)。 (<strong>盡量避免在 conf/local.conf 中使用</strong>)</li>
-<li>=.<br />
-與 _prepend 相同 (<code>不用</code>加上空白)。 (<strong>盡量避免在 conf/local.conf 中使用</strong>)</li>
-<li>?=<br />
-如果先前給過值的話，使用先前的值。</li>
-<li>??=<br />
-與 <strong>?=</strong> 相同，但優先權更低。</li>
-</ul>
-<h4 id="虛擬-package">虛擬 Package</h4>
-<p>Virtual Package 會以 vitual/<name>命名，但它是不是真的 Package 。</p>
-<figure><img src="images/xd-1.jpg"
-         alt="假的"/><figcaption>
-            <p>假的</p>
+</div><p>接著重新啟動 STM32MP1 之後，執行 nInvaders</p>
+<figure><img src="images/result-nInvaders.png"
+         alt="nInvaders 執行結果"/><figcaption>
+            <p>nInvaders 執行結果</p>
         </figcaption>
 </figure>
 
-<p>常見的 virtual pacakge 有</p>
-<ul>
-<li>virtual/bootloader: u-boot, u-boot-ti-staging, &hellip;</li>
-<li>virtual/kernel: linux-yocto, linux-yocto-tiny, linux-ti-staging, &hellip;</li>
-<li>virtual/libc: glibc, musl, newlib</li>
-<li>virtual/xserver: xserver-xorg</li>
-</ul>
-<h4 id="選擇">選擇</h4>
-<p>我們可以使用 <code>PREFERRED_PROVIDER</code> 來指定我們想要用的 Package。<br />
-如: PREFERRED_PROVIDER_vritual/kernel ?= &ldquo;linux-ti-staging&rdquo;</p>
-<p>我們可以使用 <code>PREFERRED_VERSION</code> 來指定想使用的 Package 版本。<br />
-如: PREFERRED_VERSION_python = &ldquo;2.7.3&rdquo; 或是 PREFERRED_VERSION_linux-yocto = &ldquo;5.4.%&rdquo;</p>
-<h4 id="root-filesystem">Root Filesystem</h4>
-<p>我們可以使用 <code>IMAGE_INSTALL</code> 來指定哪些 Packages 要加入 root filesystem 中，並可以使用 <code>RDEPENDS</code> 來指定其相依 Packages. 我們也可以使用 <code>PACKAGE_EXCLUDE</code> 來過慮我們不想要的 Packages。</p>
 <h2 id="小結">小結</h2>
-<p>我們已經建立了基本的 STM32MP1 Linux 系統開發環境，接下來就要一邊玩 Yocto 一邊探索 STM32MP1 的週邊了。</p>
+<p>因為筆者手邊沒有 Nunchuk ，所以也就沒有進行 Lab 5 了。<br />
+有興趣的同學，再自己玩玩看囉!</p>
 <h2 id="參考連結">參考連結</h2>
 <ul>
-<li><a href="https://www.st.com/en/evaluation-tools/stm32mp157f-dk2.html">STM32MP157F-DK2</a></li>
+<li><a href="https://layers.openembedded.org/layerindex/branch/master/layers/">OpenEmbedded Layer Index</a></li>
+<li><a href="https://github.com/TheZ3ro/ninvaders">TheZ3ro/ninvaders</a></li>
 <li><a href="https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-slides.pdf">Bootlin/Yocto with STM32</a></li>
 <li><a href="https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.pdf">Bootlin/Yocto with STM32 Lab</a></li>
-<li><a href="https://wiki.st.com/stm32mpu/wiki/STM32MP1_Distribution_Package">Wiki - STM32MP1 Distribution Package</a></li>
-<li><a href="https://www.kernel.org/doc/Documentation/filesystems/nfs/nfsroot.txt">Kernel Document - nfsroot</a></li>
 </ul>
     </article>
     
@@ -2328,6 +2348,10 @@ sudo tar xpf <span class="si">${</span><span class="nv">BUILDDIR</span><span cla
     <ul class="related-ul">
         
         <li>
+          <a href="/2021-08-11-stm32mp-with-yocto/" class="related__link">在 STM32MP1 上使用 Yocto 建置 Linux 系統</a>
+        </li>
+        
+        <li>
           <a href="/2021-07-30-yocto-kernel-menuconfig/" class="related__link">在 Yocto 環境中調整 Linux Kernel</a>
         </li>
         
@@ -2343,10 +2367,6 @@ sudo tar xpf <span class="si">${</span><span class="nv">BUILDDIR</span><span cla
           <a href="/2021-07-31-coscup-2021-day-1/" class="related__link">COSCUP 2021 Day 1</a>
         </li>
         
-        <li>
-          <a href="/2021-07-28-yocto-first-layer/" class="related__link">Yocto First Layer</a>
-        </li>
-        
     </ul>
     
   </section>
@@ -2354,21 +2374,14 @@ sudo tar xpf <span class="si">${</span><span class="nv">BUILDDIR</span><span cla
 <nav class="pagination-single">
   
     
-      <a href="https://e61983.github.io/2021-08-04-using-leaflet-map/" class="pagination-single__left">
+      <a href="https://e61983.github.io/2021-08-11-stm32mp-with-yocto/" class="pagination-single__left">
         <div class="pagination-single__icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path fill="currentColor" d="M19 11H7.83l4.88-4.88c.39-.39.39-1.03 0-1.42-.39-.39-1.02-.39-1.41 0l-6.59 6.59c-.39.39-.39 1.02 0 1.41l6.59 6.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.83 13H19c.55 0 1-.45 1-1s-.45-1-1-1z"/></svg>
         </div>
-        <div class="pagination-single__left-title">使用 Leaflet 地圖</div>      
+        <div class="pagination-single__left-title">在 STM32MP1 上使用 Yocto 建置 Linux 系統</div>      
       </a>
     
     <div class="grow"></div>
-    
-      <a href="https://e61983.github.io/2021-08-12-stm32mp-with-yocto-2/" class="pagination-single__right">      
-        <div class="pagination-single__right-title">在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</div>
-        <div class="pagination-single__icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path fill="currentColor" d="M5 13h11.17l-4.88 4.88c-.39.39-.39 1.03 0 1.42.39.39 1.02.39 1.41 0l6.59-6.59c.39-.39.39-1.02 0-1.41l-6.58-6.6c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L16.17 11H5c-.55 0-1 .45-1 1s.45 1 1 1z"/></svg>
-        </div>
-      </a>
     
   
 </nav>
@@ -3365,35 +3378,22 @@ document.addEventListener('DOMContentLoaded', function () {
     <li><a href="#前言">前言</a></li>
     <li><a href="#主要內容">主要內容</a>
       <ul>
-        <li><a href="#環境">環境</a></li>
-        <li><a href="#準備-bootlin-的課程資料">準備 Bootlin 的課程資料</a></li>
-        <li><a href="#安裝-yocto-的相依套件">安裝 Yocto 的相依套件</a></li>
-        <li><a href="#建置-yocto-環境">建置 Yocto 環境</a>
+        <li><a href="#recipe">Recipe</a>
           <ul>
-            <li><a href="#修改-yocto-的配置檔">修改 Yocto 的配置檔</a></li>
-            <li><a href="#建置映像檔">建置映像檔</a></li>
-            <li><a href="#建置用於-sd-card-的映像檔">建置用於 SD Card 的映像檔</a></li>
-            <li><a href="#將映像檔寫入-sd-card-中">將映像檔寫入 SD Card 中</a></li>
-            <li><a href="#測試">測試</a></li>
+            <li><a href="#常見的配置項">常見的配置項</a></li>
+            <li><a href="#常見的變數">常見的變數</a></li>
+            <li><a href="#task">Task</a></li>
+            <li><a href="#example-recipe">Example Recipe</a></li>
+            <li><a href="#擴展-recipe">擴展 Recipe</a></li>
+            <li><a href="#自訂-virtual-packages">自訂 Virtual Packages</a></li>
+            <li><a href="#class">Class</a></li>
           </ul>
         </li>
-        <li><a href="#從-nfs-載入-root-filesystem">從 NFS 載入 Root Filesystem</a>
+        <li><a href="#layer">Layer</a>
           <ul>
-            <li><a href="#建置-nfs-環境">建置 NFS 環境</a></li>
-            <li><a href="#修改-u-boot-的開機選項">修改 U-boot 的開機選項</a></li>
-          </ul>
-        </li>
-        <li><a href="#使用-ssh-登入">使用 SSH 登入</a>
-          <ul>
-            <li><a href="#加入-ssh-server-至系統中">加入 SSH Server 至系統中</a></li>
-            <li><a href="#測試-1">測試</a></li>
-          </ul>
-        </li>
-        <li><a href="#更多關於-conflocalconf">更多關於 conf/local.conf</a>
-          <ul>
-            <li><a href="#虛擬-package">虛擬 Package</a></li>
-            <li><a href="#選擇">選擇</a></li>
-            <li><a href="#root-filesystem">Root Filesystem</a></li>
+            <li><a href="#meta-bootlinlabs">meta-bootlinlabs</a></li>
+            <li><a href="#加入-recipe-ninvaders">加入 recipe-ninvaders</a></li>
+            <li><a href="#將-ninvaders-加入-root-filesystem-中">將 ninvaders 加入 root filesystem 中</a></li>
           </ul>
         </li>
       </ul>
