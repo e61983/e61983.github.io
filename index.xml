@@ -14,7 +14,7 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 12 Aug 2021 13:23:59 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 12 Aug 2021 15:34:03 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -40,6 +40,46 @@
         
       
 
+      
+      <item>
+        <title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 4</title>
+        <link>https://e61983.github.io/2021-08-12-stm32mp-with-yocto-4/</link>
+        <pubDate>Thu, 12 Aug 2021 15:34:03 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Thu, 12 Aug 2021 15:34:03 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-08-12-stm32mp-with-yocto-4/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;繼先前建立好基楚的系統後，我們已經加入了 bootlinlabs machine。&lt;br /&gt;
+本文會接續之前建立的環境，開始加入自訂的 Image。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>stm32mp1</category>
+            
+          
+            
+              <category>yocto</category>
+            
+          
+            
+              <category>linux</category>
+            
+          
+        
+        
+          
+            
+              <category>embedded system</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</title>

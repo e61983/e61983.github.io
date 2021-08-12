@@ -14,7 +14,7 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 12 Aug 2021 13:23:59 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 12 Aug 2021 15:34:03 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -23,7 +23,7 @@
       <item>
         <title>linux</title>
         <link>https://e61983.github.io/tags/linux/</link>
-        <pubDate>Thu, 12 Aug 2021 13:23:59 +0800</pubDate>
+        <pubDate>Thu, 12 Aug 2021 15:34:03 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
         <guid>https://e61983.github.io/tags/linux/</guid>
@@ -41,7 +41,7 @@
       <item>
         <title>stm32mp1</title>
         <link>https://e61983.github.io/tags/stm32mp1/</link>
-        <pubDate>Thu, 12 Aug 2021 13:23:59 +0800</pubDate>
+        <pubDate>Thu, 12 Aug 2021 15:34:03 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
         <guid>https://e61983.github.io/tags/stm32mp1/</guid>
@@ -59,7 +59,7 @@
       <item>
         <title>yocto</title>
         <link>https://e61983.github.io/tags/yocto/</link>
-        <pubDate>Thu, 12 Aug 2021 13:23:59 +0800</pubDate>
+        <pubDate>Thu, 12 Aug 2021 15:34:03 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
         <guid>https://e61983.github.io/tags/yocto/</guid>
