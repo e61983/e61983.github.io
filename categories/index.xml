@@ -14,19 +14,19 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 12 Aug 2021 15:34:03 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 19 Aug 2021 14:22:28 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
 
       
       <item>
-        <title>embedded system</title>
-        <link>https://e61983.github.io/categories/embedded-system/</link>
-        <pubDate>Thu, 12 Aug 2021 15:34:03 +0800</pubDate>
+        <title>gis</title>
+        <link>https://e61983.github.io/categories/gis/</link>
+        <pubDate>Thu, 19 Aug 2021 14:22:28 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
-        <guid>https://e61983.github.io/categories/embedded-system/</guid>
+        <guid>https://e61983.github.io/categories/gis/</guid>
         <description></description>
         
         <dc:creator>Yuan Li</dc:creator>
@@ -39,12 +39,12 @@
       </item>
       
       <item>
-        <title>gis</title>
-        <link>https://e61983.github.io/categories/gis/</link>
-        <pubDate>Wed, 04 Aug 2021 14:43:00 +0800</pubDate>
+        <title>embedded system</title>
+        <link>https://e61983.github.io/categories/embedded-system/</link>
+        <pubDate>Thu, 12 Aug 2021 15:34:03 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
-        <guid>https://e61983.github.io/categories/gis/</guid>
+        <guid>https://e61983.github.io/categories/embedded-system/</guid>
         <description></description>
         
         <dc:creator>Yuan Li</dc:creator>

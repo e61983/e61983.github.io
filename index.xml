@@ -14,7 +14,7 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 12 Aug 2021 15:34:03 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 19 Aug 2021 14:22:28 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -40,6 +40,45 @@
         
       
 
+      
+      <item>
+        <title>在台灣常見的地理位置表示方式</title>
+        <link>https://e61983.github.io/2021-08-19-gps-format/</link>
+        <pubDate>Thu, 19 Aug 2021 14:22:28 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Thu, 19 Aug 2021 14:22:28 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-08-19-gps-format/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;最近開始接觸到跟 GPS 有關的東西，想說順便把地理定位相關的資料整理起來。所以這一篇就這樣誕生啦。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>geo</category>
+            
+          
+            
+              <category>gps</category>
+            
+          
+            
+              <category>go</category>
+            
+          
+        
+        
+          
+            
+              <category>gis</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 4</title>
