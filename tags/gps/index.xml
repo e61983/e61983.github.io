@@ -14,11 +14,46 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 19 Aug 2021 14:22:28 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 20 Aug 2021 13:54:03 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/tags/gps/index.xml" rel="self" type="application/rss+xml" />
     
 
+      
+      <item>
+        <title>NEO M8N GPS模組</title>
+        <link>https://e61983.github.io/2021-08-20-gps-module/</link>
+        <pubDate>Fri, 20 Aug 2021 13:54:03 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Fri, 20 Aug 2021 13:54:03 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-08-20-gps-module/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;因為工作上的需求，最近接觸到了 GNSS 模組。&lt;/p&gt;
+&lt;p&gt;維基百科是這樣說的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;衛星導航系統（Global Navigation Satellite System, GNSS）是覆蓋全球的自主地利空間定位的衛星系統，允許小巧的電子接收器確定它的所在位置（經度、緯度和高度），並且經由衛星廣播沿著視線方向傳送的時間信號精確到10米的範圍內。接收機計算的精確時間以及位置，可以作為科學實驗的參考。&lt;/p&gt;
+&lt;/blockquote&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>gps</category>
+            
+          
+        
+        
+          
+            
+              <category>gis</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>在台灣常見的地理位置表示方式</title>
