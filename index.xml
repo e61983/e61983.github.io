@@ -14,7 +14,7 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Fri, 20 Aug 2021 13:54:03 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 31 Aug 2021 22:56:03 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -40,6 +40,45 @@
         
       
 
+      
+      <item>
+        <title>使用 Debian 來架設工作站</title>
+        <link>https://e61983.github.io/2021-08-31-install-debian-11/</link>
+        <pubDate>Tue, 31 Aug 2021 22:56:03 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Tue, 31 Aug 2021 22:56:03 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-08-31-install-debian-11/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;最近剛好在重新安裝工作站，就順手記錄起來囉!&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>linux</category>
+            
+          
+            
+              <category>debian</category>
+            
+          
+            
+              <category>server</category>
+            
+          
+        
+        
+          
+            
+              <category>note</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>NEO M8N GPS模組</title>
