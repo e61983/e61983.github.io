@@ -3,8 +3,29 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://e61983.github.io/categories/</loc>
-    <lastmod>2021-08-31T22:56:03+08:00</lastmod>
+    <lastmod>2021-09-02T10:13:38+08:00</lastmod>
     <priority>0</priority>
+  </url><url>
+    <loc>https://e61983.github.io/tags/cli/</loc>
+    <lastmod>2021-09-02T10:13:38+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/categories/note/</loc>
+    <lastmod>2021-09-02T10:13:38+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/tags/pdf/</loc>
+    <lastmod>2021-09-02T10:13:38+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/posts/</loc>
+    <lastmod>2021-09-02T10:13:38+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/tags/</loc>
+    <lastmod>2021-09-02T10:13:38+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/</loc>
+    <lastmod>2021-09-02T10:13:38+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/2021-09-02-cli-remove-pdf-password/</loc>
+    <lastmod>2021-09-02T10:13:38+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/tags/debian/</loc>
     <lastmod>2021-08-31T22:56:03+08:00</lastmod>
@@ -12,19 +33,7 @@
     <loc>https://e61983.github.io/tags/linux/</loc>
     <lastmod>2021-08-31T22:56:03+08:00</lastmod>
   </url><url>
-    <loc>https://e61983.github.io/categories/note/</loc>
-    <lastmod>2021-08-31T22:56:03+08:00</lastmod>
-  </url><url>
-    <loc>https://e61983.github.io/posts/</loc>
-    <lastmod>2021-08-31T22:56:03+08:00</lastmod>
-  </url><url>
     <loc>https://e61983.github.io/tags/server/</loc>
-    <lastmod>2021-08-31T22:56:03+08:00</lastmod>
-  </url><url>
-    <loc>https://e61983.github.io/tags/</loc>
-    <lastmod>2021-08-31T22:56:03+08:00</lastmod>
-  </url><url>
-    <loc>https://e61983.github.io/</loc>
     <lastmod>2021-08-31T22:56:03+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/2021-08-31-install-debian-11/</loc>

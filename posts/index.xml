@@ -14,11 +14,46 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Tue, 31 Aug 2021 22:56:03 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 02 Sep 2021 10:13:38 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
 
+      
+      <item>
+        <title>使用 qpdf 來合併 PDF 與移除密碼保護</title>
+        <link>https://e61983.github.io/2021-09-02-cli-remove-pdf-password/</link>
+        <pubDate>Thu, 02 Sep 2021 10:13:38 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Thu, 02 Sep 2021 10:13:38 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-09-02-cli-remove-pdf-password/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;突然有了移除 PDF 密碼保護的需求。在查找相關的資料時，順手記錄下來。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>cli</category>
+            
+          
+            
+              <category>pdf</category>
+            
+          
+        
+        
+          
+            
+              <category>note</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>使用 Debian 來架設工作站</title>
