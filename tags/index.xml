@@ -57,12 +57,12 @@
       </item>
       
       <item>
-        <title>debian</title>
-        <link>https://e61983.github.io/tags/debian/</link>
-        <pubDate>Tue, 31 Aug 2021 22:56:03 +0800</pubDate>
+        <title>i.mx8qxp</title>
+        <link>https://e61983.github.io/tags/i.mx8qxp/</link>
+        <pubDate>Wed, 01 Sep 2021 14:05:41 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
-        <guid>https://e61983.github.io/tags/debian/</guid>
+        <guid>https://e61983.github.io/tags/i.mx8qxp/</guid>
         <description></description>
         
         <dc:creator>Yuan Li</dc:creator>
@@ -77,10 +77,46 @@
       <item>
         <title>linux</title>
         <link>https://e61983.github.io/tags/linux/</link>
-        <pubDate>Tue, 31 Aug 2021 22:56:03 +0800</pubDate>
+        <pubDate>Wed, 01 Sep 2021 14:05:41 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
         <guid>https://e61983.github.io/tags/linux/</guid>
+        <description></description>
+        
+        <dc:creator>Yuan Li</dc:creator>
+        
+        
+        
+        
+        
+        
+      </item>
+      
+      <item>
+        <title>yocto</title>
+        <link>https://e61983.github.io/tags/yocto/</link>
+        <pubDate>Wed, 01 Sep 2021 14:05:41 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        
+        <guid>https://e61983.github.io/tags/yocto/</guid>
+        <description></description>
+        
+        <dc:creator>Yuan Li</dc:creator>
+        
+        
+        
+        
+        
+        
+      </item>
+      
+      <item>
+        <title>debian</title>
+        <link>https://e61983.github.io/tags/debian/</link>
+        <pubDate>Tue, 31 Aug 2021 22:56:03 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        
+        <guid>https://e61983.github.io/tags/debian/</guid>
         <description></description>
         
         <dc:creator>Yuan Li</dc:creator>
@@ -171,24 +207,6 @@
         <author>e61983@gmail.com (Yuan Li)</author>
         
         <guid>https://e61983.github.io/tags/stm32mp1/</guid>
-        <description></description>
-        
-        <dc:creator>Yuan Li</dc:creator>
-        
-        
-        
-        
-        
-        
-      </item>
-      
-      <item>
-        <title>yocto</title>
-        <link>https://e61983.github.io/tags/yocto/</link>
-        <pubDate>Thu, 12 Aug 2021 15:34:03 +0800</pubDate>
-        <author>e61983@gmail.com (Yuan Li)</author>
-        
-        <guid>https://e61983.github.io/tags/yocto/</guid>
         <description></description>
         
         <dc:creator>Yuan Li</dc:creator>
