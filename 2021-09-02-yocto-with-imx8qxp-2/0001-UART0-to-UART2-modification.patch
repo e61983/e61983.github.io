@@ -1,0 +1,216 @@
+From 7f044ebad7778fcdad49104e04e9070794124d06 Mon Sep 17 00:00:00 2001
+From: Yuan <e61983@gmail.com>
+Date: Mon, 6 Sep 2021 09:17:30 +0800
+Subject: [PATCH] UART0 to UART2 modification
+
+---
+ arch/arm/dts/fsl-imx8dx.dtsi              | 23 +----------------------
+ arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi  | 12 ++++++++++++
+ arch/arm/dts/fsl-imx8qxp-mek.dts          | 17 +++++++++++++++--
+ arch/arm/mach-imx/imx8/clock.c            |  2 +-
+ board/freescale/imx8qxp_mek/imx8qxp_mek.c | 14 +++++++-------
+ include/configs/imx8qxp_mek.h             |  4 ++--
+ 6 files changed, 38 insertions(+), 34 deletions(-)
+
+diff --git a/arch/arm/dts/fsl-imx8dx.dtsi b/arch/arm/dts/fsl-imx8dx.dtsi
+index a36bf388c7..4d2606defe 100644
+--- a/arch/arm/dts/fsl-imx8dx.dtsi
++++ b/arch/arm/dts/fsl-imx8dx.dtsi
+@@ -975,25 +975,7 @@
+ 				reg = <SC_R_UART_2>;
+ 				#power-domain-cells = <0>;
+ 				power-domains = <&pd_dma>;
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+ 				wakeup-irq = <347>;
+-
+-				pd_dma2_chan12: PD_UART2_RX {
+-					reg = <SC_R_DMA_2_CH12>;
+-					power-domains =<&pd_dma_lpuart2>;
+-					#power-domain-cells = <0>;
+-					#address-cells = <1>;
+-					#size-cells = <0>;
+-
+-					pd_dma2_chan13: PD_UART2_TX {
+-						reg = <SC_R_DMA_2_CH13>;
+-						power-domains =<&pd_dma2_chan12>;
+-						#power-domain-cells = <0>;
+-						#address-cells = <1>;
+-						#size-cells = <0>;
+-					};
+-				};
+ 			};
+ 			pd_dma_lpuart3: PD_DMA_UART3 {
+ 				reg = <SC_R_UART_3>;
+@@ -2839,10 +2821,7 @@
+ 		clock-names = "per", "ipg";
+ 		assigned-clocks = <&clk IMX8QXP_UART2_CLK>;
+ 		assigned-clock-rates = <80000000>;
+-		power-domains = <&pd_dma2_chan13>;
+-		dma-names = "tx","rx";
+-		dmas = <&edma2 13 0 0>,
+-			<&edma2 12 0 1>;
++		power-domains = <&pd_dma_lpuart2>;
+ 		status = "disabled";
+ 	};
+ 
+diff --git a/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi b/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi
+index 5327485bfa..7df4d1bb5e 100644
+--- a/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi
++++ b/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi
+@@ -68,6 +68,10 @@
+ 	u-boot,dm-spl;
+ };
+ 
++&pinctrl_lpuart2 {
++	u-boot,dm-spl;
++};
++
+ &pinctrl_usdhc1 {
+ 	u-boot,dm-spl;
+ };
+@@ -136,6 +140,10 @@
+ 	u-boot,dm-spl;
+ };
+ 
++&pd_dma_lpuart2 {
++	u-boot,dm-spl;
++};
++
+ &pd_conn_usbotg0 {
+ 	u-boot,dm-spl;
+ };
+@@ -208,6 +216,10 @@
+ 	u-boot,dm-spl;
+ };
+ 
++&lpuart2 {
++	u-boot,dm-spl;
++};
++
+ &usbmisc1 {
+ 	u-boot,dm-spl;
+ };
+diff --git a/arch/arm/dts/fsl-imx8qxp-mek.dts b/arch/arm/dts/fsl-imx8qxp-mek.dts
+index 86aa868479..a5a5c5e49d 100644
+--- a/arch/arm/dts/fsl-imx8qxp-mek.dts
++++ b/arch/arm/dts/fsl-imx8qxp-mek.dts
+@@ -21,8 +21,8 @@
+ 	};
+ 
+ 	chosen {
+-		bootargs = "console=ttyLP0,115200 earlycon";
+-		stdout-path = &lpuart0;
++		bootargs = "console=ttyLP2,115200 earlycon";
++		stdout-path = &lpuart2;
+ 	};
+ 
+ 	regulators {
+@@ -126,6 +126,13 @@
+ 			>;
+ 		};
+ 
++		pinctrl_lpuart2: lpuart2grp {
++			fsl,pins = <
++				SC_P_UART2_RX_ADMA_UART2_RX	0x06000020
++				SC_P_UART2_TX_ADMA_UART2_TX	0x06000020
++			>;
++		};
++
+ 		pinctrl_usdhc1: usdhc1grp {
+ 			fsl,pins = <
+ 				SC_P_EMMC0_CLK_CONN_EMMC0_CLK		0x06000041
+@@ -217,6 +224,12 @@
+ 	status = "okay";
+ };
+ 
++&lpuart2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_lpuart2>;
++	status = "okay";
++};
++
+ &gpio0 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm/mach-imx/imx8/clock.c b/arch/arm/mach-imx/imx8/clock.c
+index 4eb22ce129..05343d901d 100644
+--- a/arch/arm/mach-imx/imx8/clock.c
++++ b/arch/arm/mach-imx/imx8/clock.c
+@@ -27,7 +27,7 @@ u32 mxc_get_clock(enum mxc_clock clk)
+ 	switch (clk) {
+ 	case MXC_UART_CLK:
+ 		err = sc_pm_get_clock_rate(-1,
+-				SC_R_UART_0, 2, &clkrate);
++				SC_R_UART_2, 2, &clkrate);
+ 		if (err != SC_ERR_NONE) {
+ 			printf("sc get UART clk failed! err=%d\n", err);
+ 			return 0;
+diff --git a/board/freescale/imx8qxp_mek/imx8qxp_mek.c b/board/freescale/imx8qxp_mek/imx8qxp_mek.c
+index a4f9fab986..71068b090d 100644
+--- a/board/freescale/imx8qxp_mek/imx8qxp_mek.c
++++ b/board/freescale/imx8qxp_mek/imx8qxp_mek.c
+@@ -42,14 +42,14 @@ DECLARE_GLOBAL_DATA_PTR;
+ 			 (SC_PAD_28FDSOI_DSE_DV_HIGH << PADRING_DSE_SHIFT) | \
+ 			 (SC_PAD_28FDSOI_PS_PU << PADRING_PULL_SHIFT))
+ 
+-static iomux_cfg_t uart0_pads[] = {
+-	SC_P_UART0_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
+-	SC_P_UART0_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
++static iomux_cfg_t uart2_pads[] = {
++	SC_P_UART2_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
++	SC_P_UART2_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
+ };
+ 
+ static void setup_iomux_uart(void)
+ {
+-	imx8_iomux_setup_multiple_pads(uart0_pads, ARRAY_SIZE(uart0_pads));
++	imx8_iomux_setup_multiple_pads(uart2_pads, ARRAY_SIZE(uart2_pads));
+ }
+ 
+ int board_early_init_f(void)
+@@ -57,8 +57,8 @@ int board_early_init_f(void)
+ 	sc_pm_clock_rate_t rate = SC_80MHZ;
+ 	int ret;
+ 
+-	/* Set UART0 clock root to 80 MHz */
+-	ret = sc_pm_setup_uart(SC_R_UART_0, rate);
++	/* Set uart2 clock root to 80 MHz */
++	ret = sc_pm_setup_uart(SC_R_UART_2, rate);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -348,7 +348,7 @@ int board_init(void)
+ void board_quiesce_devices(void)
+ {
+ 	const char *power_on_devices[] = {
+-		"dma_lpuart0",
++		"dma_lpuart2",
+ 
+ 		/* HIFI DSP boot */
+ 		"audio_sai0",
+diff --git a/include/configs/imx8qxp_mek.h b/include/configs/imx8qxp_mek.h
+index 8e5e48026e..124cbc715c 100644
+--- a/include/configs/imx8qxp_mek.h
++++ b/include/configs/imx8qxp_mek.h
+@@ -30,7 +30,7 @@
+ #define CONFIG_SPL_BSS_MAX_SIZE		0x1000	/* 4 KB */
+ #define CONFIG_SYS_SPL_MALLOC_START	0x82200000
+ #define CONFIG_SYS_SPL_MALLOC_SIZE     0x80000	/* 512 KB */
+-#define CONFIG_SERIAL_LPUART_BASE	0x5a060000
++#define CONFIG_SERIAL_LPUART_BASE	0x5a080000 /* use UART2 */
+ #define CONFIG_MALLOC_F_ADDR		0x00138000
+ 
+ #define CONFIG_SPL_RAW_IMAGE_ARM_TRUSTED_FIRMWARE
+@@ -125,7 +125,7 @@
+ 	"script=boot.scr\0" \
+ 	"image=Image\0" \
+ 	"splashimage=0x9e000000\0" \
+-	"console=ttyLP0\0" \
++	"console=ttyLP2\0" \
+ 	"fdt_addr=0x83000000\0"			\
+ 	"fdt_high=0xffffffffffffffff\0"		\
+ 	"cntr_addr=0x98000000\0"			\
+-- 
+2.30.2
+
