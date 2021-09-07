@@ -3,31 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://e61983.github.io/categories/</loc>
-    <lastmod>2021-09-02T13:36:25+08:00</lastmod>
+    <lastmod>2021-09-07T01:21:50+08:00</lastmod>
     <priority>0</priority>
   </url><url>
-    <loc>https://e61983.github.io/tags/device-tree/</loc>
-    <lastmod>2021-09-02T13:36:25+08:00</lastmod>
-  </url><url>
     <loc>https://e61983.github.io/categories/embedded-system/</loc>
-    <lastmod>2021-09-02T13:36:25+08:00</lastmod>
+    <lastmod>2021-09-07T01:21:50+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/tags/i.mx8qxp/</loc>
-    <lastmod>2021-09-02T13:36:25+08:00</lastmod>
+    <lastmod>2021-09-07T01:21:50+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/tags/linux/</loc>
-    <lastmod>2021-09-02T13:36:25+08:00</lastmod>
+    <lastmod>2021-09-07T01:21:50+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/posts/</loc>
-    <lastmod>2021-09-02T13:36:25+08:00</lastmod>
+    <lastmod>2021-09-07T01:21:50+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/tags/</loc>
-    <lastmod>2021-09-02T13:36:25+08:00</lastmod>
+    <lastmod>2021-09-07T01:21:50+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/tags/yocto/</loc>
-    <lastmod>2021-09-02T13:36:25+08:00</lastmod>
+    <lastmod>2021-09-07T01:21:50+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/</loc>
+    <lastmod>2021-09-07T01:21:50+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/2021-09-07-yocto-with-imx8qxp-3/</loc>
+    <lastmod>2021-09-07T01:21:50+08:00</lastmod>
+  </url><url>
+    <loc>https://e61983.github.io/tags/device-tree/</loc>
     <lastmod>2021-09-02T13:36:25+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/2021-09-02-yocto-with-imx8qxp-2/</loc>

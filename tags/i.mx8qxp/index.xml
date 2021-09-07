@@ -14,11 +14,51 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 02 Sep 2021 13:36:25 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 07 Sep 2021 01:21:50 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/tags/i.mx8qxp/index.xml" rel="self" type="application/rss+xml" />
     
 
+      
+      <item>
+        <title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 3</title>
+        <link>https://e61983.github.io/2021-09-07-yocto-with-imx8qxp-3/</link>
+        <pubDate>Tue, 07 Sep 2021 01:21:50 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Tue, 07 Sep 2021 01:21:50 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-09-07-yocto-with-imx8qxp-3/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;UUU 全名為 Universal Update Utility。對 NXP i.MX 系列熟悉的使用者對 MFGTools 一定不會感到陌生，UUU 就是從 MFGTools 演進而來的，也稱為 MFGTools v3。它是用來進行 Freescale/NXP 晶片的映像檔燒錄。&lt;/p&gt;
+&lt;p&gt;本篇將使用 UUU 將&lt;a href=&#34;https://e61983.github.io/2021-09-02-yocto-with-imx8qxp-2/#重新編譯映像檔並燒寫至-sd-卡&#34;&gt;我們先前建立的映像檔&lt;/a&gt;燒寫至 eMMC 中。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>i.mx8qxp</category>
+            
+          
+            
+              <category>yocto</category>
+            
+          
+            
+              <category>linux</category>
+            
+          
+        
+        
+          
+            
+              <category>embedded system</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 2</title>

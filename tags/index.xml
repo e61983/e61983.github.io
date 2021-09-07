@@ -14,34 +14,16 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 02 Sep 2021 13:36:25 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 07 Sep 2021 01:21:50 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
 
       
       <item>
-        <title>device tree</title>
-        <link>https://e61983.github.io/tags/device-tree/</link>
-        <pubDate>Thu, 02 Sep 2021 13:36:25 +0800</pubDate>
-        <author>e61983@gmail.com (Yuan Li)</author>
-        
-        <guid>https://e61983.github.io/tags/device-tree/</guid>
-        <description></description>
-        
-        <dc:creator>Yuan Li</dc:creator>
-        
-        
-        
-        
-        
-        
-      </item>
-      
-      <item>
         <title>i.mx8qxp</title>
         <link>https://e61983.github.io/tags/i.mx8qxp/</link>
-        <pubDate>Thu, 02 Sep 2021 13:36:25 +0800</pubDate>
+        <pubDate>Tue, 07 Sep 2021 01:21:50 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
         <guid>https://e61983.github.io/tags/i.mx8qxp/</guid>
@@ -59,7 +41,7 @@
       <item>
         <title>linux</title>
         <link>https://e61983.github.io/tags/linux/</link>
-        <pubDate>Thu, 02 Sep 2021 13:36:25 +0800</pubDate>
+        <pubDate>Tue, 07 Sep 2021 01:21:50 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
         <guid>https://e61983.github.io/tags/linux/</guid>
@@ -77,10 +59,28 @@
       <item>
         <title>yocto</title>
         <link>https://e61983.github.io/tags/yocto/</link>
-        <pubDate>Thu, 02 Sep 2021 13:36:25 +0800</pubDate>
+        <pubDate>Tue, 07 Sep 2021 01:21:50 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
         <guid>https://e61983.github.io/tags/yocto/</guid>
+        <description></description>
+        
+        <dc:creator>Yuan Li</dc:creator>
+        
+        
+        
+        
+        
+        
+      </item>
+      
+      <item>
+        <title>device tree</title>
+        <link>https://e61983.github.io/tags/device-tree/</link>
+        <pubDate>Thu, 02 Sep 2021 13:36:25 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        
+        <guid>https://e61983.github.io/tags/device-tree/</guid>
         <description></description>
         
         <dc:creator>Yuan Li</dc:creator>
