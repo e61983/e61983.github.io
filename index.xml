@@ -14,7 +14,7 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Tue, 07 Sep 2021 01:21:50 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 09 Sep 2021 17:06:40 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -40,6 +40,50 @@
         
       
 
+      
+      <item>
+        <title>安裝 Opnsense 並設定 OpenVPN</title>
+        <link>https://e61983.github.io/2021-09-09-install-opnsense/</link>
+        <pubDate>Thu, 09 Sep 2021 17:06:40 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Thu, 09 Sep 2021 17:06:40 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-09-09-install-opnsense/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;目前有了在外面存取 NAS 資料的需求，直接裸奔實在不是個明智的想法。還是放在防火牆後面，架個 VPN 服務好了。&lt;br /&gt;
+想說既然要架 VPN 伺服器。趁這次機會也一併換套防火牆軟體試試。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>vpn</category>
+            
+          
+            
+              <category>openvpn</category>
+            
+          
+            
+              <category>pfsense</category>
+            
+          
+            
+              <category>opnsense</category>
+            
+          
+        
+        
+          
+            
+              <category>mis</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 3</title>
