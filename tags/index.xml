@@ -14,11 +14,119 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 09 Sep 2021 17:06:40 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 13 Sep 2021 11:38:39 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
 
+      
+      <item>
+        <title>i.mx8qxp</title>
+        <link>https://e61983.github.io/tags/i.mx8qxp/</link>
+        <pubDate>Mon, 13 Sep 2021 11:38:39 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        
+        <guid>https://e61983.github.io/tags/i.mx8qxp/</guid>
+        <description></description>
+        
+        <dc:creator>Yuan Li</dc:creator>
+        
+        
+        
+        
+        
+        
+      </item>
+      
+      <item>
+        <title>linux</title>
+        <link>https://e61983.github.io/tags/linux/</link>
+        <pubDate>Mon, 13 Sep 2021 11:38:39 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        
+        <guid>https://e61983.github.io/tags/linux/</guid>
+        <description></description>
+        
+        <dc:creator>Yuan Li</dc:creator>
+        
+        
+        
+        
+        
+        
+      </item>
+      
+      <item>
+        <title>nfs</title>
+        <link>https://e61983.github.io/tags/nfs/</link>
+        <pubDate>Mon, 13 Sep 2021 11:38:39 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        
+        <guid>https://e61983.github.io/tags/nfs/</guid>
+        <description></description>
+        
+        <dc:creator>Yuan Li</dc:creator>
+        
+        
+        
+        
+        
+        
+      </item>
+      
+      <item>
+        <title>tftp</title>
+        <link>https://e61983.github.io/tags/tftp/</link>
+        <pubDate>Mon, 13 Sep 2021 11:38:39 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        
+        <guid>https://e61983.github.io/tags/tftp/</guid>
+        <description></description>
+        
+        <dc:creator>Yuan Li</dc:creator>
+        
+        
+        
+        
+        
+        
+      </item>
+      
+      <item>
+        <title>u-boot</title>
+        <link>https://e61983.github.io/tags/u-boot/</link>
+        <pubDate>Mon, 13 Sep 2021 11:38:39 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        
+        <guid>https://e61983.github.io/tags/u-boot/</guid>
+        <description></description>
+        
+        <dc:creator>Yuan Li</dc:creator>
+        
+        
+        
+        
+        
+        
+      </item>
+      
+      <item>
+        <title>yocto</title>
+        <link>https://e61983.github.io/tags/yocto/</link>
+        <pubDate>Mon, 13 Sep 2021 11:38:39 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        
+        <guid>https://e61983.github.io/tags/yocto/</guid>
+        <description></description>
+        
+        <dc:creator>Yuan Li</dc:creator>
+        
+        
+        
+        
+        
+        
+      </item>
       
       <item>
         <title>openvpn</title>
@@ -81,60 +189,6 @@
         <author>e61983@gmail.com (Yuan Li)</author>
         
         <guid>https://e61983.github.io/tags/vpn/</guid>
-        <description></description>
-        
-        <dc:creator>Yuan Li</dc:creator>
-        
-        
-        
-        
-        
-        
-      </item>
-      
-      <item>
-        <title>i.mx8qxp</title>
-        <link>https://e61983.github.io/tags/i.mx8qxp/</link>
-        <pubDate>Tue, 07 Sep 2021 01:21:50 +0800</pubDate>
-        <author>e61983@gmail.com (Yuan Li)</author>
-        
-        <guid>https://e61983.github.io/tags/i.mx8qxp/</guid>
-        <description></description>
-        
-        <dc:creator>Yuan Li</dc:creator>
-        
-        
-        
-        
-        
-        
-      </item>
-      
-      <item>
-        <title>linux</title>
-        <link>https://e61983.github.io/tags/linux/</link>
-        <pubDate>Tue, 07 Sep 2021 01:21:50 +0800</pubDate>
-        <author>e61983@gmail.com (Yuan Li)</author>
-        
-        <guid>https://e61983.github.io/tags/linux/</guid>
-        <description></description>
-        
-        <dc:creator>Yuan Li</dc:creator>
-        
-        
-        
-        
-        
-        
-      </item>
-      
-      <item>
-        <title>yocto</title>
-        <link>https://e61983.github.io/tags/yocto/</link>
-        <pubDate>Tue, 07 Sep 2021 01:21:50 +0800</pubDate>
-        <author>e61983@gmail.com (Yuan Li)</author>
-        
-        <guid>https://e61983.github.io/tags/yocto/</guid>
         <description></description>
         
         <dc:creator>Yuan Li</dc:creator>

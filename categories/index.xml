@@ -14,19 +14,19 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 09 Sep 2021 17:06:40 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 13 Sep 2021 11:38:39 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
 
       
       <item>
-        <title>mis</title>
-        <link>https://e61983.github.io/categories/mis/</link>
-        <pubDate>Thu, 09 Sep 2021 17:06:40 +0800</pubDate>
+        <title>embedded system</title>
+        <link>https://e61983.github.io/categories/embedded-system/</link>
+        <pubDate>Mon, 13 Sep 2021 11:38:39 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
-        <guid>https://e61983.github.io/categories/mis/</guid>
+        <guid>https://e61983.github.io/categories/embedded-system/</guid>
         <description></description>
         
         <dc:creator>Yuan Li</dc:creator>
@@ -39,12 +39,12 @@
       </item>
       
       <item>
-        <title>embedded system</title>
-        <link>https://e61983.github.io/categories/embedded-system/</link>
-        <pubDate>Tue, 07 Sep 2021 01:21:50 +0800</pubDate>
+        <title>mis</title>
+        <link>https://e61983.github.io/categories/mis/</link>
+        <pubDate>Thu, 09 Sep 2021 17:06:40 +0800</pubDate>
         <author>e61983@gmail.com (Yuan Li)</author>
         
-        <guid>https://e61983.github.io/categories/embedded-system/</guid>
+        <guid>https://e61983.github.io/categories/mis/</guid>
         <description></description>
         
         <dc:creator>Yuan Li</dc:creator>

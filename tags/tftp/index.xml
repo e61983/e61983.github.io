@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" 
+  xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/" 
+  xmlns:atom="http://www.w3.org/2005/Atom" 
+  xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" 
+  xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>tftp on Yuan のノート</title>
+    <link>https://e61983.github.io/tags/tftp/</link>
+    <description>Recent content in tftp on Yuan のノート</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-tw</language>
+    <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
+    <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
+    <copyright>©2021, All Rights Reserved</copyright>
+    <lastBuildDate>Mon, 13 Sep 2021 11:38:39 +0800</lastBuildDate>
+    
+        <atom:link href="https://e61983.github.io/tags/tftp/index.xml" rel="self" type="application/rss+xml" />
+    
+
+      
+      <item>
+        <title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</title>
+        <link>https://e61983.github.io/2021-09-13-yocto-with-imx8qxp-4/</link>
+        <pubDate>Mon, 13 Sep 2021 11:38:39 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Mon, 13 Sep 2021 11:38:39 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-09-13-yocto-with-imx8qxp-4/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;為了在之後開發過程中不用反覆燒寫 eMMC 與 SD 卡，本篇會設定 U-Boot 載入 Rootfs 以達到我們的目的。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>i.mx8qxp</category>
+            
+          
+            
+              <category>u-boot</category>
+            
+          
+            
+              <category>yocto</category>
+            
+          
+            
+              <category>linux</category>
+            
+          
+            
+              <category>nfs</category>
+            
+          
+            
+              <category>tftp</category>
+            
+          
+        
+        
+          
+            
+              <category>embedded system</category>
+            
+          
+        
+        
+      </item>
+      
+
+    
+  </channel>
+</rss>
