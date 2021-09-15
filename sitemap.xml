@@ -21,10 +21,10 @@
     <loc>https://e61983.github.io/tags/</loc>
     <lastmod>2021-09-14T17:03:13+08:00</lastmod>
   </url><url>
-    <loc>https://e61983.github.io/categories/web/</loc>
+    <loc>https://e61983.github.io/tags/web-backend/</loc>
     <lastmod>2021-09-14T17:03:13+08:00</lastmod>
   </url><url>
-    <loc>https://e61983.github.io/tags/web-backend/</loc>
+    <loc>https://e61983.github.io/categories/website/</loc>
     <lastmod>2021-09-14T17:03:13+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/</loc>
@@ -145,9 +145,6 @@
     <lastmod>2021-08-04T14:43:00+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/tags/map/</loc>
-    <lastmod>2021-08-04T14:43:00+08:00</lastmod>
-  </url><url>
-    <loc>https://e61983.github.io/categories/website/</loc>
     <lastmod>2021-08-04T14:43:00+08:00</lastmod>
   </url><url>
     <loc>https://e61983.github.io/2021-08-04-using-leaflet-map/</loc>
