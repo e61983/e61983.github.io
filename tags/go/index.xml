@@ -14,11 +14,55 @@
     <managingEditor>e61983@gmail.com (Yuan Li)</managingEditor>
     <webMaster>e61983@gmail.com (Yuan Li)</webMaster>
     <copyright>©2021, All Rights Reserved</copyright>
-    <lastBuildDate>Thu, 19 Aug 2021 14:22:28 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 14 Sep 2021 17:03:13 +0800</lastBuildDate>
     
         <atom:link href="https://e61983.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
     
 
+      
+      <item>
+        <title>使用 Gin 框架實作登入功能</title>
+        <link>https://e61983.github.io/2021-09-14-go-gin-web-backend/</link>
+        <pubDate>Tue, 14 Sep 2021 17:03:13 +0800</pubDate>
+        <author>e61983@gmail.com (Yuan Li)</author>
+        <atom:modified>Tue, 14 Sep 2021 17:03:13 +0800</atom:modified>
+        <guid>https://e61983.github.io/2021-09-14-go-gin-web-backend/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;最近又要開始接觸到網頁的東西了!&lt;br /&gt;
+久沒有碰要再花一點時間回想。想說就趁著這次順手記錄起來吧。&lt;/p&gt;</description>
+        
+        <dc:creator>Yuan</dc:creator>
+        
+        
+        
+        
+          
+            
+              <category>go</category>
+            
+          
+            
+              <category>gin</category>
+            
+          
+            
+              <category>web backend</category>
+            
+          
+            
+              <category>cookie</category>
+            
+          
+        
+        
+          
+            
+              <category>web</category>
+            
+          
+        
+        
+      </item>
       
       <item>
         <title>在台灣常見的地理位置表示方式</title>
