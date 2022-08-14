@@ -58,6 +58,8 @@
 </span><span class=lnt>39
 </span><span class=lnt>40
 </span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>main</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
@@ -67,7 +69,9 @@
 </span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/gorilla/websocket&#34;</span>
 </span></span><span class=line><span class=cl><span class=p>)</span>
 </span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>upgrader</span> <span class=p>=</span> <span class=nx>websocket</span><span class=p>.</span><span class=nx>Upgrader</span><span class=p>{}</span>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>upgrader</span> <span class=p>=</span> <span class=nx>websocket</span><span class=p>.</span><span class=nx>Upgrader</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>CheckOrigin</span><span class=p>:</span> <span class=kd>func</span><span class=p>(</span><span class=nx>r</span> <span class=o>*</span><span class=nx>http</span><span class=p>.</span><span class=nx>Request</span><span class=p>)</span> <span class=kt>bool</span> <span class=p>{</span><span class=k>return</span> <span class=kc>true</span><span class=p>},</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1>// 提供 echo 服務
 </span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=nf>echo</span><span class=p>(</span><span class=nx>w</span> <span class=nx>http</span><span class=p>.</span><span class=nx>ResponseWriter</span><span class=p>,</span> <span class=nx>r</span> <span class=o>*</span><span class=nx>http</span><span class=p>.</span><span class=nx>Request</span><span class=p>){</span>
