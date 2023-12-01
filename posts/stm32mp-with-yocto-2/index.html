@@ -1,0 +1,295 @@
+<!doctype html><html lang=zh-Hant><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet href=/styles.f124ef51657bdc82b98114bac9e11454.min.e94b493a4fe8f46b26d21f8986856ed65ba4e8f0a7bb23126df17117f48a175d.css></head><body class="flex flex-col bg-black/80 space-y-2 m-2"><header class="flex flex-col items-center space-y-2 mt-[2rem]"><div class="flex flex-col items-center space-y-2 max-w-[5rem] min-w-[4rem] aspect-square"><div class="rounded-full max-w-[200px] max-h-[200px] overflow-hidden"><img src="https://s.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=200"></div></div><a href=/ class="text-2xl text-white font-semibold">Yuan のノート</a><div class="text-yellow-500 text-xs">心之所至，隨意亂書</div></header><nav class="container mx-auto px-2 rounded bg-slate-600"><div class="flex space-x-2 justify-end"><a href=/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
+text-yellow-500 hover:text-yellow-300">home
+</a><a href=/abouts/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
+text-yellow-500 hover:text-yellow-300">abouts
+</a><a href=/archives/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
+text-yellow-500 hover:text-yellow-300">Archives</a></div></nav><section class="mt-2 container mx-auto"><div class="bg-white flex px-12 py-4 space-x-8 rounded"><main class=flex-grow><article class="flex flex-col space-y-2"><a href=/posts/stm32mp-with-yocto-2/ class="text-2xl font-semibold text-yellow-500">在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</a><div class="flex items-center space-x-2"><div class="text-xs text-slate-500">Thu Aug 12, 2021</div><span>🏷️</span><ul class="flex space-x-2"><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/stm32mp1/ title=stm32mp1>#stm32mp1</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/yocto/ title=yocto>#yocto</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/linux/ title=linux>#linux</a></li></ul></div><div class="w-full content"><h2 id=前言>前言</h2><p>繼先前建立好基楚的系統後，我們已經可以順利開機，並從 NFS 載入 rootf filesystem。
+本文會接續之前建立的環境，開始加入自製的程式以及自訂的 Layer。</p><h2 id=主要內容>主要內容</h2><h3 id=recipe>Recipe</h3><p>Recipe 是以 <code>&lt;APPLICATION_NAME>_&lt;VERSION>.bb</code> 的方式命名。裡面會包含這個 Package 該如何「穫取源始碼、Patch、編譯、安裝」的方法、它的授權方式以及它的相依套件/Package。</p><p>為了簡化 Recipe 以及避免過多的重複，我們可以將共同的部份撰寫在 <code>&lt;APPLICATION>.inc</code> 並在 Recipe 中引用。</p><h4 id=常見的配置項>常見的配置項</h4><ul><li><p>DESCRIPTION
+說明、介紹此 Package</p></li><li><p>HOMEPAGE
+如果此 Package 的專案有介紹網站的話，可以寫在此</p></li><li><p>PRIORITY
+預設是: optional</p></li><li><p>SECTION
+這個 Package 的分類。例: console/utils</p></li><li><p>LICENSE
+這個 Package 的授權方式</p></li><li><p>SRC_URL
+這個 Package 源始碼位置
+它的格式為: <code>scheme://&lt;ur>l;param1;param2</code>
+scheme 可以是 https, git, svn, hg, ftp, file, &mldr;</p></li><li><p>SRC_URL[md5sum], SRC_URL[sha256sum]
+源始碼的檢查碼設置。
+例:</p><ul><li>SRC_URI = &ldquo;<a href="http://example.com/src.tar.bz2;name=tarball%22">http://example.com/src.tar.bz2;name=tarball"</a>
+SRC_URI[tarball.md5sum] = &ldquo;97b2c3fb082241ab5c56&mldr;&rdquo;<ul><li>git scheme:
+git:<code>&lt;url></code>;protocol=<code>&lt;protocol></code>;branch=<code>&lt;branch></code></li><li>http,https,ftp:
+https://<code>&lt;url></code>
+也可以使用一些變數來設置位置，例: ${SOURCEFORGE_MIRROR}/<code>&lt;project-name></code>/${PN}-${PV}.tar.gz
+詳細資訊可以參考 <a href=https://raw.githubusercontent.com/openembedded/openembedded-core/master/meta/conf/bitbake.conf>meta/conf/bitbake.conf</a></li></ul></li></ul></li><li><p>S
+獲取後、解壓縮後的源始碼路目錄。通常會配置為 <code>${WORKDIR}</code>
+<strong>如果是使用 git 來獲取程式碼，則一定要設置成</strong> <code>${WORKDIR}/git</code></p></li><li><p>FILESPATH
+本機檔案的搜尋路徑。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>FILESPATH = &#34;${@base_set_filespath([&#34;${FILE_DIRNAME}/${BP}&#34;,
+</span></span><span style=display:flex><span>			&#34;${FILE_DIRNAME}/${BPN}&#34;,&#34;${FILE_DIRNAME}/files&#34;], d)}&#34;
+</span></span></code></pre></td></tr></table></div></div></li><li><p>FILESOVERRIDES
+本機檔案的搜尋路徑。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>FILESOVERRIDES = &#34;${TRANSLATED_TARGET_ARCH}:${MACHINEOVERRIDES}:${DISTROOVERRIDES}&#34;
+</span></span></code></pre></td></tr></table></div></div></li><li><p>LIC_FILES_CHKSUM</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>LIC_FILES_CHKSUM = &#34;file://gpl.txt;md5=393a5ca...&#34;
+</span></span><span style=display:flex><span>LIC_FILES_CHKSUM =  &#34;file://main.c;beginline=3;endline=21;md5=58e...&#34;
+</span></span><span style=display:flex><span>LIC_FILES_CHKSUM =  &#34;file://${COMMON_LICENSE_DIR}/MIT;md5=083...&#34;
+</span></span></code></pre></td></tr></table></div></div></li><li><p>DEPENDS
+在編譯時期的相依套件/Package。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>DEPENDS = &#34;recipe-b&#34;
+</span></span><span style=display:flex><span>DEPENDS = &#34;recipe-b (&gt;= 1.2)&#34;
+</span></span></code></pre></td></tr></table></div></div></li><li><p>RDEPENDS
+在執行時期的相依套件/Package。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>RDEPENDS_${PN} = &#34;recipe-b&#34;
+</span></span><span style=display:flex><span>RDEPENDS_${PN} = &#34;recipe-b (&gt; 1.2)&#34;
+</span></span></code></pre></td></tr></table></div></div></li></ul><h4 id=常見的變數>常見的變數</h4><ul><li>PN
+表示 Package Name</li><li>BPN
+移除 PN 的前綴與後綴。例: nativesdk- 或是 -native。</li><li>PV
+表示 Package Version</li><li>PR
+表示 Package Revision。預設是: r0</li><li>BP
+表示 ${BPN}-${PV}</li><li>WORKDIR
+表示 Recipe 工作時期的目錄</li><li>D
+表示安裝時的目標目錄<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>do_install() {
+</span></span><span style=display:flex><span>	install -d ${D}${bindir}
+</span></span><span style=display:flex><span>	install -m 0755 hello ${D}${bindir}
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div></li></ul><h4 id=task>Task</h4><p>在 Recipe 中有許的預設的 task，我們可以自訂、修改它們來滿足我們的需求。</p><ul><li>do_fetch</li><li>do_unpack</li><li>do_patch</li><li>do_configure</li><li>do_compile</li><li>do_install</li><li>do_package</li><li>do_rootfs</li></ul><div class="notices info" data-title=Info>我們可以使用下列指令來顯示該 Recipe 有哪些 Task
+bitbake <code>&lt;recipe></code> -c listtasks</div><h5 id=加入自訂的-task>加入自訂的 Task</h5><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>do_mkimage() {
+</span></span><span style=display:flex><span>	uboot-mkimage ...
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>addtask do_mkimage after do_compile before do_install
+</span></span></code></pre></td></tr></table></div></div><h4 id=example-recipe>Example Recipe</h4><p>下列是一個 Recipe 的範例</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>DESCRIPTION = &#34;Hello world program&#34;
+</span></span><span style=display:flex><span>HOMEPAGE = &#34;http://example.net/hello/&#34;
+</span></span><span style=display:flex><span>PRIORITY = &#34;optional&#34;
+</span></span><span style=display:flex><span>SECTION = &#34;examples&#34;
+</span></span><span style=display:flex><span>LICENSE = &#34;CLOSED&#34;
+</span></span><span style=display:flex><span>LIC_FILES_CHKSUM = &#34;&#34;
+</span></span><span style=display:flex><span>FILESOVERRIDES_prepend := &#34;${THISDIR}/${PN}_${PV}:&#34;
+</span></span><span style=display:flex><span>SRC_URI = &#34; \
+</span></span><span style=display:flex><span>           file://main.c \
+</span></span><span style=display:flex><span>           file://Makefile \
+</span></span><span style=display:flex><span>           &#34;
+</span></span><span style=display:flex><span>           
+</span></span><span style=display:flex><span>S = &#34;${WORKDIR}&#34;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>do_configure () {
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>do_compile () {
+</span></span><span style=display:flex><span>	oe_runmake
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>do_install () {
+</span></span><span style=display:flex><span>    oe_runmake install &#39;DESTDIR=${D}&#39;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><div class="notices info" data-title=如何除錯><p>我們可以透過下列指令來看到編譯時期 pacakge 的配置。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>bitbake -e <span style=color:#e6db74>`</span>&lt;package&gt;<span style=color:#e6db74>`</span> 
+</span></span></code></pre></td></tr></table></div></div><p>我們也可以使用下列指令來喚出編譯環境進行操作。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>	bitbake -c devshell <span style=color:#e6db74>`</span>&lt;package&gt;<span style=color:#e6db74>`</span>
+</span></span></code></pre></td></tr></table></div></div></div><h4 id=擴展-recipe>擴展 Recipe</h4><p>通常不建議直接修改上游的配置，但常常我們又會遇到需要調整程式的需求。這時候我們可以使用 Recipe Extension (.bbappend)。
+它的命名方式為 <code>&lt;appliction>_&lt;version></code>.bbappend</p><p>recipe-b_%.bbappend:</p><blockquote><p>這要的 % 為萬用字元，在此代表任意版本。</p></blockquote><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>FILESEXTRAPATHS_prepend := &#34;${THISDIR}/files:&#34;
+</span></span><span style=display:flex><span>SRC_URI += &#34;file://custom-modification-0.patch \
+</span></span><span style=display:flex><span>            file://custom-modification-1.patch \
+</span></span><span style=display:flex><span>&#34;
+</span></span></code></pre></td></tr></table></div></div><h4 id=自訂-virtual-packages>自訂 Virtual Packages</h4><p>我們可以透過 <code>PROVIDES = "virtual/&lt;package>"</code> 來表示。</p><h4 id=class>Class</h4><p>我們可以提出共同的配置，撰寫成 <code>.bbclass</code> 。在不同的 Recipe 要使用時，就可以以 <code>inherit &lt;class></code> 來使用它。
+常見到地方有 Build System。例: cmake, make, autotools, &mldr;。更多我們可以在 <code>meta/classes</code> 中找到</p><h5 id=base-class>Base Class</h5><p>已包含了 fetch, unpack, compile, &mldr; 等 Task。可以使用 <code>oe_runmake</code> 並透過 <code>EXTRA_OEMAKE</code> 來指定參數。</p><h5 id=kernel-class>Kernel Class</h5><p>用來建置 Linux Kernel 的 Class。它已配置了 PROVIDE，並且可以使用下列幾個變數:</p><ul><li>KERNEL_IMAGETYPE</li><li>KERNEL_EXTRA_ARGS</li><li>INITRAMFS_IMAGE</li></ul><h5 id=useradd-class>Useradd Class</h5><p>用來新增系統的使用者。在使用的時候必須指定 <strong>USERADD_PACKAGES</strong>，詳情可參考 <a href=https://git.yoctoproject.org/cgit.cgi/poky/tree/meta-skeleton/recipes-skeleton/useradd/useradd-example.bb>useradd-example.bb</a>。</p><p>我們可以透過 <code>USERADD_PARAM</code> 與 <code>GROUPADD_PARAM</code> 來傳遞參數給 useradd 及 groupadd</p><p>例:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>DESCRIPTION = &#34;useradd class usage example&#34;
+</span></span><span style=display:flex><span>PRIORITY = &#34;optional&#34;
+</span></span><span style=display:flex><span>SECTION = &#34;examples&#34;
+</span></span><span style=display:flex><span>LICENSE = &#34;MIT&#34;
+</span></span><span style=display:flex><span>SRC_URI = &#34;file://file0&#34;
+</span></span><span style=display:flex><span>LIC_FILES_CHKSUM = &#34;file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bc...&#34;
+</span></span><span style=display:flex><span>inherit useradd 
+</span></span><span style=display:flex><span>USERADD_PACKAGES = &#34;${PN}&#34;
+</span></span><span style=display:flex><span>USERADD_PARAM = &#34;-u 1000 -d /home/user0 -s /bin/bash user0&#34;
+</span></span><span style=display:flex><span>do_install() {
+</span></span><span style=display:flex><span>install -m 644 file0 ${D}/home/user0/ chown user0:user0 ${D}/home/user0/file0
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><h3 id=layer>Layer</h3><p>Layer 是以 <code>meta-&lt;LAYER_NAME></code> 的方式命名。裡面會包含這個一個或數個 Recipe。
+Bitbake 會獲取 <code>${BUILDDIR}/conf/bblayers.conf</code> 中每個 Layer 的配置，進而開始建置系統。
+所以，如果我們想要加入 Layer 時，必須將其加入至 <code>BBLAYERS</code> 變數中。</p><h4 id=meta-bootlinlabs>meta-bootlinlabs</h4><p>建立 meta-bootlinlabs 並加入 <code>BBLAYERS</code> 中。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+</span></span><span style=display:flex><span>bitbake-layers create-layer -p <span style=color:#ae81ff>7</span> ../meta-bootlinlabs
+</span></span><span style=display:flex><span>bitbake-layers add-layer ../meta-bootlinlabs/
+</span></span></code></pre></td></tr></table></div></div><h4 id=加入-recipe-ninvaders>加入 recipe-ninvaders</h4><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>pushd ../meta-bootlinlabs
+</span></span><span style=display:flex><span>mkdir -p recipes-ninvaders/ninvaders
+</span></span><span style=display:flex><span>recipetool create -o recipes-ninvaders/ninvaders/ninvaders_git.bb https://github.com/TheZ3ro/ninvaders
+</span></span><span style=display:flex><span>popd
+</span></span><span style=display:flex><span>bitbake ninvaders
+</span></span></code></pre></td></tr></table></div></div><div class="notices error" data-title="Make *** no rule to make target 'globals.o', needed by 'n invaders'. stop."><p>筆者在編譯時遇到了下列錯誤，如果有同學也遇到相同的問題，可以進行下列提到的修改。</p><p><strong>ERROR</strong>: ninvaders-1.0+gitAUTOINC+c6ab4117ba-r0 do_compile: oe_runmake failed
+<strong>ERROR</strong>: ninvaders-1.0+gitAUTOINC+c6ab4117ba-r0 do_compile: Execution of &lsquo;/home/yuan/workspace/yocto-stm32-labs/build/tmp/work/cortexa7t2hf-neon-vfpv4-poky-linux-gnueabi/ninvaders/1.0+gitAUTOINC+c6ab4117ba-r0/temp/run.do_compile.2732811&rsquo; failed with exit code 1:
+make: *** No rule to make target &lsquo;globals.o&rsquo;, needed by &rsquo;nInvaders&rsquo;. Stop.
+<strong>WARNING</strong>: exit code 1 from a shell command.</p><p>ninvaders_git.bb:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-diff data-lang=diff><span style=display:flex><span><span style=color:#f92672>- inherit autotools
+</span></span></span><span style=display:flex><span><span style=color:#f92672></span><span style=color:#a6e22e>+ inherit autotools-brokensep
+</span></span></span></code></pre></td></tr></table></div></div><blockquote><p>The problem is most likely that you&rsquo;re not using automake but the
+generated recipe (would have been useful to include that) is using the
+autotools class, which assumes correct use of both autoconf and
+automake. Specifically, your hand-written Makefile doesn&rsquo;t handle
+out-of-tree builds.</p><p>Source: <a href=https://www.yoctoproject.org/pipermail/yocto/2018-September/042600.html>[yocto] Adding nInvaders game package recipe</a></p></blockquote></div><h4 id=將-ninvaders-加入-root-filesystem-中>將 ninvaders 加入 root filesystem 中</h4><p>重新編譯後，記得要更新 NFS 分享目錄</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>echo <span style=color:#e6db74>&#39;IMAGE_INSTALL_append = &#34; ninvaders&#34;&#39;</span>
+</span></span><span style=display:flex><span>bitbake core-image-miminal
+</span></span></code></pre></td></tr></table></div></div><p>接著重新啟動 STM32MP1 之後，執行 nInvaders</p><figure><img src=images/result-nInvaders.png alt="nInvaders 執行結果"><figcaption><p>nInvaders 執行結果</p></figcaption></figure><h2 id=小結>小結</h2><p>因為筆者手邊沒有 Nunchuk ，所以也就沒有進行 Lab 5 了。
+有興趣的同學，再自己玩玩看囉!</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://layers.openembedded.org/layerindex/branch/master/layers/>OpenEmbedded Layer Index</a></li><li><a href=https://github.com/TheZ3ro/ninvaders>TheZ3ro/ninvaders</a></li><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-slides.pdf>Bootlin/Yocto with STM32</a></li><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.pdf>Bootlin/Yocto with STM32 Lab</a></li></ul><h2>相關頁面</h2><ul><li><a href=/posts/stm32mp-with-yocto/>在 STM32MP1 上使用 Yocto 建置 Linux 系統</a></li><li><a href=/posts/yocto-kernel-menuconfig/>在 Yocto 環境中調整 Linux Kernel</a></li><li><a href=/posts/yocto-introduction/>Yocto 基礎介紹</a></li><li><a href=/posts/building-raspberry-pi-systems-with-yocto/>使用 Yocto 打造你的 Raspberry Pi 系統</a></li><li><a href=/posts/coscup-2021-day-1/>COSCUP 2021 Day 1</a></li></ul></div></article></main><aside class="w-2/12 flex-shrink-0"><div class="border flex flex-col px-4 py-2 space-y-2 rounded shadow-md"><div class="text-yellow-500 font-normal">文章分類</div><div class="flex flex-col"><a href=/categories/c-language/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">c language </span><span class="text-sm text-slate-600">(2) </span></a><a href=/categories/database/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">database </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/embedded-system/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">embedded system </span><span class="text-sm text-slate-600">(12) </span></a><a href=/categories/gis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">gis </span><span class="text-sm text-slate-600">(3) </span></a><a href=/categories/hacker/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">hacker </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/mis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">mis </span><span class="text-sm text-slate-600">(4) </span></a><a href=/categories/note/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">note </span><span class="text-sm text-slate-600">(9) </span></a><a href=/categories/website/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">website </span><span class="text-sm text-slate-600">(5)</span></a></div><div class="text-yellow-500 font-normal">文章標籤</div><div class="flex flex-wrap gap-2"><a href=/tags/acl/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">acl
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/bootstrap/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">bootstrap
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/c/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/c11/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c11
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/ceh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ceh
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/chatbot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">chatbot
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/cli/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cli
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/cookie/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cookie
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/coscup/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">coscup
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
+</span></a><a href=/tags/debian/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">debian
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/device-tree/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">device tree
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/electron/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">electron
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/gcc/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gcc
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/geo/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geo
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/geojson/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geojson
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/gin/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gin
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/git/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">git
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/go/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">go
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">9
+</span></a><a href=/tags/gps/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gps
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
+</span></a><a href=/tags/hacker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">hacker
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/i.mx8qxp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">i.mx8qxp
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
+</span></a><a href=/tags/iperf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">iperf
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/kernel/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">kernel
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/leaflet/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">leaflet
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/library/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">library
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/liff/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">liff
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/linker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linker
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/linux/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linux
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">13
+</span></a><a href=/tags/macos/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">MacOS
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/map/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">map
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/markdown/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">markdown
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/mysql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">mysql
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/nas/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nas
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/nfs/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nfs
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/openvpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">openvpn
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/opnsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">opnsense
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/pdf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pdf
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/pfsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pfsense
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/postgresql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">postgresql
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/protobuf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">protobuf
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/server/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">server
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/ssh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ssh
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/stm32mp1/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">stm32mp1
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
+</span></a><a href=/tags/synology/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">synology
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/tftp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">tftp
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/u-boot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">u-boot
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/unifi/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">unifi
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/vpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vpn
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/vscode/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">VSCode
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/vue/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vue
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/web/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
+</span></a><a href=/tags/web-backend/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web backend
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/websocket/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">websocket
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/yocto/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">yocto
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">12</span></a></div></div></aside></div></section><footer class="w-full flex justify-center py-2 text-white">©2017-2024, All Rights Reserved</footer><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{anonymize_ip:!1})}</script></body></html>

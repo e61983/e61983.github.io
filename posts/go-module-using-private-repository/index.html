@@ -1,0 +1,156 @@
+<!doctype html><html lang=zh-Hant><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet href=/styles.9bea8a6c30b52eccc8909edc992e6285.min.e94b493a4fe8f46b26d21f8986856ed65ba4e8f0a7bb23126df17117f48a175d.css></head><body class="flex flex-col bg-black/80 space-y-2 m-2"><header class="flex flex-col items-center space-y-2 mt-[2rem]"><div class="flex flex-col items-center space-y-2 max-w-[5rem] min-w-[4rem] aspect-square"><div class="rounded-full max-w-[200px] max-h-[200px] overflow-hidden"><img src="https://s.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=200"></div></div><a href=/ class="text-2xl text-white font-semibold">Yuan のノート</a><div class="text-yellow-500 text-xs">心之所至，隨意亂書</div></header><nav class="container mx-auto px-2 rounded bg-slate-600"><div class="flex space-x-2 justify-end"><a href=/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
+text-yellow-500 hover:text-yellow-300">home
+</a><a href=/abouts/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
+text-yellow-500 hover:text-yellow-300">abouts
+</a><a href=/archives/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
+text-yellow-500 hover:text-yellow-300">Archives</a></div></nav><section class="mt-2 container mx-auto"><div class="bg-white flex px-12 py-4 space-x-8 rounded"><main class=flex-grow><article class="flex flex-col space-y-2"><a href=/posts/go-module-using-private-repository/ class="text-2xl font-semibold text-yellow-500">Go 語言使用私有 Git Repository</a><div class="flex items-center space-x-2"><div class="text-xs text-slate-500">Sat Jul 30, 2022</div><span>🏷️</span><ul class="flex space-x-2"><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/go/ title=go>#go</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/git/ title=git>#git</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/ssh/ title=ssh>#ssh</a></li></ul></div><div class="w-full content"><h2 id=前言>前言</h2><p>最近終於有時間整裡筆者家中的 NAS 。先前筆者已經架設好了 Gitea，但一直沒有時間把整個開發環境串起來。這篇文章記錄了如何在 go 中使用自架的 Git Repository。</p><h2 id=主要內容>主要內容</h2><p>由於筆者所架設的 Gitea 並不是使用 http/https 埠作為網站所使用的埠。所以當執行 <code>go get</code> 時會無法正常的動作。</p><p>所以本文主要想解決的問題有:</p><ol><li>讓 go 可以使用私有的 Git repository</li><li>讓 go 可以從非標準的 http/https 埠下載程式碼。</li></ol><h3 id=go-get-的運作原理>go get 的運作原理</h3><p>從 [<a href=https://studygolang.com/articles/35235>1</a>] 我們可以知道，<code>go get</code> 在下載程式碼時有三種匹配方式，來決定要使用什麼工具來抓取程式碼。</p><ol><li><p>prefix matching</p><p>直接比對網址使用定好的協定。</p></li><li><p>regular expression matching</p><p>比對網址結尾是否為已知的版控協定。</p></li><li><p>dynamic matching</p><p>會送出 http/https 請求，並在返回的 http 中的 meta 標簽選定要用的協定。</p></li></ol><p>除此之外</p><p><code>go get</code> 它預設會使用 <code>GOPROXY</code> 來加快下載的速度。
+我們可以透過設定 <code>GOPRIVATE</code> 來避免 go 使用 proxy 進行程式碼下載。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>go env -w GOPRIVATE<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;foo.example.idv/*&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=策略>策略</h4><p>在已經知道 <code>go get</code> 下載程式碼的方式後，筆者決定從 regular expression matching 下手。
+讓模組名稱以 <code>.git</code> 作為結尾。</p><h3 id=git-使用-insteadof-改寫-url>git 使用 insteadOf 改寫 url</h3><p>我們可以對 git 進行設定，使其改寫我們指定的 url。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>git config --global url.<span style=color:#e6db74>&#34;http://foo.example.idv:8080&#34;</span>.insteadof <span style=color:#e6db74>&#34;http://foo.example.idv&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>或是</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>git config --global url.<span style=color:#e6db74>&#34;ssh://foo.example.idv:&#34;</span>.insteadof <span style=color:#e6db74>&#34;http://foo.example.idv&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=策略-1>策略</h4><p>go get 底層也是使用 git 進行來對使用 git 進行版控的程式碼進行懆作。
+所以我們就可以對它動點手腳，使它可以抓取非 http/https 埠的程式。</p><h3 id=指定-ssh-所使用的-key>指定 ssh 所使用的 key</h3><p>其實到了上一步我們就已經可以從我們的git repository 抓取程式碼了。
+但筆者比較習慣使用 ssh 的協定，所以才會有這一個章節。</p><p>git 使用 ssh 協定抓取程式碼，走的是 ssh 協定 (( 廢話 ~~
+所以我們可以使用 ssh config 來進行設定。</p><p>~/.ssh/config:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>Host foo.example.idv
+</span></span><span style=display:flex><span>    Hostname foo.example.idv
+</span></span><span style=display:flex><span>    Port 22
+</span></span><span style=display:flex><span>    User git
+</span></span><span style=display:flex><span>    IdentitiesOnly yes
+</span></span><span style=display:flex><span>    IdentityFile ~/.ssh/id_rsa.pub
+</span></span></code></pre></td></tr></table></div></div><h3 id=滲在一起做撒尿牛丸>滲在一起做撒尿牛丸</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>go env -w GOPRIVATE<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;foo.example.idv/*&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>~/.gitconfig</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>[url &#34;ssh://foo.example.idv:&#34;]
+</span></span><span style=display:flex><span>    insteadOf = https://foo.example.idv
+</span></span></code></pre></td></tr></table></div></div><p>~/.ssh/config</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>Host foo.example.idv
+</span></span><span style=display:flex><span>    Hostname foo.example.idv #192.168.1.100
+</span></span><span style=display:flex><span>    Port 2234
+</span></span><span style=display:flex><span>    User git
+</span></span><span style=display:flex><span>    IdentitiesOnly yes
+</span></span><span style=display:flex><span>    IdentityFile ~/.ssh/id_rsa.pub
+</span></span></code></pre></td></tr></table></div></div><p>開始新專案時</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>go mod init foo.example.idv/foo.git
+</span></span></code></pre></td></tr></table></div></div><h2 id=小結>小結</h2><p>雖然在專案中都要以 <code>.git</code> 作為結尾，但除了這點目前還沒有遇到其它不方便的地方。</p><p>如果未來有找到更好的方法，也會跟大家說的！</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://studygolang.com/articles/35235>私有化仓库的 GO 模块使用实践</a></li><li><a href=https://developer.51cto.com/article/682237.html>Go Module：私有不合规库怎么解决引用问题</a></li><li><a href=https://blog.wu-boy.com/2020/03/read-private-module-in-golang/>Go Modules 處理私有 GIT Repository 流程</a></li></ul><h2>相關頁面</h2><ul><li><a href=/posts/golang-with-shared-library/>Go語言、動態連結函式庫與它們的產地</a></li><li><a href=/posts/how-to-use-vue-electron-and-go-to-build-an-app/>使用 Vue、Electron 以及 Go 建立一個小工具</a></li><li><a href=/posts/go-gin-web-backend/>使用 Gin 框架實作登入功能</a></li><li><a href=/posts/gps-format/>在台灣常見的地理位置表示方式</a></li><li><a href=/posts/coscup-2021-day-1/>COSCUP 2021 Day 1</a></li></ul></div></article></main><aside class="w-2/12 flex-shrink-0"><div class="border flex flex-col px-4 py-2 space-y-2 rounded shadow-md"><div class="text-yellow-500 font-normal">文章分類</div><div class="flex flex-col"><a href=/categories/c-language/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">c language </span><span class="text-sm text-slate-600">(2) </span></a><a href=/categories/database/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">database </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/embedded-system/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">embedded system </span><span class="text-sm text-slate-600">(12) </span></a><a href=/categories/gis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">gis </span><span class="text-sm text-slate-600">(3) </span></a><a href=/categories/hacker/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">hacker </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/mis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">mis </span><span class="text-sm text-slate-600">(4) </span></a><a href=/categories/note/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">note </span><span class="text-sm text-slate-600">(9) </span></a><a href=/categories/website/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">website </span><span class="text-sm text-slate-600">(5)</span></a></div><div class="text-yellow-500 font-normal">文章標籤</div><div class="flex flex-wrap gap-2"><a href=/tags/acl/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">acl
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/bootstrap/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">bootstrap
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/c/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/c11/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c11
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/ceh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ceh
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/chatbot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">chatbot
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/cli/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cli
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/cookie/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cookie
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/coscup/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">coscup
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
+</span></a><a href=/tags/debian/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">debian
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/device-tree/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">device tree
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/electron/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">electron
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/gcc/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gcc
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/geo/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geo
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/geojson/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geojson
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/gin/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gin
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/git/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">git
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/go/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">go
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">9
+</span></a><a href=/tags/gps/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gps
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
+</span></a><a href=/tags/hacker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">hacker
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/i.mx8qxp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">i.mx8qxp
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
+</span></a><a href=/tags/iperf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">iperf
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/kernel/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">kernel
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/leaflet/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">leaflet
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/library/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">library
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/liff/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">liff
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/linker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linker
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/linux/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linux
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">13
+</span></a><a href=/tags/macos/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">MacOS
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/map/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">map
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/markdown/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">markdown
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/mysql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">mysql
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/nas/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nas
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/nfs/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nfs
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/openvpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">openvpn
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/opnsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">opnsense
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/pdf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pdf
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/pfsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pfsense
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/postgresql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">postgresql
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/protobuf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">protobuf
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/server/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">server
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/ssh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ssh
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/stm32mp1/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">stm32mp1
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
+</span></a><a href=/tags/synology/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">synology
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/tftp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">tftp
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/u-boot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">u-boot
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/unifi/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">unifi
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/vpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vpn
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/vscode/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">VSCode
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/vue/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vue
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/web/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
+</span></a><a href=/tags/web-backend/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web backend
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/websocket/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">websocket
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
+</span></a><a href=/tags/yocto/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">yocto
+</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">12</span></a></div></div></aside></div></section><footer class="w-full flex justify-center py-2 text-white">©2017-2024, All Rights Reserved</footer><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{anonymize_ip:!1})}</script></body></html>
