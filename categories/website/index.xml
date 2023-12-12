@@ -5,7 +5,7 @@
 &lt;p>最近剛好要更新地圖應用。先前是直接使用 Mapbox ，但覺得它的 Marker 操作起來不是很彈性。因緣際會下聽說了 Leaflet ，就來試看看吧。&lt;/p>
 &lt;p>維基百科是這樣說的。&lt;/p>
 &lt;blockquote>
-&lt;p>Leaflet是一個開源的JavaScript庫，用於構建Web地圖應用。首次發布於2011年，&lt;a href="https://docs.mapbox.com/help/troubleshooting/migrate-legacy-static-tiles-api/">2&lt;/a>它支持大多數移動和桌面平台，支持HTML5和CSS3。&lt;/p>
+&lt;p>Leaflet是一個開源的JavaScript庫，用於構建Web地圖應用。首次發布於2011年，&lt;a href="https://docs.mapbox.com/help/troubleshooting/migrate-legacy-static-tiles-api/" target="_blank" rel="noopener">2&lt;/a>它支持大多數移動和桌面平台，支持HTML5和CSS3。&lt;/p>
 &lt;/blockquote></description></item><item><title>要如何在Hugo 中使用Bootstrap ?</title><link>https://e61983.github.io/2021-07-28-using-bootstrap-with-hugo/</link><pubDate>Wed, 28 Jul 2021 22:23:01 +0800</pubDate><author>e61983@gmail.com</author><guid>https://e61983.github.io/2021-07-28-using-bootstrap-with-hugo/</guid><description>&lt;!-- raw HTML omitted -->
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="前言">前言&lt;/h2>
