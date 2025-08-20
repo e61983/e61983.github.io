@@ -1,9 +1,14 @@
-<!doctype html><html lang=zh-Hant><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet href=/styles.f124ef51657bdc82b98114bac9e11454.min.e94b493a4fe8f46b26d21f8986856ed65ba4e8f0a7bb23126df17117f48a175d.css></head><body class="flex flex-col bg-black/80 space-y-2 m-2"><header class="flex flex-col items-center space-y-2 mt-[2rem]"><div class="flex flex-col items-center space-y-2 max-w-[5rem] min-w-[4rem] aspect-square"><div class="rounded-full max-w-[200px] max-h-[200px] overflow-hidden"><img src="https://s.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=200"></div></div><a href=/ class="text-2xl text-white font-semibold">Yuan のノート</a><div class="text-yellow-500 text-xs">心之所至，隨意亂書</div></header><nav class="container mx-auto px-2 rounded bg-slate-600"><div class="flex space-x-2 justify-end"><a href=/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">home
-</a><a href=/abouts/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">abouts
-</a><a href=/archives/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">Archives</a></div></nav><section class="mt-2 container mx-auto"><div class="bg-white flex px-12 py-4 space-x-8 rounded"><main class=flex-grow><article class="flex flex-col space-y-2"><a href=/posts/stm32mp-with-yocto-3/ class="text-2xl font-semibold text-yellow-500">在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</a><div class="flex items-center space-x-2"><div class="text-xs text-slate-500">Thu Aug 12, 2021</div><span>🏷️</span><ul class="flex space-x-2"><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/stm32mp1/ title=stm32mp1>#stm32mp1</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/yocto/ title=yocto>#yocto</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/linux/ title=linux>#linux</a></li></ul></div><div class="w-full content"><h2 id=前言>前言</h2><p>繼先前建立好基楚的系統後，我們已經加入了 meta-bootlinlabs Layer。
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 STM32MP1 上使用 Yocto 建置 Linux 系統 3 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/stm32mp-with-yocto-3/"><link rel=icon type=image/x-icon href=/favicon.ico><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<span class=hamburger></span>
+<span class=hamburger></span>
+<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</h1><div class=post-meta><time class=post-date datetime=2021-08-12T13:23:59+08:00>2021年08月12日
+</time><span class=reading-time>3 分鐘閱讀</span>
+<span class=word-count>479 字</span>
+<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/stm32mp1 class=tag>stm32mp1</a>
+<a href=/tags/yocto class=tag>yocto</a>
+<a href=/tags/linux class=tag>linux</a></div><div class=post-categories><a href=/categories/embedded-system class=category>embedded system</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#bsp-layer>BSP Layer</a></li><li><a href=#machine-常見的配置項>Machine 常見的配置項</a></li><li><a href=#bootloader-常見的配置項>Bootloader 常見的配置項</a></li><li><a href=#kernel-常見的配置項>Kernel 常見的配置項</a></li><li><a href=#kernel-metadata-常見的配置項>Kernel Metadata 常見的配置項</a></li><li><a href=#建立-bootlinlabs-machine>建立 bootlinlabs Machine</a></li><li><a href=#distro-layer>Distro Layer</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>繼先前建立好基楚的系統後，我們已經加入了 meta-bootlinlabs Layer。
 本文會接續之前建立的環境，開始加入自訂的 Machine。</p><h2 id=主要內容>主要內容</h2><h3 id=bsp-layer>BSP Layer</h3><p>BSP Layer 是 Layer 的一種，它通常會包含目標機器的硬體配置、Bootloader、Kernel、Display Support。常以 <code>meta-&lt;bsp-name></code> 命名，裡面會有 machnes 資料夾。</p><p>如果我們想知道該 BSP Layer 它支援了哪些機器，我們可以在該 Layer 中，觀察它的 conf/machine/*.conf。
 目標機器的配置檔會以 <code>MACHINE.conf</code> 命名。</p><p>但更好的方式是，該 BSP Layer 有完善的 README，讓我們可以直接參考。</p><h3 id=machine-常見的配置項>Machine 常見的配置項</h3><ul><li>TARGET_ARCH
 該機器的硬體架構，例: arm, aarch64</li><li>PREFERRED_PROVIDER_virtual/kernel
@@ -26,115 +31,115 @@ Makefile 的目標，預設是 all</li></ul><h3 id=kernel-常見的配置項>Ker
 </code></pre></li></ul><h3 id=kernel-metadata-常見的配置項>Kernel Metadata 常見的配置項</h3><ul><li>LINUX_KERNEL_TYPE<ul><li>standard (預設)</li><li>tiny</li><li>preempt-rt</li></ul></li><li>KERNEL_FEATURES
 提供的 Kernel 特性清單</li></ul><p>資料夾結構</p><ul><li>bsp/</li><li>cfg/</li><li>features/
 例: features/smp.scc
-KERNEL_FEATURES += &ldquo;features/smp.scc&rdquo;<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span> define KFEATURE_DESCRIPTION &#34;Enable SMP&#34;
+KERNEL_FEATURES += &ldquo;features/smp.scc&rdquo;<div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span> define KFEATURE_DESCRIPTION &#34;Enable SMP&#34;
 </span></span><span style=display:flex><span> kconf hardware smp.cfg
 </span></span><span style=display:flex><span> patch smp-support.patch
-</span></span></code></pre></td></tr></table></div></div></li><li>ktypes/</li><li>patches/</li></ul><h4 id=調整-kernel-配置>調整 Kernel 配置</h4><p>調整 Kernel 配置時，我們可以以提供 defconfig 的方式進行。或是提供 Configure Fragments 進行調整。</p><ul><li>提供 defconfig<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># 配置 Kernel</span>
+</span></span></code></pre></td></tr></table></div></div></li><li>ktypes/</li><li>patches/</li></ul><h4 id=調整-kernel-配置>調整 Kernel 配置</h4><p>調整 Kernel 配置時，我們可以以提供 defconfig 的方式進行。或是提供 Configure Fragments 進行調整。</p><ul><li>提供 defconfig<div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 配置 Kernel</span>
 </span></span><span style=display:flex><span>bitbake -c kernel_configme linux-yocto
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 手動調整 Kernel 選項</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 手動調整 Kernel 選項</span>
 </span></span><span style=display:flex><span>bitbake -c menuconfig linux-yocto
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 產生 .config</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 產生 .config</span>
 </span></span><span style=display:flex><span>bitbake -c savedefconfig  linux-yocto
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 我們再自行將 .confg 存為 defconfig</span>
-</span></span></code></pre></td></tr></table></div></div></li><li>提供 Configure Fragments<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># 配置 Kernel</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 我們再自行將 .confg 存為 defconfig</span>
+</span></span></code></pre></td></tr></table></div></div></li><li>提供 Configure Fragments<div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 配置 Kernel</span>
 </span></span><span style=display:flex><span>bitbake -c kernel_configme linux-yocto
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 手動調整 Kernel 選項</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 手動調整 Kernel 選項</span>
 </span></span><span style=display:flex><span>bitbake -c menuconfig linux-yocto
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 產生 Configure Fragments</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 產生 Configure Fragments</span>
 </span></span><span style=display:flex><span>bitbake -c diffconfig linux-yocto
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 確認 Configure Fragments 是否有正確被套用</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 確認 Configure Fragments 是否有正確被套用</span>
 </span></span><span style=display:flex><span>bitbake -c kernel_configcheck -f linux-yocto
-</span></span></code></pre></td></tr></table></div></div></li></ul><h3 id=建立-bootlinlabs-machine>建立 bootlinlabs Machine</h3><p>我們可以參考 meta-st-stm32mp/conf/machine 的配置進行 bootlinlabs Machine 的建立。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>pushd ../meta-bootlinlabs
+</span></span></code></pre></td></tr></table></div></div></li></ul><h3 id=建立-bootlinlabs-machine>建立 bootlinlabs Machine</h3><p>我們可以參考 meta-st-stm32mp/conf/machine 的配置進行 bootlinlabs Machine 的建立。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>pushd ../meta-bootlinlabs
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 建立 machine 資料夾</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 建立 machine 資料夾</span>
 </span></span><span style=display:flex><span>mkdir conf/machine
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 建立 bootlinlabs 配置檔</span>
-</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#39;require conf/machine/include/st-machine-common-stm32mp.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#39;require conf/machine/include/st-machine-providers-stm32mp.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#39;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#39;DEFAULTTUNE = &#34;cortexa7thf-neon-vfpv4&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#39;require conf/machine/include/tune-cortexa7.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#39;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#39;BOOTSCHEME_LABELS += &#34;trusted&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#39;STM32MP_DT_FILES_DK += &#34;stm32mp157f-dk2&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#39;FLASHLAYOUT_CONFIG_LABELS += &#34;sdcard&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 建立 bootlinlabs 配置檔</span>
+</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;require conf/machine/include/st-machine-common-stm32mp.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;require conf/machine/include/st-machine-providers-stm32mp.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;DEFAULTTUNE = &#34;cortexa7thf-neon-vfpv4&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;require conf/machine/include/tune-cortexa7.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;BOOTSCHEME_LABELS += &#34;trusted&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;STM32MP_DT_FILES_DK += &#34;stm32mp157f-dk2&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;FLASHLAYOUT_CONFIG_LABELS += &#34;sdcard&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
 </span></span><span style=display:flex><span>popd
-</span></span></code></pre></td></tr></table></div></div><p>修改 conf/local.conf 內的 MACHINE，並重新編譯。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>sed -i <span style=color:#e6db74>&#39;s/^MACHINE.*/MACHINE ?= &#34;bootlinlabs&#34;/g&#39;</span> conf/local.conf
+</span></span></code></pre></td></tr></table></div></div><p>修改 conf/local.conf 內的 MACHINE，並重新編譯。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;s/^MACHINE.*/MACHINE ?= &#34;bootlinlabs&#34;/g&#39;</span> conf/local.conf
 </span></span><span style=display:flex><span>bitbake core-image-minimal
-</span></span></code></pre></td></tr></table></div></div><p>我們可以在 <code>${BUILDDIR}/tmp/deploy/images/**bootlinlabs**/</code> 看到我們所建立的新 Machine。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>$ ls tmp/deploy/images/bootlinlabs/
+</span></span></code></pre></td></tr></table></div></div><p>我們可以在 <code>${BUILDDIR}/tmp/deploy/images/**bootlinlabs**/</code> 看到我們所建立的新 Machine。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>$ ls tmp/deploy/images/bootlinlabs/
 </span></span><span style=display:flex><span>arm-trusted-firmware
 </span></span><span style=display:flex><span>bootloader
 </span></span><span style=display:flex><span>core-image-minimal-bootlinlabs-20210812144202_nand_4_256_multivolume.rootfs.ubi
@@ -158,23 +163,23 @@ KERNEL_FEATURES += &ldquo;features/smp.scc&rdquo;<div class=highlight><div style
 </span></span><span style=display:flex><span>flashlayout_core-image-minimal
 </span></span><span style=display:flex><span>kernel
 </span></span><span style=display:flex><span>scripts
-</span></span></code></pre></td></tr></table></div></div><h3 id=distro-layer>Distro Layer</h3><p>通常 Distro Layer 會包含 Libc，initialization script, splash screen, &mldr; 等, 相關的配置會記錄在 <code>conf/distro/&lt;distro>.conf</code> 中。</p><p>在 <code>&lt;distro>.conf</code> 中必須包含 <code>DISTRO</code> 變數。例:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>require conf/distro/poky.conf
+</span></span></code></pre></td></tr></table></div></div><h3 id=distro-layer>Distro Layer</h3><p>通常 Distro Layer 會包含 Libc，initialization script, splash screen, &mldr; 等, 相關的配置會記錄在 <code>conf/distro/&lt;distro>.conf</code> 中。</p><p>在 <code>&lt;distro>.conf</code> 中必須包含 <code>DISTRO</code> 變數。例:</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>require conf/distro/poky.conf
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>DISTRO = &#34;distro&#34;
 </span></span><span style=display:flex><span>DISTRO_NAME = &#34;distro description&#34;
@@ -190,111 +195,9 @@ KERNEL_FEATURES += &ldquo;features/smp.scc&rdquo;<div class=highlight><div style
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span># Toolchain
 </span></span><span style=display:flex><span>TCMODE = &#34;...&#34;
-</span></span></code></pre></td></tr></table></div></div><h2 id=小結>小結</h2><p>本次實做的部份比較少，重心主要放在瞭解 machine，distro 的配置。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-slides.pdf>Bootlin/Yocto with STM32</a></li><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.pdf>Bootlin/Yocto with STM32 Lab</a></li></ul><h2>相關頁面</h2><ul><li><a href=/posts/stm32mp-with-yocto-2/>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</a></li><li><a href=/posts/stm32mp-with-yocto/>在 STM32MP1 上使用 Yocto 建置 Linux 系統</a></li><li><a href=/posts/yocto-kernel-menuconfig/>在 Yocto 環境中調整 Linux Kernel</a></li><li><a href=/posts/yocto-introduction/>Yocto 基礎介紹</a></li><li><a href=/posts/building-raspberry-pi-systems-with-yocto/>使用 Yocto 打造你的 Raspberry Pi 系統</a></li></ul></div></article></main><aside class="w-2/12 flex-shrink-0"><div class="border flex flex-col px-4 py-2 space-y-2 rounded shadow-md"><div class="text-yellow-500 font-normal">文章分類</div><div class="flex flex-col"><a href=/categories/c-language/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">c language </span><span class="text-sm text-slate-600">(2) </span></a><a href=/categories/database/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">database </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/embedded-system/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">embedded system </span><span class="text-sm text-slate-600">(12) </span></a><a href=/categories/gis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">gis </span><span class="text-sm text-slate-600">(3) </span></a><a href=/categories/hacker/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">hacker </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/mis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">mis </span><span class="text-sm text-slate-600">(4) </span></a><a href=/categories/note/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">note </span><span class="text-sm text-slate-600">(9) </span></a><a href=/categories/website/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">website </span><span class="text-sm text-slate-600">(5)</span></a></div><div class="text-yellow-500 font-normal">文章標籤</div><div class="flex flex-wrap gap-2"><a href=/tags/acl/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">acl
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/bootstrap/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">bootstrap
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/c/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/c11/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c11
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/ceh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ceh
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/chatbot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">chatbot
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/cli/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cli
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/cookie/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cookie
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/coscup/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">coscup
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/debian/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">debian
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/device-tree/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">device tree
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/electron/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">electron
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/gcc/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gcc
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/geo/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geo
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/geojson/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geojson
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/gin/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gin
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/git/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">git
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/go/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">go
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">9
-</span></a><a href=/tags/gps/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gps
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/hacker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">hacker
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/i.mx8qxp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">i.mx8qxp
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
-</span></a><a href=/tags/iperf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">iperf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/kernel/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">kernel
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/leaflet/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">leaflet
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/library/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">library
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/liff/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">liff
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/linker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linker
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/linux/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linux
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">13
-</span></a><a href=/tags/macos/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">MacOS
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/map/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">map
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/markdown/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">markdown
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/mysql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">mysql
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/nas/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nas
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/nfs/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nfs
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/openvpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">openvpn
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/opnsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">opnsense
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/pdf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pdf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/pfsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pfsense
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/postgresql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">postgresql
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/protobuf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">protobuf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/server/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">server
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/ssh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ssh
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/stm32mp1/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">stm32mp1
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
-</span></a><a href=/tags/synology/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">synology
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/tftp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">tftp
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/u-boot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">u-boot
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/unifi/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">unifi
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vpn
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vscode/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">VSCode
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vue/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vue
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/web/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/web-backend/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web backend
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/websocket/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">websocket
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/yocto/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">yocto
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">12</span></a></div></div></aside></div></section><footer class="w-full flex justify-center py-2 text-white">©2017-2024, All Rights Reserved</footer><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{anonymize_ip:!1})}</script></body></html>
+</span></span></code></pre></td></tr></table></div></div><h2 id=小結>小結</h2><p>本次實做的部份比較少，重心主要放在瞭解 machine，distro 的配置。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-slides.pdf>Bootlin/Yocto with STM32</a></li><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.pdf>Bootlin/Yocto with STM32 Lab</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/stm32mp-with-yocto-2/ class=post-nav-prev><span class=nav-label>上一篇</span>
+<span class=nav-title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</span>
+</a><a href=https://e61983.github.io/posts/stm32mp-with-yocto-4/ class=post-nav-next><span class=nav-label>下一篇</span>
+<span class=nav-title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 4</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#bsp-layer>BSP Layer</a></li><li><a href=#machine-常見的配置項>Machine 常見的配置項</a></li><li><a href=#bootloader-常見的配置項>Bootloader 常見的配置項</a></li><li><a href=#kernel-常見的配置項>Kernel 常見的配置項</a></li><li><a href=#kernel-metadata-常見的配置項>Kernel Metadata 常見的配置項</a></li><li><a href=#建立-bootlinlabs-machine>建立 bootlinlabs Machine</a></li><li><a href=#distro-layer>Distro Layer</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js></script><script>hljs.highlightAll()</script></body></html>

@@ -1,197 +1,96 @@
-<!doctype html><html lang=zh-Hant><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet href=/styles.9bea8a6c30b52eccc8909edc992e6285.min.e94b493a4fe8f46b26d21f8986856ed65ba4e8f0a7bb23126df17117f48a175d.css></head><body class="flex flex-col bg-black/80 space-y-2 m-2"><header class="flex flex-col items-center space-y-2 mt-[2rem]"><div class="flex flex-col items-center space-y-2 max-w-[5rem] min-w-[4rem] aspect-square"><div class="rounded-full max-w-[200px] max-h-[200px] overflow-hidden"><img src="https://s.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=200"></div></div><a href=/ class="text-2xl text-white font-semibold">Yuan のノート</a><div class="text-yellow-500 text-xs">心之所至，隨意亂書</div></header><nav class="container mx-auto px-2 rounded bg-slate-600"><div class="flex space-x-2 justify-end"><a href=/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">home
-</a><a href=/abouts/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">abouts
-</a><a href=/archives/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">Archives</a></div></nav><section class="mt-2 container mx-auto"><div class="bg-white flex px-12 py-4 space-x-8 rounded"><main class=flex-grow><article class="flex flex-col space-y-2"><a href=/posts/c11-generic-selections/ class="text-2xl font-semibold text-yellow-500">C11 Generic Selections</a><div class="flex items-center space-x-2"><div class="text-xs text-slate-500">Wed Oct 18, 2017</div><span>🏷️</span><ul class="flex space-x-2"><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/c11/ title=c11>#c11</a></li></ul></div><div class="w-full content"><h2 id=前言>前言</h2><p>Generic 在C11上出現，我們可以透過實作出物件導向中的多型。要注意的是 Generic 是在編譯時期運作的。</p><h2 id=主要內容>主要內容</h2><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>funci</span>(<span style=color:#66d9ef>int</span> x) { <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;func value = %d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, x); }
-</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>funcc</span>(<span style=color:#66d9ef>char</span> c) { <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;func char = %c</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, c); }
-</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>funcdef</span>(<span style=color:#66d9ef>double</span> v) { <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Def func&#39;s value = %lf</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, v); }
-</span></span><span style=display:flex><span><span style=color:#75715e>#define func(X) \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>    _Generic((X), \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        int: funci, char: funcc, default: funcdef \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>    )(X)
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() {
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>func</span>(<span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>func</span>(<span style=color:#e6db74>&#39;a&#39;</span>);
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>func</span>(<span style=color:#ae81ff>1.3</span>);
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>C11 Generic Selections - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content><meta name=author content="Yuan"><meta property="og:title" content="C11 Generic Selections - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/c11-generic-selections/"><link rel=icon type=image/x-icon href=/favicon.ico><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<span class=hamburger></span>
+<span class=hamburger></span>
+<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>C11 Generic Selections</h1><div class=post-meta><time class=post-date datetime=2017-10-18T00:25:49+08:00>2017年10月18日
+</time><span class=reading-time>1 分鐘閱讀</span>
+<span class=word-count>186 字</span>
+<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/c11 class=tag>c11</a></div><div class=post-categories><a href=/categories/c-language class=category>c language</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>Generic 在C11上出現，我們可以透過實作出物件導向中的多型。要注意的是 Generic 是在編譯時期運作的。</p><h2 id=主要內容>主要內容</h2><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>#include</span> <span style=color:#8b949e;font-weight:700;font-style:italic>&lt;stdio.h&gt;</span><span style=color:#8b949e;font-weight:700;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic></span><span style=color:#ff7b72>void</span> <span style=color:#d2a8ff;font-weight:700>funci</span>(<span style=color:#ff7b72>int</span> x) { <span style=color:#d2a8ff;font-weight:700>printf</span>(<span style=color:#a5d6ff>&#34;func value = %d</span><span style=color:#79c0ff>\n</span><span style=color:#a5d6ff>&#34;</span>, x); }
+</span></span><span style=display:flex><span><span style=color:#ff7b72>void</span> <span style=color:#d2a8ff;font-weight:700>funcc</span>(<span style=color:#ff7b72>char</span> c) { <span style=color:#d2a8ff;font-weight:700>printf</span>(<span style=color:#a5d6ff>&#34;func char = %c</span><span style=color:#79c0ff>\n</span><span style=color:#a5d6ff>&#34;</span>, c); }
+</span></span><span style=display:flex><span><span style=color:#ff7b72>void</span> <span style=color:#d2a8ff;font-weight:700>funcdef</span>(<span style=color:#ff7b72>double</span> v) { <span style=color:#d2a8ff;font-weight:700>printf</span>(<span style=color:#a5d6ff>&#34;Def func&#39;s value = %lf</span><span style=color:#79c0ff>\n</span><span style=color:#a5d6ff>&#34;</span>, v); }
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>#define func(X) \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>    _Generic((X), \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        int: funci, char: funcc, default: funcdef \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>    )(X)
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic></span><span style=color:#ff7b72>int</span> <span style=color:#d2a8ff;font-weight:700>main</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#d2a8ff;font-weight:700>func</span>(<span style=color:#a5d6ff>1</span>);
+</span></span><span style=display:flex><span>        <span style=color:#d2a8ff;font-weight:700>func</span>(<span style=color:#a5d6ff>&#39;a&#39;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#d2a8ff;font-weight:700>func</span>(<span style=color:#a5d6ff>1.3</span>);
+</span></span><span style=display:flex><span>        <span style=color:#ff7b72>return</span> <span style=color:#a5d6ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>在多個參數的使用上比較繁瑣，需要自行作每個參數的組合。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#define format2(x,y) _Generic((x), \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>    char: _Generic((y), \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        char:&#34;%c - %c\n&#34;, \ char*:&#34;%c - %s\n&#34;, \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        int:&#34;%c - %d\n&#34;, \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        default:&#34;error\n&#34; \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        ), \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>    char*: _Generic((y), \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        char:&#34;%s - %c\n&#34;, \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        char*:&#34;%s - %s\n&#34;, \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        int:&#34;%s - %d\n&#34;, \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        default:&#34;error\n&#34; \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        ), \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>    int: _Generic((y), \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        char:&#34;%d - %c\n&#34;, \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        char*:&#34;%d - %s\n&#34;, \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        int:&#34;%d - %d\n&#34;, \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        default:&#34;error\n&#34; \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>        ), \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>    default:&#34;error\n&#34; \
-</span></span></span><span style=display:flex><span><span style=color:#75715e>  )
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#define print2(x, y) printf(format2(x,y),x,y)
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>(<span style=color:#66d9ef>int</span> argc, <span style=color:#66d9ef>char</span> <span style=color:#f92672>**</span>argv)
+</span></span></code></pre></td></tr></table></div></div><p>在多個參數的使用上比較繁瑣，需要自行作每個參數的組合。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">28
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>#define format2(x,y) _Generic((x), \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>    char: _Generic((y), \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        char:&#34;%c - %c\n&#34;, \ char*:&#34;%c - %s\n&#34;, \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        int:&#34;%c - %d\n&#34;, \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        default:&#34;error\n&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        ), \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>    char*: _Generic((y), \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        char:&#34;%s - %c\n&#34;, \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        char*:&#34;%s - %s\n&#34;, \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        int:&#34;%s - %d\n&#34;, \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        default:&#34;error\n&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        ), \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>    int: _Generic((y), \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        char:&#34;%d - %c\n&#34;, \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        char*:&#34;%d - %s\n&#34;, \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        int:&#34;%d - %d\n&#34;, \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        default:&#34;error\n&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>        ), \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>    default:&#34;error\n&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>  )
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic>#define print2(x, y) printf(format2(x,y),x,y)
+</span></span></span><span style=display:flex><span><span style=color:#8b949e;font-weight:700;font-style:italic></span><span style=color:#ff7b72>int</span> <span style=color:#d2a8ff;font-weight:700>main</span>(<span style=color:#ff7b72>int</span> argc, <span style=color:#ff7b72>char</span> <span style=color:#ff7b72;font-weight:700>**</span>argv)
 </span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;test 2 parameters</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>print2</span>(<span style=color:#ae81ff>3</span>, <span style=color:#e6db74>&#39;c&#39;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#d2a8ff;font-weight:700>printf</span>(<span style=color:#a5d6ff>&#34;test 2 parameters</span><span style=color:#79c0ff>\n</span><span style=color:#a5d6ff>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#d2a8ff;font-weight:700>print2</span>(<span style=color:#a5d6ff>3</span>, <span style=color:#a5d6ff>&#39;c&#39;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>return</span> <span style=color:#a5d6ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div></div></article></main><aside class="w-2/12 flex-shrink-0"><div class="border flex flex-col px-4 py-2 space-y-2 rounded shadow-md"><div class="text-yellow-500 font-normal">文章分類</div><div class="flex flex-col"><a href=/categories/c-language/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">c language </span><span class="text-sm text-slate-600">(2) </span></a><a href=/categories/database/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">database </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/embedded-system/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">embedded system </span><span class="text-sm text-slate-600">(12) </span></a><a href=/categories/gis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">gis </span><span class="text-sm text-slate-600">(3) </span></a><a href=/categories/hacker/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">hacker </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/mis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">mis </span><span class="text-sm text-slate-600">(4) </span></a><a href=/categories/note/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">note </span><span class="text-sm text-slate-600">(9) </span></a><a href=/categories/website/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">website </span><span class="text-sm text-slate-600">(5)</span></a></div><div class="text-yellow-500 font-normal">文章標籤</div><div class="flex flex-wrap gap-2"><a href=/tags/acl/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">acl
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/bootstrap/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">bootstrap
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/c/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/c11/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c11
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/ceh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ceh
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/chatbot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">chatbot
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/cli/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cli
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/cookie/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cookie
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/coscup/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">coscup
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/debian/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">debian
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/device-tree/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">device tree
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/electron/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">electron
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/gcc/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gcc
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/geo/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geo
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/geojson/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geojson
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/gin/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gin
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/git/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">git
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/go/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">go
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">9
-</span></a><a href=/tags/gps/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gps
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/hacker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">hacker
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/i.mx8qxp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">i.mx8qxp
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
-</span></a><a href=/tags/iperf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">iperf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/kernel/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">kernel
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/leaflet/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">leaflet
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/library/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">library
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/liff/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">liff
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/linker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linker
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/linux/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linux
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">13
-</span></a><a href=/tags/macos/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">MacOS
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/map/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">map
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/markdown/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">markdown
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/mysql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">mysql
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/nas/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nas
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/nfs/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nfs
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/openvpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">openvpn
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/opnsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">opnsense
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/pdf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pdf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/pfsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pfsense
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/postgresql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">postgresql
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/protobuf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">protobuf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/server/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">server
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/ssh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ssh
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/stm32mp1/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">stm32mp1
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
-</span></a><a href=/tags/synology/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">synology
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/tftp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">tftp
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/u-boot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">u-boot
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/unifi/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">unifi
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vpn
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vscode/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">VSCode
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vue/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vue
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/web/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/web-backend/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web backend
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/websocket/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">websocket
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/yocto/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">yocto
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">12</span></a></div></div></aside></div></section><footer class="w-full flex justify-center py-2 text-white">©2017-2024, All Rights Reserved</footer><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{anonymize_ip:!1})}</script></body></html>
+</span></span></code></pre></td></tr></table></div></div></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/ld-print-memory-usage/ class=post-nav-next><span class=nav-label>下一篇</span>
+<span class=nav-title>GNU LD print memory usage</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js></script><script>hljs.highlightAll()</script></body></html>

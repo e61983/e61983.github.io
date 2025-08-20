@@ -1,88 +1,96 @@
-<!doctype html><html lang=zh-Hant><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet href=/styles.a9ef2b7ca292142693092e7fd1d302d0.min.e94b493a4fe8f46b26d21f8986856ed65ba4e8f0a7bb23126df17117f48a175d.css></head><body class="flex flex-col bg-black/80 space-y-2 m-2"><header class="flex flex-col items-center space-y-2 mt-[2rem]"><div class="flex flex-col items-center space-y-2 max-w-[5rem] min-w-[4rem] aspect-square"><div class="rounded-full max-w-[200px] max-h-[200px] overflow-hidden"><img src="https://s.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=200"></div></div><a href=/ class="text-2xl text-white font-semibold">Yuan のノート</a><div class="text-yellow-500 text-xs">心之所至，隨意亂書</div></header><nav class="container mx-auto px-2 rounded bg-slate-600"><div class="flex space-x-2 justify-end"><a href=/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">home
-</a><a href=/abouts/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">abouts
-</a><a href=/archives/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">Archives</a></div></nav><section class="mt-2 container mx-auto"><div class="bg-white flex px-12 py-4 space-x-8 rounded"><main class=flex-grow><article class="flex flex-col space-y-2"><a href=/posts/yocto-with-imx8qxp-4/ class="text-2xl font-semibold text-yellow-500">在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</a><div class="flex items-center space-x-2"><div class="text-xs text-slate-500">Mon Sep 13, 2021</div><span>🏷️</span><ul class="flex space-x-2"><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/i.mx8qxp/ title=i.mx8qxp>#i.mx8qxp</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/u-boot/ title=u-boot>#u-boot</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/yocto/ title=yocto>#yocto</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/linux/ title=linux>#linux</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/nfs/ title=nfs>#nfs</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/tftp/ title=tftp>#tftp</a></li></ul></div><div class="w-full content"><h2 id=前言>前言</h2><p>為了在之後開發過程中不用反覆燒寫 eMMC 與 SD 卡，本篇會設定 U-Boot 載入 Rootfs 以達到我們的目的。</p><h2 id=主要內容>主要內容</h2><h3 id=寫在前面>寫在前面</h3><p>我們這次的目標是從 NFS 伺服器中載入 Rootfs。所以我們在開機時，U-Boot 載入的 Kernel 與裝置樹 ( Devicetree ) 仍是 eMMC/SD 卡內的。</p><p>在開機的過程中，首先會要把要執行的東西載入到記憶體中執行。
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/yocto-with-imx8qxp-4/"><link rel=icon type=image/x-icon href=/favicon.ico><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<span class=hamburger></span>
+<span class=hamburger></span>
+<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</h1><div class=post-meta><time class=post-date datetime=2021-09-13T11:38:39+08:00>2021年09月13日
+</time><span class=reading-time>3 分鐘閱讀</span>
+<span class=word-count>533 字</span>
+<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/i.mx8qxp class=tag>i.mx8qxp</a>
+<a href=/tags/u-boot class=tag>u-boot</a>
+<a href=/tags/yocto class=tag>yocto</a>
+<a href=/tags/linux class=tag>linux</a>
+<a href=/tags/nfs class=tag>nfs</a>
+<a href=/tags/tftp class=tag>tftp</a></div><div class=post-categories><a href=/categories/embedded-system class=category>embedded system</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#寫在前面>寫在前面</a></li><li><a href=#配置-nfs-伺服器>配置 NFS 伺服器</a></li><li><a href=#分析-kernel-與-devicetree-的載入命令>分析 Kernel 與 Devicetree 的載入命令</a></li><li><a href=#設定-u-boot-環境變數>設定 U-Boot 環境變數</a></li><li><a href=#結果>結果</a></li><li><a href=#寫在最後>寫在最後</a></li></ul></li><li><a href=#小結>小結</a><ul><li><a href=#配置-tftp-伺服器>配置 TFTP 伺服器</a></li></ul></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>為了在之後開發過程中不用反覆燒寫 eMMC 與 SD 卡，本篇會設定 U-Boot 載入 Rootfs 以達到我們的目的。</p><h2 id=主要內容>主要內容</h2><h3 id=寫在前面>寫在前面</h3><p>我們這次的目標是從 NFS 伺服器中載入 Rootfs。所以我們在開機時，U-Boot 載入的 Kernel 與裝置樹 ( Devicetree ) 仍是 eMMC/SD 卡內的。</p><p>在開機的過程中，首先會要把要執行的東西載入到記憶體中執行。
 所以我們可以預期，待會我們會需要載入 Kernel 與 裝置樹。
 最後才把主控權交給 Kernel。</p><p>我們要做的就是在執行時期，修改 U-Boot 傳給 Kernel 的開機參數。</p><h3 id=配置-nfs-伺服器>配置 NFS 伺服器</h3><p>這一個部份先前有筆記過了，如果還沒有看過的同學請參考<a href=https://e61983.github.io/posts/stm32mp-with-yocto/#建置-nfs-環境>這裡</a>。</p><h3 id=分析-kernel-與-devicetree-的載入命令>分析 Kernel 與 Devicetree 的載入命令</h3><p>U-Boot 預設開機在基本的初始化完成後，並且在指定的秒數內沒有都收到使用者的輸入，便會開始執行 <strong>bootcmd</strong> 中的內容。
-我們可以藉由分析它，來初步的知道系統的開機流程。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>print bootcmd
+我們可以藉由分析它，來初步的知道系統的開機流程。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>print bootcmd
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Output:</span>
-</span></span><span style=display:flex><span>bootcmd<span style=color:#f92672>=</span>mmc dev <span style=color:#e6db74>${</span>mmcdev<span style=color:#e6db74>}</span>; <span style=color:#66d9ef>if</span> mmc rescan; <span style=color:#66d9ef>then</span> <span style=color:#66d9ef>if</span> run loadbootscript; <span style=color:#66d9ef>then</span> run bootscript; <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> test <span style=color:#e6db74>${</span>sec_boot<span style=color:#e6db74>}</span> <span style=color:#f92672>=</span> yes; <span style=color:#66d9ef>then</span> <span style=color:#66d9ef>if</span> run loadcntr; <span style=color:#66d9ef>then</span> run mmcboot; <span style=color:#66d9ef>else</span> run netboot; <span style=color:#66d9ef>fi</span>; <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> run loadimage; <span style=color:#66d9ef>then</span> run mmcboot; <span style=color:#66d9ef>else</span> run netboot; <span style=color:#66d9ef>fi</span>; <span style=color:#66d9ef>fi</span>; <span style=color:#66d9ef>fi</span>; <span style=color:#66d9ef>else</span> booti <span style=color:#e6db74>${</span>loadaddr<span style=color:#e6db74>}</span> - <span style=color:#e6db74>${</span>fdt_addr<span style=color:#e6db74>}</span>; <span style=color:#66d9ef>fi</span>
-</span></span></code></pre></td></tr></table></div></div><p>整理過後, 我們可以觀察到它真正會執行到的指令為 <code>run loadimage </code>，接著會是 <code>run mmcboot</code></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>bootcmd<span style=color:#f92672>=</span>
-</span></span><span style=display:flex><span>	mmc dev <span style=color:#e6db74>${</span>mmcdev<span style=color:#e6db74>}</span>;
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> mmc rescan; <span style=color:#66d9ef>then</span> 
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> run loadbootscript; <span style=color:#66d9ef>then</span> 
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Output:</span>
+</span></span><span style=display:flex><span><span style=color:#79c0ff>bootcmd</span><span style=color:#ff7b72;font-weight:700>=</span>mmc dev <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>mmcdev</span><span style=color:#a5d6ff>}</span>; <span style=color:#ff7b72>if</span> mmc rescan; <span style=color:#ff7b72>then</span> <span style=color:#ff7b72>if</span> run loadbootscript; <span style=color:#ff7b72>then</span> run bootscript; <span style=color:#ff7b72>else</span> <span style=color:#ff7b72>if</span> test <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>sec_boot</span><span style=color:#a5d6ff>}</span> <span style=color:#ff7b72;font-weight:700>=</span> yes; <span style=color:#ff7b72>then</span> <span style=color:#ff7b72>if</span> run loadcntr; <span style=color:#ff7b72>then</span> run mmcboot; <span style=color:#ff7b72>else</span> run netboot; <span style=color:#ff7b72>fi</span>; <span style=color:#ff7b72>else</span> <span style=color:#ff7b72>if</span> run loadimage; <span style=color:#ff7b72>then</span> run mmcboot; <span style=color:#ff7b72>else</span> run netboot; <span style=color:#ff7b72>fi</span>; <span style=color:#ff7b72>fi</span>; <span style=color:#ff7b72>fi</span>; <span style=color:#ff7b72>else</span> booti <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>loadaddr</span><span style=color:#a5d6ff>}</span> - <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>fdt_addr</span><span style=color:#a5d6ff>}</span>; <span style=color:#ff7b72>fi</span>
+</span></span></code></pre></td></tr></table></div></div><p>整理過後, 我們可以觀察到它真正會執行到的指令為 <code>run loadimage </code>，接著會是 <code>run mmcboot</code></p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#79c0ff>bootcmd</span><span style=color:#ff7b72;font-weight:700>=</span>
+</span></span><span style=display:flex><span>	mmc dev <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>mmcdev</span><span style=color:#a5d6ff>}</span>;
+</span></span><span style=display:flex><span>	<span style=color:#ff7b72>if</span> mmc rescan; <span style=color:#ff7b72>then</span> 
+</span></span><span style=display:flex><span>		<span style=color:#ff7b72>if</span> run loadbootscript; <span style=color:#ff7b72>then</span> 
 </span></span><span style=display:flex><span>			run bootscript; 
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>			<span style=color:#66d9ef>if</span> test <span style=color:#e6db74>${</span>sec_boot<span style=color:#e6db74>}</span> <span style=color:#f92672>=</span> yes; <span style=color:#66d9ef>then</span> 
-</span></span><span style=display:flex><span>				<span style=color:#66d9ef>if</span> run loadcntr; <span style=color:#66d9ef>then</span> 
+</span></span><span style=display:flex><span>		<span style=color:#ff7b72>else</span> 
+</span></span><span style=display:flex><span>			<span style=color:#ff7b72>if</span> test <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>sec_boot</span><span style=color:#a5d6ff>}</span> <span style=color:#ff7b72;font-weight:700>=</span> yes; <span style=color:#ff7b72>then</span> 
+</span></span><span style=display:flex><span>				<span style=color:#ff7b72>if</span> run loadcntr; <span style=color:#ff7b72>then</span> 
 </span></span><span style=display:flex><span>					run mmcboot; 
-</span></span><span style=display:flex><span>				<span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>				<span style=color:#ff7b72>else</span>
 </span></span><span style=display:flex><span>					run netboot; 
-</span></span><span style=display:flex><span>				<span style=color:#66d9ef>fi</span>;
-</span></span><span style=display:flex><span>			<span style=color:#66d9ef>else</span>
-</span></span><span style=display:flex><span>				<span style=color:#66d9ef>if</span> run loadimage; <span style=color:#66d9ef>then</span> 
+</span></span><span style=display:flex><span>				<span style=color:#ff7b72>fi</span>;
+</span></span><span style=display:flex><span>			<span style=color:#ff7b72>else</span>
+</span></span><span style=display:flex><span>				<span style=color:#ff7b72>if</span> run loadimage; <span style=color:#ff7b72>then</span> 
 </span></span><span style=display:flex><span>					run mmcboot; 
-</span></span><span style=display:flex><span>				<span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>				<span style=color:#ff7b72>else</span>
 </span></span><span style=display:flex><span>					run netboot; 
-</span></span><span style=display:flex><span>				<span style=color:#66d9ef>fi</span>; 
-</span></span><span style=display:flex><span>			<span style=color:#66d9ef>fi</span>; 
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>fi</span>; 
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>else</span>
-</span></span><span style=display:flex><span>		booti <span style=color:#e6db74>${</span>loadaddr<span style=color:#e6db74>}</span> - <span style=color:#e6db74>${</span>fdt_addr<span style=color:#e6db74>}</span>; 
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>fi</span>
-</span></span></code></pre></td></tr></table></div></div><p>從 eMMC 中把 Kernel 載到記憶體裡面</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}
-</span></span></code></pre></td></tr></table></div></div><p>繼續展開 <code>mmcboot</code></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>mmcboot=
+</span></span><span style=display:flex><span>				<span style=color:#ff7b72>fi</span>; 
+</span></span><span style=display:flex><span>			<span style=color:#ff7b72>fi</span>; 
+</span></span><span style=display:flex><span>		<span style=color:#ff7b72>fi</span>; 
+</span></span><span style=display:flex><span>	<span style=color:#ff7b72>else</span>
+</span></span><span style=display:flex><span>		booti <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>loadaddr</span><span style=color:#a5d6ff>}</span> - <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>fdt_addr</span><span style=color:#a5d6ff>}</span>; 
+</span></span><span style=display:flex><span>	<span style=color:#ff7b72>fi</span>
+</span></span></code></pre></td></tr></table></div></div><p>從 eMMC 中把 Kernel 載到記憶體裡面</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}
+</span></span></code></pre></td></tr></table></div></div><p>繼續展開 <code>mmcboot</code></p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>mmcboot=
 </span></span><span style=display:flex><span>	echo Booting from mmc ...; 
 </span></span><span style=display:flex><span>	run mmcargs;
 </span></span><span style=display:flex><span>	if test ${sec_boot} = yes; then
@@ -102,21 +110,22 @@ text-yellow-500 hover:text-yellow-300">Archives</a></div></nav><section class="m
 </span></span><span style=display:flex><span>			echo wait for boot; 
 </span></span><span style=display:flex><span>		fi;
 </span></span><span style=display:flex><span>	fi;
-</span></span></code></pre></td></tr></table></div></div><p>從 eMMC 中把 裝置樹 ( Devicetree ) 載到記憶體裡面</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}
-</span></span></code></pre></td></tr></table></div></div><p>開始載入 Kernel ，之後就會把控制權交給 Kernel 了。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>boot_os=booti ${loadaddr} - ${fdt_addr};
-</span></span></code></pre></td></tr></table></div></div><div class="notices info" data-title=小提示>我們可以使用 <code>echo $?</code> 來看返回值。</div><h3 id=設定-u-boot-環境變數>設定 U-Boot 環境變數</h3><p>從先前的分析來看，比較重要的指令有:</p><ul><li>loadfdt</li><li>loadimage</li><li>boot_os</li></ul><p>所以我們只要進行下列修改，即可。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>setenv serverip &#34;NFS_SERVER_IP&#34;
+</span></span></code></pre></td></tr></table></div></div><p>從 eMMC 中把 裝置樹 ( Devicetree ) 載到記憶體裡面</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}
+</span></span></code></pre></td></tr></table></div></div><p>開始載入 Kernel ，之後就會把控制權交給 Kernel 了。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>boot_os=booti ${loadaddr} - ${fdt_addr};
+</span></span></code></pre></td></tr></table></div></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
+小提示</div><div>我們可以使用 <code>echo $?</code> 來看返回值。</div></div><h3 id=設定-u-boot-環境變數>設定 U-Boot 環境變數</h3><p>從先前的分析來看，比較重要的指令有:</p><ul><li>loadfdt</li><li>loadimage</li><li>boot_os</li></ul><p>所以我們只要進行下列修改，即可。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>setenv serverip &#34;NFS_SERVER_IP&#34;
 </span></span><span style=display:flex><span>setenv rootfs_dir &#34;/srv/rootfs&#34;
 </span></span><span style=display:flex><span>setenv ethaddr &#34;01:02:03:04:05:06&#34;
 </span></span><span style=display:flex><span>setenv image Image
@@ -126,176 +135,75 @@ text-yellow-500 hover:text-yellow-300">Archives</a></div></nav><section class="m
 </span></span><span style=display:flex><span>setenv bootcmd &#39;run rootfsinfo; run loadfdt; run loadimage; run boot_os&#39;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>saveenv
-</span></span></code></pre></td></tr></table></div></div><div class="notices info" data-title=還原回預設值><p>如我們想還原回預設值，可以使用下列指令</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>env default -a
+</span></span></code></pre></td></tr></table></div></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
+還原回預設值</div><div><p>如我們想還原回預設值，可以使用下列指令</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>env default -a
 </span></span><span style=display:flex><span>saveenv
-</span></span></code></pre></td></tr></table></div></div></div><h3 id=結果>結果</h3><p>我們可以重新啟動系統，或是直接執行 <code>boot</code> 就可以看到 U-Boot 正在開始執行我們剛才所撰寫的指令了。
-會發現，開機的時候有稍微變長了，並且在過程中可以看到 <code>NFS</code> 相關的字樣。</p><p>開機完成後，我們可以在 <code>/proc/cmdline</code> 看到我們先前指定的開機參數(bootarg)。</p><figure><img src=images/result.png alt="從 NFS 伺服器中載入 rootfs"><figcaption><p>從 NFS 伺服器中載入 rootfs</p></figcaption></figure><h3 id=寫在最後>寫在最後</h3><p>在 U-Boot 中看到的參數，在本篇並沒有多去探究。不過也別太過傷心，以後我們會專門製作一篇為大家講解。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span>loadaddr=0x80280000
+</span></span></code></pre></td></tr></table></div></div></div></div><h3 id=結果>結果</h3><p>我們可以重新啟動系統，或是直接執行 <code>boot</code> 就可以看到 U-Boot 正在開始執行我們剛才所撰寫的指令了。
+會發現，開機的時候有稍微變長了，並且在過程中可以看到 <code>NFS</code> 相關的字樣。</p><p>開機完成後，我們可以在 <code>/proc/cmdline</code> 看到我們先前指定的開機參數(bootarg)。</p><figure><img src=/posts/yocto-with-imx8qxp-4/images/result.png alt="從 NFS 伺服器中載入 rootfs"><figcaption><p>從 NFS 伺服器中載入 rootfs</p></figcaption></figure><h3 id=寫在最後>寫在最後</h3><p>在 U-Boot 中看到的參數，在本篇並沒有多去探究。不過也別太過傷心，以後我們會專門製作一篇為大家講解。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>loadaddr=0x80280000
 </span></span><span style=display:flex><span>fdt_addr=0x83000000
 </span></span><span style=display:flex><span>image=Image
 </span></span><span style=display:flex><span>fdt_file=imx8qxp-mek-rpmsg.dtb
 </span></span></code></pre></td></tr></table></div></div><h2 id=小結>小結</h2><p>這次在撰寫本篇時，其實是想把 Kernel 與裝置樹都從網路載下來的。
 但礙於筆者的網路環境比較複雜，一直無法成功的藉由 TFTP 傳輸資料。
 所以也就暫時作罷。
-未來如果有完成這個部份再來更新吧。</p><p>( 附上當時的筆記 )</p><h3 id=配置-tftp-伺服器>配置 TFTP 伺服器</h3><h4 id=安裝-tftp>安裝 TFTP</h4><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>sudo aptitude install -y tftpd-hpa
-</span></span></code></pre></td></tr></table></div></div><h4 id=配置分享路徑>配置分享路徑</h4><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>sudo cp /etc/default/tftpd-hpa<span style=color:#f92672>{</span>,.bk<span style=color:#f92672>}</span> 
-</span></span><span style=display:flex><span>sudo sed -i <span style=color:#e6db74>&#39;s#TFTP_DIRECTORY.*#TFTP_DIRECTORY=&#34;/srv/tftp_shared&#34;#g&#39;</span> /etc/default/tftpd-hpa
-</span></span><span style=display:flex><span>sudo sed -i <span style=color:#e6db74>&#39;s#TFTP_ADDRESS.*#TFTP_ADDRESS=&#34;:69&#34;#g&#39;</span> /etc/default/tftpd-hpa
-</span></span><span style=display:flex><span>sudo sed -i <span style=color:#e6db74>&#39;s#TFTP_OPTIONS.*#TFTP_OPTIONS=&#34;--secure --create&#34;#g&#39;</span> /etc/default/tftpd-hpa
+未來如果有完成這個部份再來更新吧。</p><p>( 附上當時的筆記 )</p><h3 id=配置-tftp-伺服器>配置 TFTP 伺服器</h3><h4 id=安裝-tftp>安裝 TFTP</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>sudo aptitude install -y tftpd-hpa
+</span></span></code></pre></td></tr></table></div></div><h4 id=配置分享路徑>配置分享路徑</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">7
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>sudo cp /etc/default/tftpd-hpa<span style=color:#ff7b72;font-weight:700>{</span>,.bk<span style=color:#ff7b72;font-weight:700>}</span> 
+</span></span><span style=display:flex><span>sudo sed -i <span style=color:#a5d6ff>&#39;s#TFTP_DIRECTORY.*#TFTP_DIRECTORY=&#34;/srv/tftp_shared&#34;#g&#39;</span> /etc/default/tftpd-hpa
+</span></span><span style=display:flex><span>sudo sed -i <span style=color:#a5d6ff>&#39;s#TFTP_ADDRESS.*#TFTP_ADDRESS=&#34;:69&#34;#g&#39;</span> /etc/default/tftpd-hpa
+</span></span><span style=display:flex><span>sudo sed -i <span style=color:#a5d6ff>&#39;s#TFTP_OPTIONS.*#TFTP_OPTIONS=&#34;--secure --create&#34;#g&#39;</span> /etc/default/tftpd-hpa
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>sudo systemctl enable tftpd-hpa
 </span></span><span style=display:flex><span>sudo systemctl restart tftpd-hpa
-</span></span></code></pre></td></tr></table></div></div><p>/etc/default/tftpd-hpa:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt><span style=display:flex><span># /etc/default/tftpd-hpa
+</span></span></code></pre></td></tr></table></div></div><p>/etc/default/tftpd-hpa:</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span># /etc/default/tftpd-hpa
 </span></span><span style=display:flex><span>TFTP_USERNAME=&#34;tftp&#34;
 </span></span><span style=display:flex><span>TFTP_DIRECTORY=&#34;/srv/tftp_shared/&#34;
 </span></span><span style=display:flex><span>TFTP_ADDRESS=&#34;:69&#34;
 </span></span><span style=display:flex><span>TFTP_OPTIONS=&#34;--secure --create&#34;
-</span></span></code></pre></td></tr></table></div></div><h4 id=配置防火牆>配置防火牆</h4><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>sudo firewall-cmd <span style=color:#ae81ff>\
-</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>	--add-rich-rule<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;rule family=&#39;ipv4&#39; source address=&#39;192.168.1.2&#39; service name=&#39;tftp&#39; accept&#34;</span> <span style=color:#ae81ff>\
-</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>	--permanent
+</span></span></code></pre></td></tr></table></div></div><h4 id=配置防火牆>配置防火牆</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>sudo firewall-cmd <span style=color:#79c0ff>\
+</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span>	--add-rich-rule<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;rule family=&#39;ipv4&#39; source address=&#39;192.168.1.2&#39; service name=&#39;tftp&#39; accept&#34;</span> <span style=color:#79c0ff>\
+</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span>	--permanent
 </span></span><span style=display:flex><span>sudo firewall-cmd --reload
-</span></span></code></pre></td></tr></table></div></div><h4 id=除錯>除錯</h4><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>sudo netstat -nlp
+</span></span></code></pre></td></tr></table></div></div><h4 id=除錯>除錯</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>sudo netstat -nlp
 </span></span><span style=display:flex><span>sudo journalctl -fu  tftpd-hpa.service
 </span></span></code></pre></td></tr></table></div></div><h4 id=用戶端測試>用戶端測試</h4><p>在伺服器中建立測試用的資料</p><pre tabindex=0><code class=language-base data-lang=base>echo &#34;Hello word&#34; &gt; /srv/tftp_shared/hello
-</code></pre><p>在用戶端進行上、下載測試</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>echo <span style=color:#e6db74>&#34;I am Groot~~~~~&#34;</span> &gt; groot.txt
+</code></pre><p>在用戶端進行上、下載測試</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>echo <span style=color:#a5d6ff>&#34;I am Groot~~~~~&#34;</span> &gt; groot.txt
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>tftp SERVER_IP
 </span></span><span style=display:flex><span>tftp get hello
 </span></span><span style=display:flex><span>tftp put groot.txt
-</span></span></code></pre></td></tr></table></div></div><h2 id=參考連結>參考連結</h2><ul><li><a href=https://www.nxp.com/docs/en/user-guide/IMX_LINUX_USERS_GUIDE.pdf>i.MX Linux® User&rsquo;s Guide</a></li></ul><h2>相關頁面</h2><ul><li><a href=/posts/yocto-with-imx8qxp-3/>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 3</a></li><li><a href=/posts/yocto-with-imx8qxp-2/>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 2</a></li><li><a href=/posts/yocto-with-imx8qxp/>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統</a></li><li><a href=/posts/stm32mp-with-yocto-4/>在 STM32MP1 上使用 Yocto 建置 Linux 系統 4</a></li><li><a href=/posts/stm32mp-with-yocto-3/>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</a></li></ul></div></article></main><aside class="w-2/12 flex-shrink-0"><div class="border flex flex-col px-4 py-2 space-y-2 rounded shadow-md"><div class="text-yellow-500 font-normal">文章分類</div><div class="flex flex-col"><a href=/categories/c-language/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">c language </span><span class="text-sm text-slate-600">(2) </span></a><a href=/categories/database/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">database </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/embedded-system/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">embedded system </span><span class="text-sm text-slate-600">(12) </span></a><a href=/categories/gis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">gis </span><span class="text-sm text-slate-600">(3) </span></a><a href=/categories/hacker/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">hacker </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/mis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">mis </span><span class="text-sm text-slate-600">(4) </span></a><a href=/categories/note/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">note </span><span class="text-sm text-slate-600">(9) </span></a><a href=/categories/website/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">website </span><span class="text-sm text-slate-600">(5)</span></a></div><div class="text-yellow-500 font-normal">文章標籤</div><div class="flex flex-wrap gap-2"><a href=/tags/acl/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">acl
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/bootstrap/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">bootstrap
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/c/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/c11/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c11
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/ceh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ceh
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/chatbot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">chatbot
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/cli/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cli
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/cookie/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cookie
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/coscup/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">coscup
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/debian/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">debian
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/device-tree/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">device tree
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/electron/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">electron
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/gcc/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gcc
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/geo/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geo
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/geojson/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geojson
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/gin/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gin
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/git/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">git
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/go/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">go
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">9
-</span></a><a href=/tags/gps/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gps
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/hacker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">hacker
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/i.mx8qxp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">i.mx8qxp
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
-</span></a><a href=/tags/iperf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">iperf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/kernel/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">kernel
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/leaflet/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">leaflet
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/library/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">library
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/liff/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">liff
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/linker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linker
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/linux/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linux
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">13
-</span></a><a href=/tags/macos/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">MacOS
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/map/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">map
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/markdown/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">markdown
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/mysql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">mysql
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/nas/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nas
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/nfs/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nfs
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/openvpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">openvpn
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/opnsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">opnsense
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/pdf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pdf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/pfsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pfsense
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/postgresql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">postgresql
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/protobuf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">protobuf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/server/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">server
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/ssh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ssh
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/stm32mp1/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">stm32mp1
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
-</span></a><a href=/tags/synology/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">synology
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/tftp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">tftp
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/u-boot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">u-boot
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/unifi/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">unifi
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vpn
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vscode/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">VSCode
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vue/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vue
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/web/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/web-backend/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web backend
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/websocket/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">websocket
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/yocto/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">yocto
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">12</span></a></div></div></aside></div></section><footer class="w-full flex justify-center py-2 text-white">©2017-2024, All Rights Reserved</footer><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{anonymize_ip:!1})}</script></body></html>
+</span></span></code></pre></td></tr></table></div></div><h2 id=參考連結>參考連結</h2><ul><li><a href=https://www.nxp.com/docs/en/user-guide/IMX_LINUX_USERS_GUIDE.pdf>i.MX Linux® User&rsquo;s Guide</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/install-opnsense/ class=post-nav-prev><span class=nav-label>上一篇</span>
+<span class=nav-title>安裝 Opnsense 並設定 OpenVPN</span>
+</a><a href=https://e61983.github.io/posts/go-gin-web-backend/ class=post-nav-next><span class=nav-label>下一篇</span>
+<span class=nav-title>使用 Gin 框架實作登入功能</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#寫在前面>寫在前面</a></li><li><a href=#配置-nfs-伺服器>配置 NFS 伺服器</a></li><li><a href=#分析-kernel-與-devicetree-的載入命令>分析 Kernel 與 Devicetree 的載入命令</a></li><li><a href=#設定-u-boot-環境變數>設定 U-Boot 環境變數</a></li><li><a href=#結果>結果</a></li><li><a href=#寫在最後>寫在最後</a></li></ul></li><li><a href=#小結>小結</a><ul><li><a href=#配置-tftp-伺服器>配置 TFTP 伺服器</a></li></ul></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js></script><script>hljs.highlightAll()</script></body></html>

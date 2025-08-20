@@ -1,503 +1,407 @@
-<!doctype html><html lang=zh-Hant><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet href=/styles.9bea8a6c30b52eccc8909edc992e6285.min.e94b493a4fe8f46b26d21f8986856ed65ba4e8f0a7bb23126df17117f48a175d.css></head><body class="flex flex-col bg-black/80 space-y-2 m-2"><header class="flex flex-col items-center space-y-2 mt-[2rem]"><div class="flex flex-col items-center space-y-2 max-w-[5rem] min-w-[4rem] aspect-square"><div class="rounded-full max-w-[200px] max-h-[200px] overflow-hidden"><img src="https://s.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=200"></div></div><a href=/ class="text-2xl text-white font-semibold">Yuan のノート</a><div class="text-yellow-500 text-xs">心之所至，隨意亂書</div></header><nav class="container mx-auto px-2 rounded bg-slate-600"><div class="flex space-x-2 justify-end"><a href=/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">home
-</a><a href=/abouts/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">abouts
-</a><a href=/archives/ class="text-lg font-semibold capitalize py-2 px-1 duration-150
-text-yellow-500 hover:text-yellow-300">Archives</a></div></nav><section class="mt-2 container mx-auto"><div class="bg-white flex px-12 py-4 space-x-8 rounded"><main class=flex-grow><article class="flex flex-col space-y-2"><a href=/posts/go-gin-web-backend/ class="text-2xl font-semibold text-yellow-500">使用 Gin 框架實作登入功能</a><div class="flex items-center space-x-2"><div class="text-xs text-slate-500">Tue Sep 14, 2021</div><span>🏷️</span><ul class="flex space-x-2"><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/go/ title=go>#go</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/gin/ title=gin>#gin</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/web-backend/ title="web backend">#web backend</a></li><li class="text-sm text-slate-400"><a href=https://e61983.github.io/tags/cookie/ title=cookie>#cookie</a></li></ul></div><div class="w-full content"><h2 id=前言>前言</h2><p>最近又要開始接觸到網頁的東西了!
-久沒有碰要再花一點時間回想。想說就趁著這次順手記錄起來吧。</p><h2 id=主要內容>主要內容</h2><h3 id=寫在前面>寫在前面</h3><p>本篇我們會透過 gin 框架建立 API 伺服器。一開始會先建立一個測試用的 API，接著在試著提供網頁服務後；我們會開始建立登入功能所需的 API <code>login</code> 以及 <code>auth</code>。</p><ul><li>login 會檢查登入所使用的帳戶密碼，在驗證正確後會給予 Token 於 Cookie 中。</li><li>auth 會檢查 Cookie 是否有合法的 Token 。</li></ul><p>由於本篇主要是專注在網頁後端「如何使用 gin 框架」，所以有關 HTML、 JavaScript 、CSS 並不會著墨太多。</p><h3 id=建立專案>建立專案</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>go mod init github.com/e61983/test-gin-login
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>使用 Gin 框架實作登入功能 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="使用 Gin 框架實作登入功能 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/go-gin-web-backend/"><link rel=icon type=image/x-icon href=/favicon.ico><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<span class=hamburger></span>
+<span class=hamburger></span>
+<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>使用 Gin 框架實作登入功能</h1><div class=post-meta><time class=post-date datetime=2021-09-14T17:03:13+08:00>2021年09月14日
+</time><span class=reading-time>4 分鐘閱讀</span>
+<span class=word-count>764 字</span>
+<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/go class=tag>go</a>
+<a href=/tags/gin class=tag>gin</a>
+<a href=/tags/web-backend class=tag>web backend</a>
+<a href=/tags/cookie class=tag>cookie</a></div><div class=post-categories><a href=/categories/website class=category>website</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#寫在前面>寫在前面</a></li><li><a href=#建立專案>建立專案</a></li><li><a href=#起手式>起手式</a></li><li><a href=#登入--login--api>登入 ( Login ) API</a></li><li><a href=#驗證--auth--api>驗證 ( Auth ) API</a></li><li><a href=#建立登入表單與登入後顯示畫面>建立登入表單與登入後顯示畫面</a></li><li><a href=#畫存取清界線>畫存取清界線</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>最近又要開始接觸到網頁的東西了!
+久沒有碰要再花一點時間回想。想說就趁著這次順手記錄起來吧。</p><h2 id=主要內容>主要內容</h2><h3 id=寫在前面>寫在前面</h3><p>本篇我們會透過 gin 框架建立 API 伺服器。一開始會先建立一個測試用的 API，接著在試著提供網頁服務後；我們會開始建立登入功能所需的 API <code>login</code> 以及 <code>auth</code>。</p><ul><li>login 會檢查登入所使用的帳戶密碼，在驗證正確後會給予 Token 於 Cookie 中。</li><li>auth 會檢查 Cookie 是否有合法的 Token 。</li></ul><p>由於本篇主要是專注在網頁後端「如何使用 gin 框架」，所以有關 HTML、 JavaScript 、CSS 並不會著墨太多。</p><h3 id=建立專案>建立專案</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>go mod init github.com/e61983/test-gin-login
 </span></span><span style=display:flex><span>go get -u github.com/gin-gonic/gin
-</span></span></code></pre></td></tr></table></div></div><h3 id=起手式>起手式</h3><h4 id=建立測試用的-api---ping>建立測試用的 API - ping</h4><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cat <span style=color:#e6db74>&lt;&lt; EOF &gt; main.go
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>package main
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>import (
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>	&#34;net/http&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>	&#34;github.com/gin-gonic/gin&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>func main() {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>	r := gin.Default()
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>	r.GET(&#34;/ping&#34;, func(c *gin.Context) {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>		c.JSON(http.StatusOK, gin.H{
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>			&#34;message&#34;: &#34;pong&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>		})
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>	})
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>	r.Run()
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
-</span></span></code></pre></td></tr></table></div></div><p>現在讓我們先跑起來看看!</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>go run main.go
-</span></span></code></pre></td></tr></table></div></div><p>並在另一個終端機上試著存取我們建立的 API <code>ping</code></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>curl -X GET http://localhost:8080/ping
+</span></span></code></pre></td></tr></table></div></div><h3 id=起手式>起手式</h3><h4 id=建立測試用的-api---ping>建立測試用的 API - ping</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; main.go
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>package main
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>import (
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	&#34;net/http&#34;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	&#34;github.com/gin-gonic/gin&#34;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>)
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>func main() {
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	r := gin.Default()
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	r.GET(&#34;/ping&#34;, func(c *gin.Context) {
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>		c.JSON(http.StatusOK, gin.H{
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>			&#34;message&#34;: &#34;pong&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>		})
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	})
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	r.Run()
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>}
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
+</span></span></code></pre></td></tr></table></div></div><p>現在讓我們先跑起來看看!</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>go run main.go
+</span></span></code></pre></td></tr></table></div></div><p>並在另一個終端機上試著存取我們建立的 API <code>ping</code></p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>curl -X GET http://localhost:8080/ping
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Output:</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>{</span><span style=color:#e6db74>&#34;message&#34;</span>:<span style=color:#e6db74>&#34;pong&#34;</span><span style=color:#f92672>}</span>%
-</span></span></code></pre></td></tr></table></div></div><h4 id=提供網頁服務>提供網頁服務</h4><p>簡單的建立測試用的頁面。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>mkdir -p webroot
-</span></span><span style=display:flex><span>cat <span style=color:#e6db74>&lt;&lt; EOF &gt; webroot/index.html
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;!DOCTYPE html&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;html lang=&#34;en&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;head&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;meta charset=&#34;UTF-8&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;title&gt;Home Page&lt;/title&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;/head&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;body&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;h1&gt;Home Page&lt;/h1&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;/body&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;/html&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
-</span></span></code></pre></td></tr></table></div></div><p>接下來透過提供 <code>LoadHTMLGlob()</code> 載入文件夾中的靜態頁面。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>LoadHTMLGlob</span>(<span style=color:#e6db74>&#34;webroot/*&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>HTML</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#e6db74>&#34;index.html&#34;</span>, <span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>H</span>{})
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Output:</span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72;font-weight:700>{</span><span style=color:#a5d6ff>&#34;message&#34;</span>:<span style=color:#a5d6ff>&#34;pong&#34;</span><span style=color:#ff7b72;font-weight:700>}</span>%
+</span></span></code></pre></td></tr></table></div></div><h4 id=提供網頁服務>提供網頁服務</h4><p>簡單的建立測試用的頁面。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>mkdir -p webroot
+</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; webroot/index.html
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;!DOCTYPE html&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;html lang=&#34;en&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;head&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;meta charset=&#34;UTF-8&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;title&gt;Home Page&lt;/title&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/head&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;body&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;h1&gt;Home Page&lt;/h1&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/body&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/html&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
+</span></span></code></pre></td></tr></table></div></div><p>接下來透過提供 <code>LoadHTMLGlob()</code> 載入文件夾中的靜態頁面。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=display:flex><span>r.<span style=color:#d2a8ff;font-weight:700>LoadHTMLGlob</span>(<span style=color:#a5d6ff>&#34;webroot/*&#34;</span>)
+</span></span><span style=display:flex><span>r.<span style=color:#d2a8ff;font-weight:700>GET</span>(<span style=color:#a5d6ff>&#34;/&#34;</span>, <span style=color:#ff7b72>func</span>(c <span style=color:#ff7b72;font-weight:700>*</span>gin.Context) {
+</span></span><span style=display:flex><span>	c.<span style=color:#d2a8ff;font-weight:700>HTML</span>(http.StatusOK, <span style=color:#a5d6ff>&#34;index.html&#34;</span>, gin.H{})
 </span></span><span style=display:flex><span>})
-</span></span></code></pre></td></tr></table></div></div><p>重新運行後，使用瀏覽器觀看執行結果</p><figure><img src=images/result-first.png alt=我們的第一個畫面><figcaption><p>我們的第一個畫面</p></figcaption></figure><h3 id=登入--login--api>登入 ( Login ) API</h3><p>在使用 gin 的綁定 (binding) 功能時，我們要在想要綁定的欄位後面，依照想要綁定的方法加上 <strong>Struct Tags</strong>。
+</span></span></code></pre></td></tr></table></div></div><p>重新運行後，使用瀏覽器觀看執行結果</p><figure><img src=/posts/go-gin-web-backend/images/result-first.png alt=我們的第一個畫面><figcaption><p>我們的第一個畫面</p></figcaption></figure><h3 id=登入--login--api>登入 ( Login ) API</h3><p>在使用 gin 的綁定 (binding) 功能時，我們要在想要綁定的欄位後面，依照想要綁定的方法加上 <strong>Struct Tags</strong>。
 之我們就可以使用 <code>gin.Bind()</code> 或是 <code>gin.ShouldBind()</code> 來取得網頁前端所傳輸的資料。
 本篇是用直接比對帳號密碼的方式實作，同學在實務上不要這樣學喔!
 在檢驗完之後，將 Token 記錄於 Cookie 。
-不過，目前常見驗證是採 JWT 的驗證方式，所以同學也自己來試著改寫看看。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>User</span> <span style=color:#66d9ef>struct</span> {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Account</span>  <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;account&#34; form:&#34;account&#34;`</span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Password</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;password&#34; form:&#34;password&#34;`</span>
+不過，目前常見驗證是採 JWT 的驗證方式，所以同學也自己來試著改寫看看。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff7b72>type</span> User <span style=color:#ff7b72>struct</span> {
+</span></span><span style=display:flex><span>	Account  <span style=color:#ff7b72>string</span> <span style=color:#a5d6ff>`json:&#34;account&#34; form:&#34;account&#34;`</span>
+</span></span><span style=display:flex><span>	Password <span style=color:#ff7b72>string</span> <span style=color:#a5d6ff>`json:&#34;password&#34; form:&#34;password&#34;`</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>POST</span>(<span style=color:#e6db74>&#34;/login&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
-</span></span><span style=display:flex><span>	<span style=color:#75715e>/* 綁定資料 */</span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>u</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>User</span>{}
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>ShouldBind</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>u</span>) <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>H</span>{<span style=color:#e6db74>&#34;err&#34;</span>: <span style=color:#ae81ff>1</span>})
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span>
+</span></span><span style=display:flex><span>r.<span style=color:#d2a8ff;font-weight:700>POST</span>(<span style=color:#a5d6ff>&#34;/login&#34;</span>, <span style=color:#ff7b72>func</span>(c <span style=color:#ff7b72;font-weight:700>*</span>gin.Context) {
+</span></span><span style=display:flex><span>	<span style=color:#8b949e;font-style:italic>/* 綁定資料 */</span>
+</span></span><span style=display:flex><span>	u <span style=color:#ff7b72;font-weight:700>:=</span> <span style=color:#ff7b72;font-weight:700>&amp;</span>User{}
+</span></span><span style=display:flex><span>	<span style=color:#ff7b72>if</span> c.<span style=color:#d2a8ff;font-weight:700>ShouldBind</span>(<span style=color:#ff7b72;font-weight:700>&amp;</span>u) <span style=color:#ff7b72;font-weight:700>!=</span> <span style=color:#79c0ff>nil</span> {
+</span></span><span style=display:flex><span>		c.<span style=color:#d2a8ff;font-weight:700>JSON</span>(http.StatusOK, gin.H{<span style=color:#a5d6ff>&#34;err&#34;</span>: <span style=color:#a5d6ff>1</span>})
+</span></span><span style=display:flex><span>		<span style=color:#ff7b72>return</span>
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#75715e>/* 檢查帳號密碼 */</span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>u</span>.<span style=color:#a6e22e>Account</span> <span style=color:#f92672>!=</span> <span style=color:#a6e22e>TEST_ACCOUNT</span> <span style=color:#f92672>||</span> <span style=color:#a6e22e>u</span>.<span style=color:#a6e22e>Password</span> <span style=color:#f92672>!=</span> <span style=color:#a6e22e>TEST_PASSWORD</span> {
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>H</span>{<span style=color:#e6db74>&#34;err&#34;</span>: <span style=color:#ae81ff>2</span>})
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span>
+</span></span><span style=display:flex><span>	<span style=color:#8b949e;font-style:italic>/* 檢查帳號密碼 */</span>
+</span></span><span style=display:flex><span>	<span style=color:#ff7b72>if</span> u.Account <span style=color:#ff7b72;font-weight:700>!=</span> TEST_ACCOUNT <span style=color:#ff7b72;font-weight:700>||</span> u.Password <span style=color:#ff7b72;font-weight:700>!=</span> TEST_PASSWORD {
+</span></span><span style=display:flex><span>		c.<span style=color:#d2a8ff;font-weight:700>JSON</span>(http.StatusOK, gin.H{<span style=color:#a5d6ff>&#34;err&#34;</span>: <span style=color:#a5d6ff>2</span>})
+</span></span><span style=display:flex><span>		<span style=color:#ff7b72>return</span>
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#75715e>/* 將 Token 記錄於 Cookie 中 */</span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>SetCookie</span>(<span style=color:#a6e22e>TOKEN_KEY</span>, <span style=color:#a6e22e>TEST_TOKEN</span>, <span style=color:#ae81ff>3600</span>, <span style=color:#e6db74>&#34;/&#34;</span>, <span style=color:#a6e22e>HOST</span>, <span style=color:#66d9ef>false</span>, <span style=color:#66d9ef>false</span>)
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>H</span>{})
+</span></span><span style=display:flex><span>	<span style=color:#8b949e;font-style:italic>/* 將 Token 記錄於 Cookie 中 */</span>
+</span></span><span style=display:flex><span>	c.<span style=color:#d2a8ff;font-weight:700>SetCookie</span>(TOKEN_KEY, TEST_TOKEN, <span style=color:#a5d6ff>3600</span>, <span style=color:#a5d6ff>&#34;/&#34;</span>, HOST, <span style=color:#79c0ff>false</span>, <span style=color:#79c0ff>false</span>)
+</span></span><span style=display:flex><span>	c.<span style=color:#d2a8ff;font-weight:700>JSON</span>(http.StatusOK, gin.H{})
 </span></span><span style=display:flex><span>})
 </span></span></code></pre></td></tr></table></div></div><h3 id=驗證--auth--api>驗證 ( Auth ) API</h3><p>我們可以從瀏覽器發送的請求中取出我們先前記錄於 Cookie 的 Token 。
-並且比對它是否合法。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>POST</span>(<span style=color:#e6db74>&#34;/auth&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
-</span></span><span style=display:flex><span>	<span style=color:#75715e>/* 從 Cookie 取出 Token */</span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>token</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Cookie</span>(<span style=color:#a6e22e>TOKEN_KEY</span>); <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>TEST_TOKEN</span> <span style=color:#f92672>!=</span> <span style=color:#a6e22e>token</span> {
-</span></span><span style=display:flex><span>			<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>H</span>{<span style=color:#e6db74>&#34;err&#34;</span>: <span style=color:#ae81ff>2</span>})
-</span></span><span style=display:flex><span>			<span style=color:#66d9ef>return</span>
+並且比對它是否合法。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=display:flex><span>r.<span style=color:#d2a8ff;font-weight:700>POST</span>(<span style=color:#a5d6ff>&#34;/auth&#34;</span>, <span style=color:#ff7b72>func</span>(c <span style=color:#ff7b72;font-weight:700>*</span>gin.Context) {
+</span></span><span style=display:flex><span>	<span style=color:#8b949e;font-style:italic>/* 從 Cookie 取出 Token */</span>
+</span></span><span style=display:flex><span>	<span style=color:#ff7b72>if</span> token, err <span style=color:#ff7b72;font-weight:700>:=</span> c.<span style=color:#d2a8ff;font-weight:700>Cookie</span>(TOKEN_KEY); err <span style=color:#ff7b72;font-weight:700>!=</span> <span style=color:#79c0ff>nil</span> {
+</span></span><span style=display:flex><span>		<span style=color:#ff7b72>if</span> TEST_TOKEN <span style=color:#ff7b72;font-weight:700>!=</span> token {
+</span></span><span style=display:flex><span>			c.<span style=color:#d2a8ff;font-weight:700>JSON</span>(http.StatusOK, gin.H{<span style=color:#a5d6ff>&#34;err&#34;</span>: <span style=color:#a5d6ff>2</span>})
+</span></span><span style=display:flex><span>			<span style=color:#ff7b72>return</span>
 </span></span><span style=display:flex><span>		}
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>H</span>{<span style=color:#e6db74>&#34;err&#34;</span>: <span style=color:#66d9ef>nil</span>})
+</span></span><span style=display:flex><span>	c.<span style=color:#d2a8ff;font-weight:700>JSON</span>(http.StatusOK, gin.H{<span style=color:#a5d6ff>&#34;err&#34;</span>: <span style=color:#79c0ff>nil</span>})
 </span></span><span style=display:flex><span>})
-</span></span></code></pre></td></tr></table></div></div><h3 id=建立登入表單與登入後顯示畫面>建立登入表單與登入後顯示畫面</h3><p>建立登入頁面。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cat <span style=color:#e6db74>&lt;&lt; EOF &gt; webroot/login.html
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;!DOCTYPE html&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;html lang=&#34;en&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;head&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;meta charset=&#34;UTF-8&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;link rel=&#34;stylesheet&#34; href=&#34;assets/core.css&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;title&gt;Login Page&lt;/title&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;/head&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;body&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;h1&gt;Login Page&lt;/h1&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;div class=&#34;container&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;form&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &lt;div class=&#34;input-wrapper&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                &lt;div class=&#34;title&#34;&gt;Login&lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                &lt;div class=&#34;label&#34; for=&#34;account&#34;&gt;Account:&lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                &lt;input type=&#34;text&#34; id=&#34;account&#34; name=&#34;account&#34; value=&#34;tester&#34; /&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                &lt;div class=&#34;label&#34; for=&#34;password&#34;&gt;Password:&lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                &lt;input type=&#34;password&#34; id=&#34;password&#34; name=&#34;password&#34; value=&#34;test123&#34; /&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                &lt;button id=&#34;btn&#34; type=&#34;button&#34;&gt; Submit &lt;/button&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;/form&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;script type=&#34;module&#34; &gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        import {getData, postData, getCookie, deleteCookie} from &#39;/javascript/core.js&#39;;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        function login() {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            let account = document.getElementById(&#34;account&#34;).value;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            let password = document.getElementById(&#34;password&#34;).value;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            postData(&#34;http://localhost:8080/login&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                {&#34;account&#34;: account, &#34;password&#34;: password})
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                .then(data=&gt;{
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                    console.log(data.err)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                    if (data.err !== null){
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                        window.location.replace(&#34;/&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                    }else{
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                        window.location.replace(&#34;/admin/&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                    }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                });
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        function check(token) {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            postData(&#34;http://localhost:8080/auth&#34;, {&#34;token&#34;: token})
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                .then(data=&gt;{
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                    if (data.err === null){
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                        window.location.replace(&#34;/admin/&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                    }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                });
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        check(getCookie(&#34;token&#34;))
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        window.onload = function(){
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            document.getElementById(&#34;btn&#34;).addEventListener(&#34;click&#34;, login);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;/script&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;/body&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;/html&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
-</span></span></code></pre></td></tr></table></div></div><p>改寫歡迎畫面</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cat <span style=color:#e6db74>&lt;&lt; EOF &gt; webroot/index.html
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;!DOCTYPE html&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;html lang=&#34;en&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;head&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;meta charset=&#34;UTF-8&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;link rel=&#34;stylesheet&#34; href=&#34;/assets/core.css&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;title&gt;Home Page&lt;/title&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;/head&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;body&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;h1&gt;Home Page&lt;/h1&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;div class=&#34;container&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;div class=&#34;input-wrapper&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &lt;div class=&#34;title&#34;&gt;Hello word&lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &lt;button id=&#34;btn&#34; type=&#34;button&#34;&gt; Logout &lt;/button&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;script type=&#34;module&#34; &gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        import {getData, postData, getCookie, deleteCookie} from &#39;/javascript/core.js&#39;;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        function logout() {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            deleteCookie(&#34;token&#34;, &#34;/&#34;, &#34;localhost&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            window.location.replace(&#34;/&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        window.onload = function(){
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            document.getElementById(&#34;btn&#34;).addEventListener(&#39;click&#39;, logout);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &lt;/script&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;/body&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&lt;/html&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
-</span></span></code></pre></td></tr></table></div></div><h3 id=畫存取清界線>畫存取清界線</h3><p>我們前面建立了將要顯示的頁面，現在我們要來設定存取的路徑。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>/* 登入頁面 */</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>HTML</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#e6db74>&#34;login.html&#34;</span>, <span style=color:#66d9ef>nil</span>)
+</span></span></code></pre></td></tr></table></div></div><h3 id=建立登入表單與登入後顯示畫面>建立登入表單與登入後顯示畫面</h3><p>建立登入頁面。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">56
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; webroot/login.html
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;!DOCTYPE html&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;html lang=&#34;en&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;head&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;meta charset=&#34;UTF-8&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;link rel=&#34;stylesheet&#34; href=&#34;assets/core.css&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;title&gt;Login Page&lt;/title&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/head&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;body&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;h1&gt;Login Page&lt;/h1&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;div class=&#34;container&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        &lt;form&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            &lt;div class=&#34;input-wrapper&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                &lt;div class=&#34;title&#34;&gt;Login&lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                &lt;div class=&#34;label&#34; for=&#34;account&#34;&gt;Account:&lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                &lt;input type=&#34;text&#34; id=&#34;account&#34; name=&#34;account&#34; value=&#34;tester&#34; /&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                &lt;div class=&#34;label&#34; for=&#34;password&#34;&gt;Password:&lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                &lt;input type=&#34;password&#34; id=&#34;password&#34; name=&#34;password&#34; value=&#34;test123&#34; /&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                &lt;button id=&#34;btn&#34; type=&#34;button&#34;&gt; Submit &lt;/button&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            &lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        &lt;/form&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;script type=&#34;module&#34; &gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        import {getData, postData, getCookie, deleteCookie} from &#39;/javascript/core.js&#39;;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        function login() {
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            let account = document.getElementById(&#34;account&#34;).value;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            let password = document.getElementById(&#34;password&#34;).value;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            postData(&#34;http://localhost:8080/login&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                {&#34;account&#34;: account, &#34;password&#34;: password})
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                .then(data=&gt;{
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                    console.log(data.err)
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                    if (data.err !== null){
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                        window.location.replace(&#34;/&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                    }else{
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                        window.location.replace(&#34;/admin/&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                    }
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                });
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        }
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        function check(token) {
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            postData(&#34;http://localhost:8080/auth&#34;, {&#34;token&#34;: token})
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                .then(data=&gt;{
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                    if (data.err === null){
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                        window.location.replace(&#34;/admin/&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                    }
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>                });
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        }
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        check(getCookie(&#34;token&#34;))
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        window.onload = function(){
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            document.getElementById(&#34;btn&#34;).addEventListener(&#34;click&#34;, login);
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        }
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;/script&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/body&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/html&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
+</span></span></code></pre></td></tr></table></div></div><p>改寫歡迎畫面</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">32
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; webroot/index.html
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;!DOCTYPE html&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;html lang=&#34;en&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;head&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;meta charset=&#34;UTF-8&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;link rel=&#34;stylesheet&#34; href=&#34;/assets/core.css&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;title&gt;Home Page&lt;/title&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/head&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;body&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;h1&gt;Home Page&lt;/h1&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;div class=&#34;container&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        &lt;div class=&#34;input-wrapper&#34;&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            &lt;div class=&#34;title&#34;&gt;Hello word&lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            &lt;button id=&#34;btn&#34; type=&#34;button&#34;&gt; Logout &lt;/button&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        &lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;/div&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;script type=&#34;module&#34; &gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        import {getData, postData, getCookie, deleteCookie} from &#39;/javascript/core.js&#39;;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        function logout() {
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            deleteCookie(&#34;token&#34;, &#34;/&#34;, &#34;localhost&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            window.location.replace(&#34;/&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        }
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        window.onload = function(){
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            document.getElementById(&#34;btn&#34;).addEventListener(&#39;click&#39;, logout);
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        }
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;/script&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/body&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/html&gt;
+</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=畫存取清界線>畫存取清界線</h3><p>我們前面建立了將要顯示的頁面，現在我們要來設定存取的路徑。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8b949e;font-style:italic>/* 登入頁面 */</span>
+</span></span><span style=display:flex><span>r.<span style=color:#d2a8ff;font-weight:700>GET</span>(<span style=color:#a5d6ff>&#34;/&#34;</span>, <span style=color:#ff7b72>func</span>(c <span style=color:#ff7b72;font-weight:700>*</span>gin.Context) {
+</span></span><span style=display:flex><span>	c.<span style=color:#d2a8ff;font-weight:700>HTML</span>(http.StatusOK, <span style=color:#a5d6ff>&#34;login.html&#34;</span>, <span style=color:#79c0ff>nil</span>)
 </span></span><span style=display:flex><span>})
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>/* 需要登入才能存取的頁面 */</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>admin</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Group</span>(<span style=color:#e6db74>&#34;/admin&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#a6e22e>admin</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>currentUser</span>, <span style=color:#a6e22e>ok</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Get</span>(<span style=color:#e6db74>&#34;User&#34;</span>); <span style=color:#a6e22e>ok</span> {
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>log</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;User [ %s ] Accessed&#34;</span>, <span style=color:#a6e22e>currentUser</span>)
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>/* 需要登入才能存取的頁面 */</span>
+</span></span><span style=display:flex><span>admin <span style=color:#ff7b72;font-weight:700>:=</span> r.<span style=color:#d2a8ff;font-weight:700>Group</span>(<span style=color:#a5d6ff>&#34;/admin&#34;</span>)
+</span></span><span style=display:flex><span>admin.<span style=color:#d2a8ff;font-weight:700>GET</span>(<span style=color:#a5d6ff>&#34;/&#34;</span>, <span style=color:#ff7b72>func</span>(c <span style=color:#ff7b72;font-weight:700>*</span>gin.Context) {
+</span></span><span style=display:flex><span>	<span style=color:#ff7b72>if</span> currentUser, ok <span style=color:#ff7b72;font-weight:700>:=</span> c.<span style=color:#d2a8ff;font-weight:700>Get</span>(<span style=color:#a5d6ff>&#34;User&#34;</span>); ok {
+</span></span><span style=display:flex><span>		log.<span style=color:#d2a8ff;font-weight:700>Printf</span>(<span style=color:#a5d6ff>&#34;User [ %s ] Accessed&#34;</span>, currentUser)
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>HTML</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#e6db74>&#34;index.html&#34;</span>, <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span>	c.<span style=color:#d2a8ff;font-weight:700>HTML</span>(http.StatusOK, <span style=color:#a5d6ff>&#34;index.html&#34;</span>, <span style=color:#79c0ff>nil</span>)
 </span></span><span style=display:flex><span>})
 </span></span></code></pre></td></tr></table></div></div><h4 id=建立中間層>建立中間層</h4><p>雖然我們已經建立了 <code>/login</code> 與 <code>/admin/</code> 這 2 個路徑，但如果我們直接在劉覽器中輸入 <code>http://localhost:8080/admin/</code>。會發現還是可以存取的。
 為了避免這樣的事情發生，我們可以建立中間層來檢查是否已登入。
-如果發現尚未登入的存取請求，我們就將其轉至登入畫面。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>AuthMiddleware</span>() <span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>HandlerFunc</span> {
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>cookieToken</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Cookie</span>(<span style=color:#a6e22e>TOKEN_KEY</span>)
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> <span style=color:#f92672>&amp;&amp;</span> <span style=color:#a6e22e>cookieToken</span> <span style=color:#f92672>!=</span> <span style=color:#a6e22e>TEST_TOKEN</span> {
-</span></span><span style=display:flex><span>			<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Redirect</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusTemporaryRedirect</span>, <span style=color:#a6e22e>BASEURL</span>)
-</span></span><span style=display:flex><span>			<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>AbortWithStatus</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusTemporaryRedirect</span>)
-</span></span><span style=display:flex><span>			<span style=color:#66d9ef>return</span>
-</span></span><span style=display:flex><span>		} <span style=color:#66d9ef>else</span> {
-</span></span><span style=display:flex><span>			<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Set</span>(<span style=color:#e6db74>&#34;User&#34;</span>, <span style=color:#a6e22e>TEST_ACCOUNT</span>)
-</span></span><span style=display:flex><span>			<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Next</span>()
+如果發現尚未登入的存取請求，我們就將其轉至登入畫面。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff7b72>func</span> <span style=color:#d2a8ff;font-weight:700>AuthMiddleware</span>() gin.HandlerFunc {
+</span></span><span style=display:flex><span>	<span style=color:#ff7b72>return</span> <span style=color:#ff7b72>func</span>(c <span style=color:#ff7b72;font-weight:700>*</span>gin.Context) {
+</span></span><span style=display:flex><span>		cookieToken, err <span style=color:#ff7b72;font-weight:700>:=</span> c.<span style=color:#d2a8ff;font-weight:700>Cookie</span>(TOKEN_KEY)
+</span></span><span style=display:flex><span>		<span style=color:#ff7b72>if</span> err <span style=color:#ff7b72;font-weight:700>!=</span> <span style=color:#79c0ff>nil</span> <span style=color:#ff7b72;font-weight:700>&amp;&amp;</span> cookieToken <span style=color:#ff7b72;font-weight:700>!=</span> TEST_TOKEN {
+</span></span><span style=display:flex><span>			c.<span style=color:#d2a8ff;font-weight:700>Redirect</span>(http.StatusTemporaryRedirect, BASEURL)
+</span></span><span style=display:flex><span>			c.<span style=color:#d2a8ff;font-weight:700>AbortWithStatus</span>(http.StatusTemporaryRedirect)
+</span></span><span style=display:flex><span>			<span style=color:#ff7b72>return</span>
+</span></span><span style=display:flex><span>		} <span style=color:#ff7b72>else</span> {
+</span></span><span style=display:flex><span>			c.<span style=color:#d2a8ff;font-weight:700>Set</span>(<span style=color:#a5d6ff>&#34;User&#34;</span>, TEST_ACCOUNT)
+</span></span><span style=display:flex><span>			c.<span style=color:#d2a8ff;font-weight:700>Next</span>()
 </span></span><span style=display:flex><span>		}
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><h4 id=使用中間層>使用中間層</h4><p>在我們建立好的 <code>admin</code> 路由群組中，使用我們建立好的中間層。如此一來，要存取此路由群組的請求就會檢查是否已登入了。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#a6e22e>admin</span>.<span style=color:#a6e22e>Use</span>(<span style=color:#a6e22e>AuthMiddleware</span>())
-</span></span></code></pre></td></tr></table></div></div><p><figure><img src=images/result-login.png alt=登入表單><figcaption><p>登入表單</p></figcaption></figure><figure><img src=images/result-greeting.png alt=登入後歡迎畫面><figcaption><p>登入後歡迎畫面</p></figcaption></figure></p><h2 id=小結>小結</h2><p>本篇省略了很多實作上的細節，對被省略的部份有興趣的同學可以參考<a href=./test-gin-login.tar.bz2>這裡</a>。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://github.com/gin-gonic/gin>gin-gonic/gin</a></li></ul><h2>相關頁面</h2><ul><li><a href=/posts/gps-format/>在台灣常見的地理位置表示方式</a></li><li><a href=/posts/coscup-2021-day-1/>COSCUP 2021 Day 1</a></li><li><a href=/posts/first-hugo-website/>打造自己的Blog</a></li></ul></div></article></main><aside class="w-2/12 flex-shrink-0"><div class="border flex flex-col px-4 py-2 space-y-2 rounded shadow-md"><div class="text-yellow-500 font-normal">文章分類</div><div class="flex flex-col"><a href=/categories/c-language/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">c language </span><span class="text-sm text-slate-600">(2) </span></a><a href=/categories/database/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">database </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/embedded-system/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">embedded system </span><span class="text-sm text-slate-600">(12) </span></a><a href=/categories/gis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">gis </span><span class="text-sm text-slate-600">(3) </span></a><a href=/categories/hacker/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">hacker </span><span class="text-sm text-slate-600">(1) </span></a><a href=/categories/mis/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">mis </span><span class="text-sm text-slate-600">(4) </span></a><a href=/categories/note/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">note </span><span class="text-sm text-slate-600">(9) </span></a><a href=/categories/website/ class="flex justify-between items-center border-b last:border-0 py-1 group capitalize"><span class="text-slate-800 group-hover:text-yellow-500 duration-200 truncate">website </span><span class="text-sm text-slate-600">(5)</span></a></div><div class="text-yellow-500 font-normal">文章標籤</div><div class="flex flex-wrap gap-2"><a href=/tags/acl/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">acl
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/bootstrap/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">bootstrap
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/c/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/c11/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">c11
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/ceh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ceh
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/chatbot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">chatbot
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/cli/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cli
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/cookie/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">cookie
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/coscup/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">coscup
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/debian/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">debian
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/device-tree/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">device tree
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/electron/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">electron
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/gcc/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gcc
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/geo/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geo
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/geojson/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">geojson
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/gin/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gin
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/git/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">git
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/go/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">go
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">9
-</span></a><a href=/tags/gps/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">gps
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/hacker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">hacker
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/i.mx8qxp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">i.mx8qxp
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
-</span></a><a href=/tags/iperf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">iperf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/kernel/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">kernel
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/leaflet/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">leaflet
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/library/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">library
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/liff/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">liff
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/linker/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linker
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/linux/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">linux
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">13
-</span></a><a href=/tags/macos/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">MacOS
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/map/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">map
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/markdown/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">markdown
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/mysql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">mysql
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/nas/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nas
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/nfs/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">nfs
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/openvpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">openvpn
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/opnsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">opnsense
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/pdf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pdf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/pfsense/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">pfsense
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/postgresql/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">postgresql
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/protobuf/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">protobuf
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/server/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">server
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/ssh/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">ssh
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/stm32mp1/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">stm32mp1
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">4
-</span></a><a href=/tags/synology/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">synology
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/tftp/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">tftp
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/u-boot/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">u-boot
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/unifi/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">unifi
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vpn/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vpn
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vscode/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">VSCode
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/vue/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">vue
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/web/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">2
-</span></a><a href=/tags/web-backend/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">web backend
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/websocket/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">websocket
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">1
-</span></a><a href=/tags/yocto/ class="flex text-sm text-slate-600 group"><span class="bg-slate-400/10 px-0.5 rounded-l group-hover:font-semibold duration-200">yocto
-</span><span class="bg-slate-400/20 px-0.5 rounded-r text-sm">12</span></a></div></div></aside></div></section><footer class="w-full flex justify-center py-2 text-white">©2017-2024, All Rights Reserved</footer><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{anonymize_ip:!1})}</script></body></html>
+</span></span></code></pre></td></tr></table></div></div><h4 id=使用中間層>使用中間層</h4><p>在我們建立好的 <code>admin</code> 路由群組中，使用我們建立好的中間層。如此一來，要存取此路由群組的請求就會檢查是否已登入了。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=display:flex><span>admin.<span style=color:#d2a8ff;font-weight:700>Use</span>(<span style=color:#d2a8ff;font-weight:700>AuthMiddleware</span>())
+</span></span></code></pre></td></tr></table></div></div><p><figure><img src=/posts/go-gin-web-backend/images/result-login.png alt=登入表單><figcaption><p>登入表單</p></figcaption></figure><figure><img src=/posts/go-gin-web-backend/images/result-greeting.png alt=登入後歡迎畫面><figcaption><p>登入後歡迎畫面</p></figcaption></figure></p><h2 id=小結>小結</h2><p>本篇省略了很多實作上的細節，對被省略的部份有興趣的同學可以參考<a href=./test-gin-login.tar.bz2>這裡</a>。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://github.com/gin-gonic/gin>gin-gonic/gin</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/yocto-with-imx8qxp-4/ class=post-nav-prev><span class=nav-label>上一篇</span>
+<span class=nav-title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</span>
+</a><a href=https://e61983.github.io/posts/how-to-setup-unifi-ap/ class=post-nav-next><span class=nav-label>下一篇</span>
+<span class=nav-title>如何設定 Unifi AP</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#寫在前面>寫在前面</a></li><li><a href=#建立專案>建立專案</a></li><li><a href=#起手式>起手式</a></li><li><a href=#登入--login--api>登入 ( Login ) API</a></li><li><a href=#驗證--auth--api>驗證 ( Auth ) API</a></li><li><a href=#建立登入表單與登入後顯示畫面>建立登入表單與登入後顯示畫面</a></li><li><a href=#畫存取清界線>畫存取清界線</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js></script><script>hljs.highlightAll()</script></body></html>
