@@ -1,9 +1,9 @@
-<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 2 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 2 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/yocto-with-imx8qxp-2/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 2 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 2 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/yocto-with-imx8qxp-2/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
 <span class=hamburger></span>
 <span class=hamburger></span>
 <span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 2</h1><div class=post-meta><time class=post-date datetime=2021-09-02T13:36:25+08:00>2021年09月02日
 </time><span class=reading-time>7 分鐘閱讀</span>
-<span class=word-count>1445 字</span>
+<span class=word-count>1293 字</span>
 <span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/i.mx8qxp class=tag>i.mx8qxp</a>
 <a href=/tags/device-tree class=tag>device tree</a>
 <a href=/tags/yocto class=tag>yocto</a>
@@ -12,287 +12,148 @@
 目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#寫在開始之前>寫在開始之前</a></li><li><a href=#uart2-在哪裡>UART2 在哪裡</a></li><li><a href=#測試-uart2-是否正常>測試 UART2 是否正常</a></li><li><a href=#修改-u-boot>修改 U-Boot</a></li><li><a href=#修改-kernel>修改 Kernel</a></li><li><a href=#建立新的-layer-並加入-patch>建立新的 Layer 並加入 Patch</a></li><li><a href=#重新編譯映像檔並燒寫至-sd-卡>重新編譯映像檔並燒寫至 SD 卡</a></li><li><a href=#結果>結果</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>繼上一篇我們建立了可開機的映像檔後，接下來我們要來修改修改預設的除錯埠。從 UART0 改至 UART2。</p><h2 id=主要內容>主要內容</h2><h3 id=寫在開始之前>寫在開始之前</h3><p>在 Yocto 專案中，有關硬體的配置都會記錄在 Machine Layer。所以我們要先從 Machine 配置檔找到相關的資訊，再開始修改。
 在找到 u-boot 相關的資訊後，我們可能要修改:</p><ol><li>裝置樹 ( Devicetree )</li><li>GPIO初始化 (時序、iomux)</li><li>除錯埠相關設定</li><li>Kernel 開機參數</li></ol><h3 id=uart2-在哪裡>UART2 在哪裡</h3><p>從主板上我們可以看到有一組 DB9 的連接埠，上面寫著 RS232。但我們要如何知道它是哪一個 UART 埠呢?</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/uart2-photo.png alt="主板上的 UART2"><figcaption><p>主板上的 UART2</p></figcaption></figure><p>我們可以從官方提供的電路圖來看，先找到 J37 (主板上有寫) 的元件。再從此開始一路的往源頭找。</p><p><figure><img src=/posts/yocto-with-imx8qxp-2/images/uart2-db9.png alt="UART2 DB9"><figcaption><p>UART2 DB9</p></figcaption></figure><figure><img src=/posts/yocto-with-imx8qxp-2/images/bb_uart2.png alt=電路圖><figcaption><p>電路圖</p></figcaption></figure></p><p>最後我們可以看到它是接在 i.mx8qxp 的 <code>AD34</code> 與 <code>AD35</code> 上。</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/cpu_uart2.png alt=電路圖><figcaption><p>電路圖</p></figcaption></figure><p>我們可以看到 <code>AD34</code> 與 <code>AD35</code> 即是 <code>UART2_RX</code> 與 <code>UART2_TX</code> 。</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/ad34_ad45.png alt="i.MX 8QuadXPlus and 8DualXPlus Automotive and Infotainment Applications Processors, P128"><figcaption><p>i.MX 8QuadXPlus and 8DualXPlus Automotive and Infotainment Applications Processors, P128</p></figcaption></figure><p>也可以在參考手冊找到 UART2 的暫存器位置。</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/uart2_address.png alt="i.MX 8DualX/8DualXPlus/8QuadXPlus Applications Processor Reference Manual, P31"><figcaption><p>i.MX 8DualX/8DualXPlus/8QuadXPlus Applications Processor Reference Manual, P31</p></figcaption></figure><h3 id=測試-uart2-是否正常>測試 UART2 是否正常</h3><p>在這裡我們可以先將 <strong>boot</strong> 切換至 eMMC 並從新開機。
 連接好 i.mx8qxp 後，我們可以在 Host 端使用習慣的 RS232 工具軟體開啟 RS232 串列埠。
-接著在 i.mx8qxp 上配置好 UART2 的鮑率後，就可以進行測試了。</p><blockquote><p>如果主板的 eMMC 中並沒有可用的系統，關於這一點，以後我們會專門製作一篇為大家講解.。</p></blockquote><p>在 Host 端:</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>screen /dev/tty.XXXXX <span style=color:#a5d6ff>115200</span>
-</span></span></code></pre></td></tr></table></div></div><p>在 i.mx8qxp 端:</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 修改 ttyLP2 所使用的鮑率</span>
-</span></span><span style=display:flex><span>stty -F /dev/ttyLP2 <span style=color:#a5d6ff>115200</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&#34;Hello Word!&#34;</span> &gt; /dev//dev/ttyLP2
-</span></span></code></pre></td></tr></table></div></div><h3 id=修改-u-boot>修改 U-Boot</h3><h4 id=來自-machine-layer-的訊息>來自 Machine Layer 的訊息</h4><p>我們在<a href=https://e61983.github.io/posts/yocto-with-imx8qxp/#建立-yocto-環境>上一篇</a>是指定 <code>imx8qxpc0mek</code> 為目標機器，所以我們可以先找到此配置檔。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>cd imx-yocto-bsp/sources
-</span></span><span style=display:flex><span>find . -iname <span style=color:#a5d6ff>&#34;*imx8qxpc0mek*&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Output:</span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># ./meta-imx/meta-bsp/conf/machine/imx8qxpc0mek.conf</span>
-</span></span></code></pre></td></tr></table></div></div><h4 id=u-boot-相關配置>U-Boot 相關配置</h4><p>在找到目標機器的配置檔後，我們可以找詢有關 <code>VIRTUAL/BOOTLOADER</code> 或是 <code>VIRTUAL/UBOOT</code> 相關的設定。
+接著在 i.mx8qxp 上配置好 UART2 的鮑率後，就可以進行測試了。</p><blockquote><p>如果主板的 eMMC 中並沒有可用的系統，關於這一點，以後我們會專門製作一篇為大家講解.。</p></blockquote><p>在 Host 端:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>screen /dev/tty.XXXXX <span class=m>115200</span>
+</span></span></code></pre></div><p>在 i.mx8qxp 端:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=c1># 修改 ttyLP2 所使用的鮑率</span>
+</span></span><span class=line><span class=ln>2</span><span class=cl>stty -F /dev/ttyLP2 <span class=m>115200</span>
+</span></span><span class=line><span class=ln>3</span><span class=cl>
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=nb>echo</span> <span class=s2>&#34;Hello Word!&#34;</span> &gt; /dev//dev/ttyLP2
+</span></span></code></pre></div><h3 id=修改-u-boot>修改 U-Boot</h3><h4 id=來自-machine-layer-的訊息>來自 Machine Layer 的訊息</h4><p>我們在<a href=https://e61983.github.io/posts/yocto-with-imx8qxp/#建立-yocto-環境>上一篇</a>是指定 <code>imx8qxpc0mek</code> 為目標機器，所以我們可以先找到此配置檔。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nb>cd</span> imx-yocto-bsp/sources
+</span></span><span class=line><span class=ln>2</span><span class=cl>find . -iname <span class=s2>&#34;*imx8qxpc0mek*&#34;</span>
+</span></span><span class=line><span class=ln>3</span><span class=cl>
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=c1># Output:</span>
+</span></span><span class=line><span class=ln>5</span><span class=cl><span class=c1># ./meta-imx/meta-bsp/conf/machine/imx8qxpc0mek.conf</span>
+</span></span></code></pre></div><h4 id=u-boot-相關配置>U-Boot 相關配置</h4><p>在找到目標機器的配置檔後，我們可以找詢有關 <code>VIRTUAL/BOOTLOADER</code> 或是 <code>VIRTUAL/UBOOT</code> 相關的設定。
 如果沒有看到相關設定的話，我們可以再往它的 <code>require</code> 或是 <code>include</code> 檔查找。</p><p>在 <strong>imx8qxp-mek.conf</strong> 我們知道了 U-Boot 的 defconfig 檔, 檔名為 <strong>imx8qxp_mek</strong></p><figure><img src=/posts/yocto-with-imx8qxp-2/images/imx8qxp-mek.conf.png alt=imx8qxp-mek.conf><figcaption><p>imx8qxp-mek.conf</p></figcaption></figure><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
-imx8qxpc0mek.conf 引用路徑(非完整)</div><div><ul><li>imx-yocto-bsp/sources/meta-imx/meta-bsp/conf/machine/imx8qxpc0mek.conf<ul><li>require imx-yocto-bsp/sources/meta-freescale/conf/machine/imx8qxp-mek.conf<ul><li>require imx-yocto-bsp/sources/meta-freescale/conf/machine/include/imx8x-mek.inc<ul><li>require imx-yocto-bsp/sources/meta-freescale/conf/machine/include/imx-base.inc</li></ul></li></ul></li></ul></li></ul></div></div><h4 id=確認-u-boot-套件資訊>確認 U-Boot 套件資訊</h4><p>我們可以透過找尋下列變數，來找到使用的 U-Boot Package 名稱。</p><ul><li>PREFERRED_PROVIDER_u-boot</li><li>PREFERRED_PROVIDER_virtual/bootloader</li></ul><p>在編譯過後，原始碼可以在 ${WORK_DIR} 資料夾中找到。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">8
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>ls imx-yocto-bsp/first-build/tmp/work/imx8qxpc0mek-poky-linux/u-boot-imx/1_2021.04-r0/git
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Output:</span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># api     config.mk  dts                    include   MAINTAINERS  scripts</span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># arch    configs    env                    Kbuild    Makefile     test</span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># board   disk       examples               Kconfig   net          tools</span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># cmd     doc        fs                     lib       post</span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># common  drivers    imx8qxp_mek_defconfig  Licenses  README</span>
-</span></span></code></pre></td></tr></table></div></div><p>不過我們其實也可以直接使用 <code>devshell</code> ，在 devshell 環境進行修改就可以了。</p><h4 id=確認-u-boot-開機時使用的裝置樹devicetree>確認 U-Boot 開機時使用的裝置樹(Devicetree)</h4><p>開機所使用的裝置樹資訊，會記錄在 <code>defconfig</code> 中，我們可以在 <code>configs</code> 中找詢 <strong>imx8qxp_mek_defconfig</strong> 配置檔。從配置檔中，我們可以看到它是使用 <strong>fsl-imx8qxp-mek</strong>。</p><p>這個檔案我們可以在 <code>/arch/arm/dts/</code> 中看到。</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/imx8qxp_mek_defconfig.png alt=imx8qxp_mek_defconfig><figcaption><p>imx8qxp_mek_defconfig</p></figcaption></figure><h4 id=修改-u-boot-裝置樹devicetree>修改 U-Boot 裝置樹(Devicetree)</h4><p>在找尋的過程中發現 <strong>fsl-imx8qxp-ai_ml.dts</strong> 是使用 UART2 作為預設的輸出，所以我們可以參考它來進行修改。</p><p>下列是我們會修改到的檔案:</p><ul><li>arch/arm/dts/fsl-imx8dx.dtsi</li><li>arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi</li><li>arch/arm/dts/fsl-imx8qxp-mek.dts</li></ul><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>bitbake -c devshell virtual/bootloader
-</span></span></code></pre></td></tr></table></div></div><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">  1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">  2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">  3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">  4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">  5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">  6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">  7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">  8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">  9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 58
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 59
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 60
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 61
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 62
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 63
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 64
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 65
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 66
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 67
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 68
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 69
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 70
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 71
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 72
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 73
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 74
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 75
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 76
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 77
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 78
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 79
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 80
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 81
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 82
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 83
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 84
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 85
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 86
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 87
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 88
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 89
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 90
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 91
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 92
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 93
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 94
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 95
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 96
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 97
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 98
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 99
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">100
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">101
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">102
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">103
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">104
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">105
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">106
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">107
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">108
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">109
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">110
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">111
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">112
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">113
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">114
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">115
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">116
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">117
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">118
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">119
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">120
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-diff data-lang=diff><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>diff --git a/arch/arm/dts/fsl-imx8dx.dtsi b/arch/arm/dts/fsl-imx8dx.dtsi
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>index a36bf388c7..4d2606defe 100644
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700></span><span style=color:#ffa198;background-color:#490202>--- a/arch/arm/dts/fsl-imx8dx.dtsi
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+++ b/arch/arm/dts/fsl-imx8dx.dtsi
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span><span style=color:#79c0ff>@@ -975,25 +975,7 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span>                reg = &lt;SC_R_UART_2&gt;;
-</span></span><span style=display:flex><span>                #power-domain-cells = &lt;0&gt;;
-</span></span><span style=display:flex><span>                power-domains = &lt;&amp;pd_dma&gt;;
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-               #address-cells = &lt;1&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-               #size-cells = &lt;0&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span>                wakeup-irq = &lt;347&gt;;
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-               pd_dma2_chan12: PD_UART2_RX {
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                   reg = &lt;SC_R_DMA_2_CH12&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                   power-domains =&lt;&amp;pd_dma_lpuart2&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                   #power-domain-cells = &lt;0&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                   #address-cells = &lt;1&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                   #size-cells = &lt;0&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                   pd_dma2_chan13: PD_UART2_TX {
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                       reg = &lt;SC_R_DMA_2_CH13&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                       power-domains =&lt;&amp;pd_dma2_chan12&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                       #power-domain-cells = &lt;0&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                       #address-cells = &lt;1&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                       #size-cells = &lt;0&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-                   };
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-               };
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span>            };
-</span></span><span style=display:flex><span>            pd_dma_lpuart3: PD_DMA_UART3 {
-</span></span><span style=display:flex><span>                reg = &lt;SC_R_UART_3&gt;;
-</span></span><span style=display:flex><span><span style=color:#79c0ff>@@ -2839,10 +2821,7 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span>        clock-names = &#34;per&#34;, &#34;ipg&#34;;
-</span></span><span style=display:flex><span>        assigned-clocks = &lt;&amp;clk IMX8QXP_UART2_CLK&gt;;
-</span></span><span style=display:flex><span>        assigned-clock-rates = &lt;80000000&gt;;
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-       power-domains = &lt;&amp;pd_dma2_chan13&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-       dma-names = &#34;tx&#34;,&#34;rx&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-       dmas = &lt;&amp;edma2 13 0 0&gt;,
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-           &lt;&amp;edma2 12 0 1&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+       power-domains = &lt;&amp;pd_dma_lpuart2&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span>        status = &#34;disabled&#34;;
-</span></span><span style=display:flex><span>    };
-</span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>diff --git a/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi b/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>index 5327485bfa..7df4d1bb5e 100644
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700></span><span style=color:#ffa198;background-color:#490202>--- a/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+++ b/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span><span style=color:#79c0ff>@@ -68,6 +68,10 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 	u-boot,dm-spl;
-</span></span><span style=display:flex><span> };
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+&amp;pinctrl_lpuart2 {
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+	u-boot,dm-spl;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+};
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> &amp;pinctrl_usdhc1 {
-</span></span><span style=display:flex><span> 	u-boot,dm-spl;
-</span></span><span style=display:flex><span> };
-</span></span><span style=display:flex><span><span style=color:#79c0ff>@@ -136,6 +140,10 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 	u-boot,dm-spl;
-</span></span><span style=display:flex><span> };
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+&amp;pd_dma_lpuart2 {
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+	u-boot,dm-spl;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+};
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> &amp;pd_conn_usbotg0 {
-</span></span><span style=display:flex><span> 	u-boot,dm-spl;
-</span></span><span style=display:flex><span> };
-</span></span><span style=display:flex><span><span style=color:#79c0ff>@@ -208,6 +216,10 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 	u-boot,dm-spl;
-</span></span><span style=display:flex><span> };
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+&amp;lpuart2 {
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+	u-boot,dm-spl;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+};
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> &amp;usbmisc1 {
-</span></span><span style=display:flex><span> 	u-boot,dm-spl;
-</span></span><span style=display:flex><span> };
-</span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>diff --git a/arch/arm/dts/fsl-imx8qxp-mek.dts b/arch/arm/dts/fsl-imx8qxp-mek.dts
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>index 86aa868479..a5a5c5e49d 100644
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700></span><span style=color:#ffa198;background-color:#490202>--- a/arch/arm/dts/fsl-imx8qxp-mek.dts
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+++ b/arch/arm/dts/fsl-imx8qxp-mek.dts
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span><span style=color:#79c0ff>@@ -21,8 +21,8 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 	};
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span> 	chosen {
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-		bootargs = &#34;console=ttyLP0,115200 earlycon&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-		stdout-path = &amp;lpuart0;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+		bootargs = &#34;console=ttyLP2,115200 earlycon&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+		stdout-path = &amp;lpuart2;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> 	};
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span> 	regulators {
-</span></span><span style=display:flex><span><span style=color:#79c0ff>@@ -126,6 +126,13 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 			&gt;;
-</span></span><span style=display:flex><span> 		};
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+		pinctrl_lpuart2: lpuart2grp {
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+			fsl,pins = &lt;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+				SC_P_UART2_RX_ADMA_UART2_R	0x06000020
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+				SC_P_UART2_TX_ADMA_UART2_T	0x06000020
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+			&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+		};
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> 		pinctrl_usdhc1: usdhc1grp {
-</span></span><span style=display:flex><span> 			fsl,pins = &lt;
-</span></span><span style=display:flex><span> 				SC_P_EMMC0_CLK_CONN_EMMC0_CLK		0x06000041
-</span></span><span style=display:flex><span><span style=color:#79c0ff>@@ -217,6 +224,12 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 	status = &#34;okay&#34;;
-</span></span><span style=display:flex><span> };
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+&amp;lpuart2 {
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+	pinctrl-names = &#34;default&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+	pinctrl-0 = &lt;&amp;pinctrl_lpuart2&gt;;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+	status = &#34;okay&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+};
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> &amp;gpio0 {
-</span></span><span style=display:flex><span> 	status = &#34;okay&#34;;
-</span></span><span style=display:flex><span> };
-</span></span></code></pre></td></tr></table></div></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
+imx8qxpc0mek.conf 引用路徑(非完整)</div><div><ul><li>imx-yocto-bsp/sources/meta-imx/meta-bsp/conf/machine/imx8qxpc0mek.conf<ul><li>require imx-yocto-bsp/sources/meta-freescale/conf/machine/imx8qxp-mek.conf<ul><li>require imx-yocto-bsp/sources/meta-freescale/conf/machine/include/imx8x-mek.inc<ul><li>require imx-yocto-bsp/sources/meta-freescale/conf/machine/include/imx-base.inc</li></ul></li></ul></li></ul></li></ul></div></div><h4 id=確認-u-boot-套件資訊>確認 U-Boot 套件資訊</h4><p>我們可以透過找尋下列變數，來找到使用的 U-Boot Package 名稱。</p><ul><li>PREFERRED_PROVIDER_u-boot</li><li>PREFERRED_PROVIDER_virtual/bootloader</li></ul><p>在編譯過後，原始碼可以在 ${WORK_DIR} 資料夾中找到。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>ls imx-yocto-bsp/first-build/tmp/work/imx8qxpc0mek-poky-linux/u-boot-imx/1_2021.04-r0/git
+</span></span><span class=line><span class=ln>2</span><span class=cl>
+</span></span><span class=line><span class=ln>3</span><span class=cl><span class=c1># Output:</span>
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=c1># api     config.mk  dts                    include   MAINTAINERS  scripts</span>
+</span></span><span class=line><span class=ln>5</span><span class=cl><span class=c1># arch    configs    env                    Kbuild    Makefile     test</span>
+</span></span><span class=line><span class=ln>6</span><span class=cl><span class=c1># board   disk       examples               Kconfig   net          tools</span>
+</span></span><span class=line><span class=ln>7</span><span class=cl><span class=c1># cmd     doc        fs                     lib       post</span>
+</span></span><span class=line><span class=ln>8</span><span class=cl><span class=c1># common  drivers    imx8qxp_mek_defconfig  Licenses  README</span>
+</span></span></code></pre></div><p>不過我們其實也可以直接使用 <code>devshell</code> ，在 devshell 環境進行修改就可以了。</p><h4 id=確認-u-boot-開機時使用的裝置樹devicetree>確認 U-Boot 開機時使用的裝置樹(Devicetree)</h4><p>開機所使用的裝置樹資訊，會記錄在 <code>defconfig</code> 中，我們可以在 <code>configs</code> 中找詢 <strong>imx8qxp_mek_defconfig</strong> 配置檔。從配置檔中，我們可以看到它是使用 <strong>fsl-imx8qxp-mek</strong>。</p><p>這個檔案我們可以在 <code>/arch/arm/dts/</code> 中看到。</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/imx8qxp_mek_defconfig.png alt=imx8qxp_mek_defconfig><figcaption><p>imx8qxp_mek_defconfig</p></figcaption></figure><h4 id=修改-u-boot-裝置樹devicetree>修改 U-Boot 裝置樹(Devicetree)</h4><p>在找尋的過程中發現 <strong>fsl-imx8qxp-ai_ml.dts</strong> 是使用 UART2 作為預設的輸出，所以我們可以參考它來進行修改。</p><p>下列是我們會修改到的檔案:</p><ul><li>arch/arm/dts/fsl-imx8dx.dtsi</li><li>arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi</li><li>arch/arm/dts/fsl-imx8qxp-mek.dts</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>bitbake -c devshell virtual/bootloader
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-diff data-lang=diff><span class=line><span class=ln>  1</span><span class=cl><span class=gh>diff --git a/arch/arm/dts/fsl-imx8dx.dtsi b/arch/arm/dts/fsl-imx8dx.dtsi
+</span></span></span><span class=line><span class=ln>  2</span><span class=cl><span class=gh>index a36bf388c7..4d2606defe 100644
+</span></span></span><span class=line><span class=ln>  3</span><span class=cl><span class=gh></span><span class=gd>--- a/arch/arm/dts/fsl-imx8dx.dtsi
+</span></span></span><span class=line><span class=ln>  4</span><span class=cl><span class=gd></span><span class=gi>+++ b/arch/arm/dts/fsl-imx8dx.dtsi
+</span></span></span><span class=line><span class=ln>  5</span><span class=cl><span class=gi></span><span class=gu>@@ -975,25 +975,7 @@
+</span></span></span><span class=line><span class=ln>  6</span><span class=cl><span class=gu></span>                reg = &lt;SC_R_UART_2&gt;;
+</span></span><span class=line><span class=ln>  7</span><span class=cl>                #power-domain-cells = &lt;0&gt;;
+</span></span><span class=line><span class=ln>  8</span><span class=cl>                power-domains = &lt;&amp;pd_dma&gt;;
+</span></span><span class=line><span class=ln>  9</span><span class=cl><span class=gd>-               #address-cells = &lt;1&gt;;
+</span></span></span><span class=line><span class=ln> 10</span><span class=cl><span class=gd>-               #size-cells = &lt;0&gt;;
+</span></span></span><span class=line><span class=ln> 11</span><span class=cl><span class=gd></span>                wakeup-irq = &lt;347&gt;;
+</span></span><span class=line><span class=ln> 12</span><span class=cl><span class=gd>-
+</span></span></span><span class=line><span class=ln> 13</span><span class=cl><span class=gd>-               pd_dma2_chan12: PD_UART2_RX {
+</span></span></span><span class=line><span class=ln> 14</span><span class=cl><span class=gd>-                   reg = &lt;SC_R_DMA_2_CH12&gt;;
+</span></span></span><span class=line><span class=ln> 15</span><span class=cl><span class=gd>-                   power-domains =&lt;&amp;pd_dma_lpuart2&gt;;
+</span></span></span><span class=line><span class=ln> 16</span><span class=cl><span class=gd>-                   #power-domain-cells = &lt;0&gt;;
+</span></span></span><span class=line><span class=ln> 17</span><span class=cl><span class=gd>-                   #address-cells = &lt;1&gt;;
+</span></span></span><span class=line><span class=ln> 18</span><span class=cl><span class=gd>-                   #size-cells = &lt;0&gt;;
+</span></span></span><span class=line><span class=ln> 19</span><span class=cl><span class=gd>-
+</span></span></span><span class=line><span class=ln> 20</span><span class=cl><span class=gd>-                   pd_dma2_chan13: PD_UART2_TX {
+</span></span></span><span class=line><span class=ln> 21</span><span class=cl><span class=gd>-                       reg = &lt;SC_R_DMA_2_CH13&gt;;
+</span></span></span><span class=line><span class=ln> 22</span><span class=cl><span class=gd>-                       power-domains =&lt;&amp;pd_dma2_chan12&gt;;
+</span></span></span><span class=line><span class=ln> 23</span><span class=cl><span class=gd>-                       #power-domain-cells = &lt;0&gt;;
+</span></span></span><span class=line><span class=ln> 24</span><span class=cl><span class=gd>-                       #address-cells = &lt;1&gt;;
+</span></span></span><span class=line><span class=ln> 25</span><span class=cl><span class=gd>-                       #size-cells = &lt;0&gt;;
+</span></span></span><span class=line><span class=ln> 26</span><span class=cl><span class=gd>-                   };
+</span></span></span><span class=line><span class=ln> 27</span><span class=cl><span class=gd>-               };
+</span></span></span><span class=line><span class=ln> 28</span><span class=cl><span class=gd></span>            };
+</span></span><span class=line><span class=ln> 29</span><span class=cl>            pd_dma_lpuart3: PD_DMA_UART3 {
+</span></span><span class=line><span class=ln> 30</span><span class=cl>                reg = &lt;SC_R_UART_3&gt;;
+</span></span><span class=line><span class=ln> 31</span><span class=cl><span class=gu>@@ -2839,10 +2821,7 @@
+</span></span></span><span class=line><span class=ln> 32</span><span class=cl><span class=gu></span>        clock-names = &#34;per&#34;, &#34;ipg&#34;;
+</span></span><span class=line><span class=ln> 33</span><span class=cl>        assigned-clocks = &lt;&amp;clk IMX8QXP_UART2_CLK&gt;;
+</span></span><span class=line><span class=ln> 34</span><span class=cl>        assigned-clock-rates = &lt;80000000&gt;;
+</span></span><span class=line><span class=ln> 35</span><span class=cl><span class=gd>-       power-domains = &lt;&amp;pd_dma2_chan13&gt;;
+</span></span></span><span class=line><span class=ln> 36</span><span class=cl><span class=gd>-       dma-names = &#34;tx&#34;,&#34;rx&#34;;
+</span></span></span><span class=line><span class=ln> 37</span><span class=cl><span class=gd>-       dmas = &lt;&amp;edma2 13 0 0&gt;,
+</span></span></span><span class=line><span class=ln> 38</span><span class=cl><span class=gd>-           &lt;&amp;edma2 12 0 1&gt;;
+</span></span></span><span class=line><span class=ln> 39</span><span class=cl><span class=gd></span><span class=gi>+       power-domains = &lt;&amp;pd_dma_lpuart2&gt;;
+</span></span></span><span class=line><span class=ln> 40</span><span class=cl><span class=gi></span>        status = &#34;disabled&#34;;
+</span></span><span class=line><span class=ln> 41</span><span class=cl>    };
+</span></span><span class=line><span class=ln> 42</span><span class=cl><span class=gh>diff --git a/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi b/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi
+</span></span></span><span class=line><span class=ln> 43</span><span class=cl><span class=gh>index 5327485bfa..7df4d1bb5e 100644
+</span></span></span><span class=line><span class=ln> 44</span><span class=cl><span class=gh></span><span class=gd>--- a/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi
+</span></span></span><span class=line><span class=ln> 45</span><span class=cl><span class=gd></span><span class=gi>+++ b/arch/arm/dts/fsl-imx8qxp-mek-u-boot.dtsi
+</span></span></span><span class=line><span class=ln> 46</span><span class=cl><span class=gi></span><span class=gu>@@ -68,6 +68,10 @@
+</span></span></span><span class=line><span class=ln> 47</span><span class=cl><span class=gu></span> 	u-boot,dm-spl;
+</span></span><span class=line><span class=ln> 48</span><span class=cl> };
+</span></span><span class=line><span class=ln> 49</span><span class=cl>
+</span></span><span class=line><span class=ln> 50</span><span class=cl><span class=gi>+&amp;pinctrl_lpuart2 {
+</span></span></span><span class=line><span class=ln> 51</span><span class=cl><span class=gi>+	u-boot,dm-spl;
+</span></span></span><span class=line><span class=ln> 52</span><span class=cl><span class=gi>+};
+</span></span></span><span class=line><span class=ln> 53</span><span class=cl><span class=gi>+
+</span></span></span><span class=line><span class=ln> 54</span><span class=cl><span class=gi></span> &amp;pinctrl_usdhc1 {
+</span></span><span class=line><span class=ln> 55</span><span class=cl> 	u-boot,dm-spl;
+</span></span><span class=line><span class=ln> 56</span><span class=cl> };
+</span></span><span class=line><span class=ln> 57</span><span class=cl><span class=gu>@@ -136,6 +140,10 @@
+</span></span></span><span class=line><span class=ln> 58</span><span class=cl><span class=gu></span> 	u-boot,dm-spl;
+</span></span><span class=line><span class=ln> 59</span><span class=cl> };
+</span></span><span class=line><span class=ln> 60</span><span class=cl>
+</span></span><span class=line><span class=ln> 61</span><span class=cl><span class=gi>+&amp;pd_dma_lpuart2 {
+</span></span></span><span class=line><span class=ln> 62</span><span class=cl><span class=gi>+	u-boot,dm-spl;
+</span></span></span><span class=line><span class=ln> 63</span><span class=cl><span class=gi>+};
+</span></span></span><span class=line><span class=ln> 64</span><span class=cl><span class=gi>+
+</span></span></span><span class=line><span class=ln> 65</span><span class=cl><span class=gi></span> &amp;pd_conn_usbotg0 {
+</span></span><span class=line><span class=ln> 66</span><span class=cl> 	u-boot,dm-spl;
+</span></span><span class=line><span class=ln> 67</span><span class=cl> };
+</span></span><span class=line><span class=ln> 68</span><span class=cl><span class=gu>@@ -208,6 +216,10 @@
+</span></span></span><span class=line><span class=ln> 69</span><span class=cl><span class=gu></span> 	u-boot,dm-spl;
+</span></span><span class=line><span class=ln> 70</span><span class=cl> };
+</span></span><span class=line><span class=ln> 71</span><span class=cl>
+</span></span><span class=line><span class=ln> 72</span><span class=cl><span class=gi>+&amp;lpuart2 {
+</span></span></span><span class=line><span class=ln> 73</span><span class=cl><span class=gi>+	u-boot,dm-spl;
+</span></span></span><span class=line><span class=ln> 74</span><span class=cl><span class=gi>+};
+</span></span></span><span class=line><span class=ln> 75</span><span class=cl><span class=gi>+
+</span></span></span><span class=line><span class=ln> 76</span><span class=cl><span class=gi></span> &amp;usbmisc1 {
+</span></span><span class=line><span class=ln> 77</span><span class=cl> 	u-boot,dm-spl;
+</span></span><span class=line><span class=ln> 78</span><span class=cl> };
+</span></span><span class=line><span class=ln> 79</span><span class=cl><span class=gh>diff --git a/arch/arm/dts/fsl-imx8qxp-mek.dts b/arch/arm/dts/fsl-imx8qxp-mek.dts
+</span></span></span><span class=line><span class=ln> 80</span><span class=cl><span class=gh>index 86aa868479..a5a5c5e49d 100644
+</span></span></span><span class=line><span class=ln> 81</span><span class=cl><span class=gh></span><span class=gd>--- a/arch/arm/dts/fsl-imx8qxp-mek.dts
+</span></span></span><span class=line><span class=ln> 82</span><span class=cl><span class=gd></span><span class=gi>+++ b/arch/arm/dts/fsl-imx8qxp-mek.dts
+</span></span></span><span class=line><span class=ln> 83</span><span class=cl><span class=gi></span><span class=gu>@@ -21,8 +21,8 @@
+</span></span></span><span class=line><span class=ln> 84</span><span class=cl><span class=gu></span> 	};
+</span></span><span class=line><span class=ln> 85</span><span class=cl>
+</span></span><span class=line><span class=ln> 86</span><span class=cl> 	chosen {
+</span></span><span class=line><span class=ln> 87</span><span class=cl><span class=gd>-		bootargs = &#34;console=ttyLP0,115200 earlycon&#34;;
+</span></span></span><span class=line><span class=ln> 88</span><span class=cl><span class=gd>-		stdout-path = &amp;lpuart0;
+</span></span></span><span class=line><span class=ln> 89</span><span class=cl><span class=gd></span><span class=gi>+		bootargs = &#34;console=ttyLP2,115200 earlycon&#34;;
+</span></span></span><span class=line><span class=ln> 90</span><span class=cl><span class=gi>+		stdout-path = &amp;lpuart2;
+</span></span></span><span class=line><span class=ln> 91</span><span class=cl><span class=gi></span> 	};
+</span></span><span class=line><span class=ln> 92</span><span class=cl>
+</span></span><span class=line><span class=ln> 93</span><span class=cl> 	regulators {
+</span></span><span class=line><span class=ln> 94</span><span class=cl><span class=gu>@@ -126,6 +126,13 @@
+</span></span></span><span class=line><span class=ln> 95</span><span class=cl><span class=gu></span> 			&gt;;
+</span></span><span class=line><span class=ln> 96</span><span class=cl> 		};
+</span></span><span class=line><span class=ln> 97</span><span class=cl>
+</span></span><span class=line><span class=ln> 98</span><span class=cl><span class=gi>+		pinctrl_lpuart2: lpuart2grp {
+</span></span></span><span class=line><span class=ln> 99</span><span class=cl><span class=gi>+			fsl,pins = &lt;
+</span></span></span><span class=line><span class=ln>100</span><span class=cl><span class=gi>+				SC_P_UART2_RX_ADMA_UART2_R	0x06000020
+</span></span></span><span class=line><span class=ln>101</span><span class=cl><span class=gi>+				SC_P_UART2_TX_ADMA_UART2_T	0x06000020
+</span></span></span><span class=line><span class=ln>102</span><span class=cl><span class=gi>+			&gt;;
+</span></span></span><span class=line><span class=ln>103</span><span class=cl><span class=gi>+		};
+</span></span></span><span class=line><span class=ln>104</span><span class=cl><span class=gi>+
+</span></span></span><span class=line><span class=ln>105</span><span class=cl><span class=gi></span> 		pinctrl_usdhc1: usdhc1grp {
+</span></span><span class=line><span class=ln>106</span><span class=cl> 			fsl,pins = &lt;
+</span></span><span class=line><span class=ln>107</span><span class=cl> 				SC_P_EMMC0_CLK_CONN_EMMC0_CLK		0x06000041
+</span></span><span class=line><span class=ln>108</span><span class=cl><span class=gu>@@ -217,6 +224,12 @@
+</span></span></span><span class=line><span class=ln>109</span><span class=cl><span class=gu></span> 	status = &#34;okay&#34;;
+</span></span><span class=line><span class=ln>110</span><span class=cl> };
+</span></span><span class=line><span class=ln>111</span><span class=cl>
+</span></span><span class=line><span class=ln>112</span><span class=cl><span class=gi>+&amp;lpuart2 {
+</span></span></span><span class=line><span class=ln>113</span><span class=cl><span class=gi>+	pinctrl-names = &#34;default&#34;;
+</span></span></span><span class=line><span class=ln>114</span><span class=cl><span class=gi>+	pinctrl-0 = &lt;&amp;pinctrl_lpuart2&gt;;
+</span></span></span><span class=line><span class=ln>115</span><span class=cl><span class=gi>+	status = &#34;okay&#34;;
+</span></span></span><span class=line><span class=ln>116</span><span class=cl><span class=gi>+};
+</span></span></span><span class=line><span class=ln>117</span><span class=cl><span class=gi>+
+</span></span></span><span class=line><span class=ln>118</span><span class=cl><span class=gi></span> &amp;gpio0 {
+</span></span><span class=line><span class=ln>119</span><span class=cl> 	status = &#34;okay&#34;;
+</span></span><span class=line><span class=ln>120</span><span class=cl> };
+</span></span></code></pre></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
 fsl-imx8qxp-mek.dts 引用路徑(非完整)</div><div><ul><li>fsl-imx8qxp-mek.dts<ul><li>include fsl-imx8qxp.dtsi<ul><li>include fsl-imx8dxp.dtsi<ul><li>include fsl-imx8dx.dtsi<ul><li>include fsl-imx8-ca35.dtsi</li></ul></li></ul></li></ul></li></ul></li></ul></div></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
 doc/README.SPL</div><div><p><strong>Device tree</strong>
 The U-Boot device tree is filtered by the fdtgrep tools during the build
@@ -300,244 +161,130 @@ process to generate a much smaller device tree used in SPL (spl/u-boot-spl.dtb)
 with:</p><ul><li>the mandatory nodes (/alias, /chosen, /config)</li><li>the nodes with one pre-relocation property:
 &lsquo;u-boot,dm-pre-reloc&rsquo; or &lsquo;u-boot,dm-spl&rsquo;</li></ul><p>fdtgrep is also used to remove:</p><ul><li>the properties defined in CONFIG_OF_SPL_REMOVE_PROPS</li><li>all the pre-relocation properties
 (&lsquo;u-boot,dm-pre-reloc&rsquo;, &lsquo;u-boot,dm-spl&rsquo; and &lsquo;u-boot,dm-tpl&rsquo;)</li></ul><p>All the nodes remaining in the SPL devicetree are bound
-(see doc/driver-model/design.rst).</p></div></div><h4 id=修改-u-boot-開機配置>修改 U-Boot 開機配置</h4><p>下列是我們會修改到的檔案:</p><ul><li>arch/arm/mach-imx/imx8/clock.c</li><li>board/freescale/imx8qxp_mek/imx8qxp_mek.c</li><li>include/configs/imx8qxp_mek.h</li></ul><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">58
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">59
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">60
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">61
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">62
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">63
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">64
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">65
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">66
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">67
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">68
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">69
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">70
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">71
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">72
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">73
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">74
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">75
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">76
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">77
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">78
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">79
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-diff data-lang=diff><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>diff --git a/arch/arm/mach-imx/imx8/clock.c b/arch/arm/mach-imx/imx8/clock.c
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>index 4eb22ce129..05343d901d 100644
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700></span><span style=color:#ffa198;background-color:#490202>--- a/arch/arm/mach-imx/imx8/clock.c
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+++ b/arch/arm/mach-imx/imx8/clock.c
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span><span style=color:#79c0ff>@@ -27,7 +27,7 @@ u32 mxc_get_clock(enum mxc_clock clk)
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 	switch (clk) {
-</span></span><span style=display:flex><span> 	case MXC_UART_CLK:
-</span></span><span style=display:flex><span> 		err = sc_pm_get_clock_rate(-1,
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-				SC_R_UART_0, 2, &amp;clkrate);
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+				SC_R_UART_2, 2, &amp;clkrate);
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> 		if (err != SC_ERR_NONE) {
-</span></span><span style=display:flex><span> 			printf(&#34;sc get UART clk failed! err=%d\n&#34;, err);
-</span></span><span style=display:flex><span> 			return 0;
-</span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>diff --git a/board/freescale/imx8qxp_mek/imx8qxp_mek.c b/board/freescale/imx8qxp_mek/imx8qxp_mek.c
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>index a4f9fab986..71068b090d 100644
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700></span><span style=color:#ffa198;background-color:#490202>--- a/board/freescale/imx8qxp_mek/imx8qxp_mek.c
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+++ b/board/freescale/imx8qxp_mek/imx8qxp_mek.c
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span><span style=color:#79c0ff>@@ -42,14 +42,14 @@ DECLARE_GLOBAL_DATA_PTR;
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 			 (SC_PAD_28FDSOI_DSE_DV_HIGH &lt;&lt; PADRING_DSE_SHIFT) | \
-</span></span><span style=display:flex><span> 			 (SC_PAD_28FDSOI_PS_PU &lt;&lt; PADRING_PULL_SHIFT))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-static iomux_cfg_t uart0_pads[] = {
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-	SC_P_UART0_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-	SC_P_UART0_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+static iomux_cfg_t uart2_pads[] = {
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+	SC_P_UART2_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+	SC_P_UART2_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> };
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span> static void setup_iomux_uart(void)
-</span></span><span style=display:flex><span> {
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-	imx8_iomux_setup_multiple_pads(uart0_pads, ARRAY_SIZE(uart0_pads));
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+	imx8_iomux_setup_multiple_pads(uart2_pads, ARRAY_SIZE(uart2_pads));
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span> int board_early_init_f(void)
-</span></span><span style=display:flex><span><span style=color:#79c0ff>@@ -57,8 +57,8 @@ int board_early_init_f(void)
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 	sc_pm_clock_rate_t rate = SC_80MHZ;
-</span></span><span style=display:flex><span> 	int ret;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-	/* Set UART0 clock root to 80 MHz */
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-	ret = sc_pm_setup_uart(SC_R_UART_0, rate);
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+	/* Set uart2 clock root to 80 MHz */
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323>+	ret = sc_pm_setup_uart(SC_R_UART_2, rate);
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> 	if (ret)
-</span></span><span style=display:flex><span> 		return ret;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#79c0ff>@@ -348,7 +348,7 @@ int board_init(void)
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> void board_quiesce_devices(void)
-</span></span><span style=display:flex><span> {
-</span></span><span style=display:flex><span>    const char *power_on_devices[] = {
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-       &#34;dma_lpuart0&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+       &#34;dma_lpuart2&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span>
-</span></span><span style=display:flex><span>        /* HIFI DSP boot */
-</span></span><span style=display:flex><span>        &#34;audio_sai0&#34;,
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>diff --git a/include/configs/imx8qxp_mek.h b/include/configs/imx8qxp_mek.h
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>index 8e5e48026e..124cbc715c 100644
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700></span><span style=color:#ffa198;background-color:#490202>--- a/include/configs/imx8qxp_mek.h
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+++ b/include/configs/imx8qxp_mek.h
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span><span style=color:#79c0ff>@@ -30,7 +30,7 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> #define CONFIG_SPL_BSS_MAX_SIZE		0x1000	/* 4 KB */
-</span></span><span style=display:flex><span> #define CONFIG_SYS_SPL_MALLOC_START	0x82200000
-</span></span><span style=display:flex><span> #define CONFIG_SYS_SPL_MALLOC_SIZE     0x80000	/* 512 KB */
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-#define CONFIG_SERIAL_LPUART_BASE	0x5a060000
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+#define CONFIG_SERIAL_LPUART_BASE	0x5a080000 /* use UART2 */
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> #define CONFIG_MALLOC_F_ADDR		0x00138000
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span> #define CONFIG_SPL_RAW_IMAGE_ARM_TRUSTED_FIRMWARE
-</span></span><span style=display:flex><span><span style=color:#79c0ff>@@ -125,7 +125,7 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> 	&#34;script=boot.scr\0&#34; \
-</span></span><span style=display:flex><span> 	&#34;image=Image\0&#34; \
-</span></span><span style=display:flex><span> 	&#34;splashimage=0x9e000000\0&#34; \
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-	&#34;console=ttyLP0\0&#34; \
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+	&#34;console=ttyLP2\0&#34; \
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> 	&#34;fdt_addr=0x83000000\0&#34;			\
-</span></span><span style=display:flex><span> 	&#34;fdt_high=0xffffffffffffffff\0&#34;		\
-</span></span><span style=display:flex><span> 	&#34;cntr_addr=0x98000000\0&#34;			\
-</span></span></code></pre></td></tr></table></div></div><h4 id=建立-u-boot--的-patch>建立 U-Boot 的 Patch</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>git diff &gt; <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>BUILD_DIR</span><span style=color:#a5d6ff>}</span>/0001-UART0-to-UART2-modification.patch
-</span></span><span style=display:flex><span>bitbake -c clean virtual/bootloader
-</span></span></code></pre></td></tr></table></div></div><h3 id=修改-kernel>修改 Kernel</h3><p>修改完 Bootloader 的配置之後，接下來我們要修改 Kernel 的配置。</p><p>我們可以透過找尋 <code>PREFERRED_PROVIDER_virtual/kernel</code> 變數，來找到使用的 Kernel Package 名稱 <strong>linux-fslc-imx</strong>。</p><h4 id=確認-kernel-用的裝置樹devicetree>確認 Kernel 用的裝置樹(Devicetree)</h4><p>我們可以看到 <strong>machine/imx8qxpc0mek.conf</strong> 中， <code>KERNEL_DEVICETREE</code> 變數記錄了許多裝置樹。
-但實際會使用哪一個來開機，會是在 u-boot 決定的。所以我們可以觀察 u-bbot 中的程式碼，最後會發它是使用 <strong>imx8qxp-mek.dtb</strong> 來開機的。</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/linux-fdt.png alt=imx8qxp_mek.c:412><figcaption><p>imx8qxp_mek.c:412</p></figcaption></figure><h4 id=修改-kernel-用的裝置樹devicetree>修改 Kernel 用的裝置樹(Devicetree)</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>bitbake -c devshell virtual/kernel
-</span></span></code></pre></td></tr></table></div></div><p>下列是我們會修改到的檔案:</p><ul><li>arch/arm64/boot/dts/freescale/imx8x-mek.dtsi</li></ul><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-diff data-lang=diff><span style=display:flex><span><span style=font-weight:700>---
-</span></span></span><span style=display:flex><span><span style=font-weight:700></span><span style=color:#79c0ff;font-weight:700>diff --git a/arch/arm64/boot/dts/freescale/imx8x-mek.dtsi b/arch/arm64/boot/dts/freescale/imx8x-mek.dtsi
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700>index e7f348c2ad14..b08160c5832e 100644
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff;font-weight:700></span><span style=color:#ffa198;background-color:#490202>--- a/arch/arm64/boot/dts/freescale/imx8x-mek.dtsi
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+++ b/arch/arm64/boot/dts/freescale/imx8x-mek.dtsi
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span><span style=color:#79c0ff>@@ -6,7 +6,7 @@
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span> #include &lt;dt-bindings/usb/pd.h&gt;
-</span></span><span style=display:flex><span> / {
-</span></span><span style=display:flex><span> 	chosen {
-</span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>-		stdout-path = &amp;lpuart0;
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+		stdout-path = &amp;lpuart2;
-</span></span></span><span style=display:flex><span><span style=color:#56d364;background-color:#0f5323></span> 	};
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span> 	brcmfmac: brcmfmac {
-</span></span></code></pre></td></tr></table></div></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
+(see doc/driver-model/design.rst).</p></div></div><h4 id=修改-u-boot-開機配置>修改 U-Boot 開機配置</h4><p>下列是我們會修改到的檔案:</p><ul><li>arch/arm/mach-imx/imx8/clock.c</li><li>board/freescale/imx8qxp_mek/imx8qxp_mek.c</li><li>include/configs/imx8qxp_mek.h</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-diff data-lang=diff><span class=line><span class=ln> 1</span><span class=cl><span class=gh>diff --git a/arch/arm/mach-imx/imx8/clock.c b/arch/arm/mach-imx/imx8/clock.c
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=gh>index 4eb22ce129..05343d901d 100644
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=gh></span><span class=gd>--- a/arch/arm/mach-imx/imx8/clock.c
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=gd></span><span class=gi>+++ b/arch/arm/mach-imx/imx8/clock.c
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=gi></span><span class=gu>@@ -27,7 +27,7 @@ u32 mxc_get_clock(enum mxc_clock clk)
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=gu></span> 	switch (clk) {
+</span></span><span class=line><span class=ln> 7</span><span class=cl> 	case MXC_UART_CLK:
+</span></span><span class=line><span class=ln> 8</span><span class=cl> 		err = sc_pm_get_clock_rate(-1,
+</span></span><span class=line><span class=ln> 9</span><span class=cl><span class=gd>-				SC_R_UART_0, 2, &amp;clkrate);
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=gd></span><span class=gi>+				SC_R_UART_2, 2, &amp;clkrate);
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=gi></span> 		if (err != SC_ERR_NONE) {
+</span></span><span class=line><span class=ln>12</span><span class=cl> 			printf(&#34;sc get UART clk failed! err=%d\n&#34;, err);
+</span></span><span class=line><span class=ln>13</span><span class=cl> 			return 0;
+</span></span><span class=line><span class=ln>14</span><span class=cl><span class=gh>diff --git a/board/freescale/imx8qxp_mek/imx8qxp_mek.c b/board/freescale/imx8qxp_mek/imx8qxp_mek.c
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=gh>index a4f9fab986..71068b090d 100644
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=gh></span><span class=gd>--- a/board/freescale/imx8qxp_mek/imx8qxp_mek.c
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=gd></span><span class=gi>+++ b/board/freescale/imx8qxp_mek/imx8qxp_mek.c
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=gi></span><span class=gu>@@ -42,14 +42,14 @@ DECLARE_GLOBAL_DATA_PTR;
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=gu></span> 			 (SC_PAD_28FDSOI_DSE_DV_HIGH &lt;&lt; PADRING_DSE_SHIFT) | \
+</span></span><span class=line><span class=ln>20</span><span class=cl> 			 (SC_PAD_28FDSOI_PS_PU &lt;&lt; PADRING_PULL_SHIFT))
+</span></span><span class=line><span class=ln>21</span><span class=cl>
+</span></span><span class=line><span class=ln>22</span><span class=cl><span class=gd>-static iomux_cfg_t uart0_pads[] = {
+</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=gd>-	SC_P_UART0_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
+</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=gd>-	SC_P_UART0_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
+</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=gd></span><span class=gi>+static iomux_cfg_t uart2_pads[] = {
+</span></span></span><span class=line><span class=ln>26</span><span class=cl><span class=gi>+	SC_P_UART2_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
+</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=gi>+	SC_P_UART2_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
+</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=gi></span> };
+</span></span><span class=line><span class=ln>29</span><span class=cl>
+</span></span><span class=line><span class=ln>30</span><span class=cl> static void setup_iomux_uart(void)
+</span></span><span class=line><span class=ln>31</span><span class=cl> {
+</span></span><span class=line><span class=ln>32</span><span class=cl><span class=gd>-	imx8_iomux_setup_multiple_pads(uart0_pads, ARRAY_SIZE(uart0_pads));
+</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=gd></span><span class=gi>+	imx8_iomux_setup_multiple_pads(uart2_pads, ARRAY_SIZE(uart2_pads));
+</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=gi></span> }
+</span></span><span class=line><span class=ln>35</span><span class=cl>
+</span></span><span class=line><span class=ln>36</span><span class=cl> int board_early_init_f(void)
+</span></span><span class=line><span class=ln>37</span><span class=cl><span class=gu>@@ -57,8 +57,8 @@ int board_early_init_f(void)
+</span></span></span><span class=line><span class=ln>38</span><span class=cl><span class=gu></span> 	sc_pm_clock_rate_t rate = SC_80MHZ;
+</span></span><span class=line><span class=ln>39</span><span class=cl> 	int ret;
+</span></span><span class=line><span class=ln>40</span><span class=cl>
+</span></span><span class=line><span class=ln>41</span><span class=cl><span class=gd>-	/* Set UART0 clock root to 80 MHz */
+</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=gd>-	ret = sc_pm_setup_uart(SC_R_UART_0, rate);
+</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=gd></span><span class=gi>+	/* Set uart2 clock root to 80 MHz */
+</span></span></span><span class=line><span class=ln>44</span><span class=cl><span class=gi>+	ret = sc_pm_setup_uart(SC_R_UART_2, rate);
+</span></span></span><span class=line><span class=ln>45</span><span class=cl><span class=gi></span> 	if (ret)
+</span></span><span class=line><span class=ln>46</span><span class=cl> 		return ret;
+</span></span><span class=line><span class=ln>47</span><span class=cl>
+</span></span><span class=line><span class=ln>48</span><span class=cl><span class=gu>@@ -348,7 +348,7 @@ int board_init(void)
+</span></span></span><span class=line><span class=ln>49</span><span class=cl><span class=gu></span> void board_quiesce_devices(void)
+</span></span><span class=line><span class=ln>50</span><span class=cl> {
+</span></span><span class=line><span class=ln>51</span><span class=cl>    const char *power_on_devices[] = {
+</span></span><span class=line><span class=ln>52</span><span class=cl><span class=gd>-       &#34;dma_lpuart0&#34;,
+</span></span></span><span class=line><span class=ln>53</span><span class=cl><span class=gd></span><span class=gi>+       &#34;dma_lpuart2&#34;,
+</span></span></span><span class=line><span class=ln>54</span><span class=cl><span class=gi></span>
+</span></span><span class=line><span class=ln>55</span><span class=cl>        /* HIFI DSP boot */
+</span></span><span class=line><span class=ln>56</span><span class=cl>        &#34;audio_sai0&#34;,
+</span></span><span class=line><span class=ln>57</span><span class=cl>        
+</span></span><span class=line><span class=ln>58</span><span class=cl><span class=gh>diff --git a/include/configs/imx8qxp_mek.h b/include/configs/imx8qxp_mek.h
+</span></span></span><span class=line><span class=ln>59</span><span class=cl><span class=gh>index 8e5e48026e..124cbc715c 100644
+</span></span></span><span class=line><span class=ln>60</span><span class=cl><span class=gh></span><span class=gd>--- a/include/configs/imx8qxp_mek.h
+</span></span></span><span class=line><span class=ln>61</span><span class=cl><span class=gd></span><span class=gi>+++ b/include/configs/imx8qxp_mek.h
+</span></span></span><span class=line><span class=ln>62</span><span class=cl><span class=gi></span><span class=gu>@@ -30,7 +30,7 @@
+</span></span></span><span class=line><span class=ln>63</span><span class=cl><span class=gu></span> #define CONFIG_SPL_BSS_MAX_SIZE		0x1000	/* 4 KB */
+</span></span><span class=line><span class=ln>64</span><span class=cl> #define CONFIG_SYS_SPL_MALLOC_START	0x82200000
+</span></span><span class=line><span class=ln>65</span><span class=cl> #define CONFIG_SYS_SPL_MALLOC_SIZE     0x80000	/* 512 KB */
+</span></span><span class=line><span class=ln>66</span><span class=cl><span class=gd>-#define CONFIG_SERIAL_LPUART_BASE	0x5a060000
+</span></span></span><span class=line><span class=ln>67</span><span class=cl><span class=gd></span><span class=gi>+#define CONFIG_SERIAL_LPUART_BASE	0x5a080000 /* use UART2 */
+</span></span></span><span class=line><span class=ln>68</span><span class=cl><span class=gi></span> #define CONFIG_MALLOC_F_ADDR		0x00138000
+</span></span><span class=line><span class=ln>69</span><span class=cl>
+</span></span><span class=line><span class=ln>70</span><span class=cl> #define CONFIG_SPL_RAW_IMAGE_ARM_TRUSTED_FIRMWARE
+</span></span><span class=line><span class=ln>71</span><span class=cl><span class=gu>@@ -125,7 +125,7 @@
+</span></span></span><span class=line><span class=ln>72</span><span class=cl><span class=gu></span> 	&#34;script=boot.scr\0&#34; \
+</span></span><span class=line><span class=ln>73</span><span class=cl> 	&#34;image=Image\0&#34; \
+</span></span><span class=line><span class=ln>74</span><span class=cl> 	&#34;splashimage=0x9e000000\0&#34; \
+</span></span><span class=line><span class=ln>75</span><span class=cl><span class=gd>-	&#34;console=ttyLP0\0&#34; \
+</span></span></span><span class=line><span class=ln>76</span><span class=cl><span class=gd></span><span class=gi>+	&#34;console=ttyLP2\0&#34; \
+</span></span></span><span class=line><span class=ln>77</span><span class=cl><span class=gi></span> 	&#34;fdt_addr=0x83000000\0&#34;			\
+</span></span><span class=line><span class=ln>78</span><span class=cl> 	&#34;fdt_high=0xffffffffffffffff\0&#34;		\
+</span></span><span class=line><span class=ln>79</span><span class=cl> 	&#34;cntr_addr=0x98000000\0&#34;			\
+</span></span></code></pre></div><h4 id=建立-u-boot--的-patch>建立 U-Boot 的 Patch</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>git diff &gt; <span class=si>${</span><span class=nv>BUILD_DIR</span><span class=si>}</span>/0001-UART0-to-UART2-modification.patch
+</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake -c clean virtual/bootloader
+</span></span></code></pre></div><h3 id=修改-kernel>修改 Kernel</h3><p>修改完 Bootloader 的配置之後，接下來我們要修改 Kernel 的配置。</p><p>我們可以透過找尋 <code>PREFERRED_PROVIDER_virtual/kernel</code> 變數，來找到使用的 Kernel Package 名稱 <strong>linux-fslc-imx</strong>。</p><h4 id=確認-kernel-用的裝置樹devicetree>確認 Kernel 用的裝置樹(Devicetree)</h4><p>我們可以看到 <strong>machine/imx8qxpc0mek.conf</strong> 中， <code>KERNEL_DEVICETREE</code> 變數記錄了許多裝置樹。
+但實際會使用哪一個來開機，會是在 u-boot 決定的。所以我們可以觀察 u-bbot 中的程式碼，最後會發它是使用 <strong>imx8qxp-mek.dtb</strong> 來開機的。</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/linux-fdt.png alt=imx8qxp_mek.c:412><figcaption><p>imx8qxp_mek.c:412</p></figcaption></figure><h4 id=修改-kernel-用的裝置樹devicetree>修改 Kernel 用的裝置樹(Devicetree)</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>bitbake -c devshell virtual/kernel
+</span></span></code></pre></div><p>下列是我們會修改到的檔案:</p><ul><li>arch/arm64/boot/dts/freescale/imx8x-mek.dtsi</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-diff data-lang=diff><span class=line><span class=ln> 1</span><span class=cl><span class=gs>---
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=gs></span><span class=gh>diff --git a/arch/arm64/boot/dts/freescale/imx8x-mek.dtsi b/arch/arm64/boot/dts/freescale/imx8x-mek.dtsi
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=gh>index e7f348c2ad14..b08160c5832e 100644
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=gh></span><span class=gd>--- a/arch/arm64/boot/dts/freescale/imx8x-mek.dtsi
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=gd></span><span class=gi>+++ b/arch/arm64/boot/dts/freescale/imx8x-mek.dtsi
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=gi></span><span class=gu>@@ -6,7 +6,7 @@
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=gu></span> #include &lt;dt-bindings/usb/pd.h&gt;
+</span></span><span class=line><span class=ln> 8</span><span class=cl> / {
+</span></span><span class=line><span class=ln> 9</span><span class=cl> 	chosen {
+</span></span><span class=line><span class=ln>10</span><span class=cl><span class=gd>-		stdout-path = &amp;lpuart0;
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=gd></span><span class=gi>+		stdout-path = &amp;lpuart2;
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=gi></span> 	};
+</span></span><span class=line><span class=ln>13</span><span class=cl>
+</span></span><span class=line><span class=ln>14</span><span class=cl> 	brcmfmac: brcmfmac {
+</span></span></code></pre></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
 imx8x-mek.dts 引用路徑(非完整)</div><div><ul><li>imx8x-mek.dts<ul><li>imx8x-mek.dtsi</li></ul></li></ul></div></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
 Documentation/devicetree/bindings/chosen.txt (節錄)</div><div><p><strong>The chosen node</strong></p><p>The chosen node does not represent a real device, but serves as a place
 for passing data between firmware and the operating system, like boot
 arguments. Data in the chosen node does not represent the hardware.</p><p>(略)</p><p><strong>stdout-path</strong></p><p>Device trees may specify the device to be used for boot console output
 with a stdout-path property under /chosen, as described in the Devicetree
-Specification，e.g.</p><p>(略)</p></div></div><h4 id=建立-kernel-的-patch>建立 Kernel 的 Patch</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>git diff &gt; <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>BUILD_DIR</span><span style=color:#a5d6ff>}</span>/0001-Kernel-UART0-to-UART2-modification.patch
-</span></span><span style=display:flex><span>bitbake -c clean virtual/kernel
-</span></span></code></pre></td></tr></table></div></div><h3 id=建立新的-layer-並加入-patch>建立新的 Layer 並加入 Patch</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">9
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 建立新的 Layer - meta-first</span>
-</span></span><span style=display:flex><span>bitbake-layers create-layer meta-first
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 使用 meta-first Layer</span>
-</span></span><span style=display:flex><span>bitbake-layers add-layer meta-first
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 建立新的 recipe 用來加上我們前面的修改</span>
-</span></span><span style=display:flex><span>recipetool appendsrcfile ../meta-first virtual/bootloader ../0001-UART0-to-UART2-modification.patch
-</span></span><span style=display:flex><span>recipetool appendsrcfile ../meta-rtc virtual/kernel  ../0001-Kernel-UART0-to-UART2-modification.patch
-</span></span></code></pre></td></tr></table></div></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div><p>我們可以使用 <code>bitbake-layers</code> 來查看 bbappend 是否有發生作用。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>bitbake-layers show-appends
-</span></span><span style=display:flex><span>bitbake -e virtual/bootloader
-</span></span></code></pre></td></tr></table></div></div></div></div><h3 id=重新編譯映像檔並燒寫至-sd-卡>重新編譯映像檔並燒寫至 SD 卡</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 開始編譯</span>
-</span></span><span style=display:flex><span>bitbake imx-image-core
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 將映像檔寫入 SD 卡中</span>
-</span></span><span style=display:flex><span>bzcat &lt;image_name&gt;.wic.bz2 | sudo dd <span style=color:#79c0ff>of</span><span style=color:#ff7b72;font-weight:700>=</span>/dev/sd&lt;partition&gt; <span style=color:#79c0ff>bs</span><span style=color:#ff7b72;font-weight:700>=</span>1M <span style=color:#79c0ff>conv</span><span style=color:#ff7b72;font-weight:700>=</span>fsync
-</span></span></code></pre></td></tr></table></div></div><h3 id=結果>結果</h3><p>在接上 Host 與 主板上的 UART2 之後，我們重新啟動電源。</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/uart2_connection.png alt="從 UART2 看到 U-Boot 的輸出訊息"><figcaption><p>從 UART2 看到 U-Boot 的輸出訊息</p></figcaption></figure><p>可以看到開機的相關資訊已改從 UART2 輸出了。</p><p><figure><img src=/posts/yocto-with-imx8qxp-2/images/result-uboot.png alt="從 UART2 看到 U-Boot 的輸出訊息"><figcaption><p>從 UART2 看到 U-Boot 的輸出訊息</p></figcaption></figure><figure><img src=/posts/yocto-with-imx8qxp-2/images/result-kernel.png alt="從 UART2 看到 Kernel 的輸出訊息"><figcaption><p>從 UART2 看到 Kernel 的輸出訊息</p></figcaption></figure></p><h2 id=小結>小結</h2><p>這一篇需要了解的東西比較多。除了 Yocto 本身之外，還要了解 U-Boot 的配置、Kernel 的配置、裝置樹以及 Kernel 的開機流程。</p><ul><li>Yocto 可以參考 <a href=https://e61983.github.io/posts/yocto-introduction/>Yocto 基礎介紹</a></li></ul><p>其他的部份，以後我們會再為大家進行說明。</p><p>本篇所使用的 patch 就放在<a href=0001-UART0-to-UART2-modification.patch>這</a>提供給同學參考了。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://www.yoctoproject.org/docs/1.7/ref-manual/ref-manual.html#var-MACHINEOVERRIDES>var-MACHINEOVERRIDES</a></li><li><a href="https://www.wpgdadatong.com/tw/blog/detail?BID=B3695">[NXP i.MX 應用處理器教室] 在i.MX8QXP 平台更換偵錯的 UART接口</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/cli-remove-pdf-password/ class=post-nav-prev><span class=nav-label>上一篇</span>
+Specification，e.g.</p><p>(略)</p></div></div><h4 id=建立-kernel-的-patch>建立 Kernel 的 Patch</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>git diff &gt; <span class=si>${</span><span class=nv>BUILD_DIR</span><span class=si>}</span>/0001-Kernel-UART0-to-UART2-modification.patch
+</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake -c clean virtual/kernel
+</span></span></code></pre></div><h3 id=建立新的-layer-並加入-patch>建立新的 Layer 並加入 Patch</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=c1># 建立新的 Layer - meta-first</span>
+</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake-layers create-layer meta-first
+</span></span><span class=line><span class=ln>3</span><span class=cl>
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=c1># 使用 meta-first Layer</span>
+</span></span><span class=line><span class=ln>5</span><span class=cl>bitbake-layers add-layer meta-first
+</span></span><span class=line><span class=ln>6</span><span class=cl>
+</span></span><span class=line><span class=ln>7</span><span class=cl><span class=c1># 建立新的 recipe 用來加上我們前面的修改</span>
+</span></span><span class=line><span class=ln>8</span><span class=cl>recipetool appendsrcfile ../meta-first virtual/bootloader ../0001-UART0-to-UART2-modification.patch
+</span></span><span class=line><span class=ln>9</span><span class=cl>recipetool appendsrcfile ../meta-rtc virtual/kernel  ../0001-Kernel-UART0-to-UART2-modification.patch
+</span></span></code></pre></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div><p>我們可以使用 <code>bitbake-layers</code> 來查看 bbappend 是否有發生作用。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>bitbake-layers show-appends
+</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake -e virtual/bootloader
+</span></span></code></pre></div></div></div><h3 id=重新編譯映像檔並燒寫至-sd-卡>重新編譯映像檔並燒寫至 SD 卡</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=c1># 開始編譯</span>
+</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake imx-image-core
+</span></span><span class=line><span class=ln>3</span><span class=cl>
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=c1># 將映像檔寫入 SD 卡中</span>
+</span></span><span class=line><span class=ln>5</span><span class=cl>bzcat &lt;image_name&gt;.wic.bz2 <span class=p>|</span> sudo dd <span class=nv>of</span><span class=o>=</span>/dev/sd&lt;partition&gt; <span class=nv>bs</span><span class=o>=</span>1M <span class=nv>conv</span><span class=o>=</span>fsync
+</span></span></code></pre></div><h3 id=結果>結果</h3><p>在接上 Host 與 主板上的 UART2 之後，我們重新啟動電源。</p><figure><img src=/posts/yocto-with-imx8qxp-2/images/uart2_connection.png alt="從 UART2 看到 U-Boot 的輸出訊息"><figcaption><p>從 UART2 看到 U-Boot 的輸出訊息</p></figcaption></figure><p>可以看到開機的相關資訊已改從 UART2 輸出了。</p><p><figure><img src=/posts/yocto-with-imx8qxp-2/images/result-uboot.png alt="從 UART2 看到 U-Boot 的輸出訊息"><figcaption><p>從 UART2 看到 U-Boot 的輸出訊息</p></figcaption></figure><figure><img src=/posts/yocto-with-imx8qxp-2/images/result-kernel.png alt="從 UART2 看到 Kernel 的輸出訊息"><figcaption><p>從 UART2 看到 Kernel 的輸出訊息</p></figcaption></figure></p><h2 id=小結>小結</h2><p>這一篇需要了解的東西比較多。除了 Yocto 本身之外，還要了解 U-Boot 的配置、Kernel 的配置、裝置樹以及 Kernel 的開機流程。</p><ul><li>Yocto 可以參考 <a href=https://e61983.github.io/posts/yocto-introduction/>Yocto 基礎介紹</a></li></ul><p>其他的部份，以後我們會再為大家進行說明。</p><p>本篇所使用的 patch 就放在<a href=0001-UART0-to-UART2-modification.patch>這</a>提供給同學參考了。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://www.yoctoproject.org/docs/1.7/ref-manual/ref-manual.html#var-MACHINEOVERRIDES>var-MACHINEOVERRIDES</a></li><li><a href="https://www.wpgdadatong.com/tw/blog/detail?BID=B3695">[NXP i.MX 應用處理器教室] 在i.MX8QXP 平台更換偵錯的 UART接口</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/cli-remove-pdf-password/ class=post-nav-prev><span class=nav-label>上一篇</span>
 <span class=nav-title>使用 qpdf 來合併 PDF 與移除密碼保護</span>
 </a><a href=https://e61983.github.io/posts/yocto-with-imx8qxp-3/ class=post-nav-next><span class=nav-label>下一篇</span>
 <span class=nav-title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 3</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#寫在開始之前>寫在開始之前</a></li><li><a href=#uart2-在哪裡>UART2 在哪裡</a></li><li><a href=#測試-uart2-是否正常>測試 UART2 是否正常</a></li><li><a href=#修改-u-boot>修改 U-Boot</a></li><li><a href=#修改-kernel>修改 Kernel</a></li><li><a href=#建立新的-layer-並加入-patch>建立新的 Layer 並加入 Patch</a></li><li><a href=#重新編譯映像檔並燒寫至-sd-卡>重新編譯映像檔並燒寫至 SD 卡</a></li><li><a href=#結果>結果</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js></script><script>hljs.highlightAll()</script></body></html>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script></body></html>

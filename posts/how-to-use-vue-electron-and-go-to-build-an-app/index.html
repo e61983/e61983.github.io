@@ -1,620 +1,319 @@
-<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>使用 Vue、Electron 以及 Go 建立一個小工具 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="使用 Vue、Electron 以及 Go 建立一個小工具 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/how-to-use-vue-electron-and-go-to-build-an-app/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>使用 Vue、Electron 以及 Go 建立一個小工具 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="使用 Vue、Electron 以及 Go 建立一個小工具 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/how-to-use-vue-electron-and-go-to-build-an-app/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
 <span class=hamburger></span>
 <span class=hamburger></span>
 <span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>使用 Vue、Electron 以及 Go 建立一個小工具</h1><div class=post-meta><time class=post-date datetime=2022-07-15T16:01:27+08:00>2022年07月15日
-</time><span class=reading-time>6 分鐘閱讀</span>
-<span class=word-count>1118 字</span>
+</time><span class=reading-time>5 分鐘閱讀</span>
+<span class=word-count>993 字</span>
 <span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/go class=tag>go</a>
 <a href=/tags/vue class=tag>vue</a>
 <a href=/tags/electron class=tag>electron</a></div><div class=post-categories><a href=/categories/note class=category>note</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
-目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#建立-vue-專案>建立 Vue 專案</a></li><li><a href=#加入路徑別名>加入路徑別名</a></li><li><a href=#安裝及設定-tailwindcss>安裝及設定 Tailwindcss</a></li><li><a href=#加入-unplugin-icons>加入 Unplugin Icons</a></li><li><a href=#加入-vue-router-和-vite-plugin-pages>加入 Vue Router 和 vite-plugin-pages</a></li><li><a href=#安裝及配置-electron>安裝及配置 Electron</a></li><li><a href=#add-makefile>Add Makefile</a></li><li><a href=#額外記下來的>額外記下來的</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>最近剛好有機會要寫有圖形化介面的程式。想來想去感覺可以寫寫看 Electron！於是乎本篇就這樣誕生了。</p><h2 id=主要內容>主要內容</h2><h3 id=建立-vue-專案>建立 Vue 專案</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>yarn create vite test-001 --template vue
-</span></span><span style=display:flex><span>cd test-001
-</span></span><span style=display:flex><span>yarn
-</span></span><span style=display:flex><span>yarn dev
-</span></span></code></pre></td></tr></table></div></div><h3 id=加入路徑別名>加入路徑別名</h3><p>把專案中的 <code>src</code> 加上別名 <code>@</code>。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>mv vite.config.js vite.config.cjs.bk
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; vite.config.cjs
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>import { defineConfig } from &#39;vite&#39;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>import Vue from &#39;@vitejs/plugin-vue&#39;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>import path from &#39;path&#39;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>// https://vitejs.dev/config/
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>export default defineConfig({
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	plugins: [
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>		Vue(),
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	],
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	resolve: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>		alias: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>			&#39;@&#39;: path.resolve(__dirname, &#39;./src&#39;),
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>		},
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	},
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>})
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span></code></pre></td></tr></table></div></div><h3 id=安裝及設定-tailwindcss>安裝及設定 Tailwindcss</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">58
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>yarn add -D tailwindcss postcss autoprefixer
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; postcss.config.cjs
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>module.exports = {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  plugins: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    tailwindcss: {},
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    autoprefixer: {},
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>}
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; tailwind.config.cjs
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>module.exports = {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  content: [
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;./index.html&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;./src/**/*.{vue,js,ts,jsx,tsx}&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  ],
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  theme: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    extend: {},
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  },
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  plugins: [],
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>}
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>mkdir -p src/styles
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; src/styles/base.css
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>@layer base {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    html, body, #app {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        @apply h-full w-full;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    body, #app {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        @apply bg-[#333333];
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        @apply font-light;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>}
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; src/styles/components.css
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>@layer components {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    * {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        @apply outline outline-1 outline-red-500;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>}
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt;EOF &gt; src/styles/index.css
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>@import &#34;tailwindcss/base&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>@import &#34;base.css&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>@import &#34;tailwindcss/components&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>@import &#34;components.css&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>@import &#34;tailwindcss/utilities&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#34;3iimport &#39;@/styles/index.css&#39;&#34;</span> src/main.js
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/&lt;\/template&gt;/i \ \ \&lt;h1\ class=\&#34;text-red-200\&#34;\&gt;Hello\ world\&lt;\/h1\&gt;&#39;</span> src/App.vue
-</span></span></code></pre></td></tr></table></div></div><h3 id=加入-unplugin-icons>加入 Unplugin Icons</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>
-</span></span><span style=display:flex><span>yarn add --dev  unplugin-vue-components unplugin-icons @iconify/json
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>mkdir -p src/components
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#34;4iimport Components from &#39;unplugin-vue-components/vite&#39;&#34;</span> vite.config.cjs
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#34;4iimport IconsResolver from &#39;unplugin-icons/resolver&#39;&#34;</span> vite.config.cjs
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#34;4iimport Icons from &#39;unplugin-icons/vite&#39;&#34;</span> vite.config.cjs
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/plugins:/a \ \ \ \ \ Components({\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>     dirs: [&#34;src/components&#34;],\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>     resolvers: [\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	  IconsResolver({\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	      prefix: false,\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	      enabledCollections: [&#34;mdi&#34;],\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	  })\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      ],\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }),\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    Icons(),&#39;</span> vite.config.cjs
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/&lt;\/template&gt;/i \ \ \&lt;mdi-account-heart\ \/\&gt;&#39;</span> src/App.vue
-</span></span></code></pre></td></tr></table></div></div><h3 id=加入-vue-router-和-vite-plugin-pages>加入 Vue Router 和 vite-plugin-pages</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">54
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>yarn add vue-router@4
-</span></span><span style=display:flex><span>yarn add --dev vite-plugin-pages
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>mkdir -p src/router
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; src/router/index.js
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>import { createRouter, createWebHistory, createWebHashHistory } from &#34;vue-router&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>import routes from &#34;~pages&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>const router = createRouter({
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  // refer to: https://nklayman.github.io/vue-cli-plugin-electron-builder/guide/commonIssues.html
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  history: import.meta.env.PROD ? createWebHashHistory() : createWebHistory(import.meta.env.BASE_URL),
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  routes,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>});
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>export default router;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>mkdir -p src/pages
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#34;4iimport Pages from &#39;vite-plugin-pages&#39;&#34;</span> vite.config.cjs
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/plugins:/a \ \ \ \ \ Pages({\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>		dirs: [\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>			{ dir: &#34;src/pages&#34;, baseRoute: &#34;&#34; },\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>		],\
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	}),&#39;</span> vite.config.cjs
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#34;3iimport Router from &#39;./router&#39;&#34;</span> src/main.js
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;s/createApp(App)/createApp(App).use(Router)/&#39;</span> src/main.js
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; src/App.vue
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;template&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  &lt;div class=&#34;w-full h-full p-1&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;RouterView&gt;&lt;/RouterView&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  &lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/template&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; src/pages/index.vue
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;template&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;div class=&#34;flex w-full h-full rounded overflow-hidden&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        &lt;div :class=&#34;[
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            &#39;transition-all duration-500 ease-out&#39;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            &#39;h-full w-0 lg:block lg:w-2/12 flex-shrink-0&#39;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            &#39;max-w-xs&#39;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        ]&#34;&gt;&lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        &lt;div class=&#34;flex h-full w-full&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>          &lt;img src=&#34;@/assets/vue.svg&#34; class=&#34;w-1/4&#34; alt=&#34;Vue logo&#34; /&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>          &lt;div class=&#34;flex flex-col&#34;&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>              &lt;HelloWorld /&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>          &lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        &lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &lt;/div&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>&lt;/template&gt;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span></code></pre></td></tr></table></div></div><h3 id=安裝及配置-electron>安裝及配置 Electron</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">58
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">59
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">60
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">61
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">62
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">63
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">64
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">65
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">66
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">67
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">68
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">69
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">70
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">71
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">72
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">73
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">74
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">75
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">76
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">77
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">78
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">79
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">80
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">81
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">82
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">83
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">84
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">85
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">86
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">87
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">88
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">89
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">90
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">91
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">92
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">93
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">94
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">95
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">96
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>yarn add --dev electron concurrently wait-on cross-env electron-builder
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>mkdir -p electron
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; electron/main.cjs
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>const { app, BrowserWindow } = require(&#39;electron&#39;)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>const path = require(&#39;path&#39;)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>const NODE_ENV = process.env.NODE_ENV
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>function createWindow() {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  const mainWindow = new BrowserWindow({
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    width: 800,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    height: 600,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    show: false,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    autoHideMenuBar: true,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    webPreferences: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      preload: path.join(__dirname, &#39;preload.cjs&#39;)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  })
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  mainWindow.once(&#39;ready-to-show&#39;, () =&gt; {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    mainWindow.show()
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  })
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  mainWindow.loadURL(
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      NODE_ENV === &#39;development&#39;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      ? &#39;http://localhost:5173&#39;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      : \`file://\${path.join(__dirname, &#39;../dist/index.html&#39;)}\`
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  );
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  if (NODE_ENV === &#34;development&#34;) {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    mainWindow.webContents.openDevTools()
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>}
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>app.whenReady().then(() =&gt; {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  createWindow()
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  app.on(&#39;activate&#39;, function () {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  })
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>})
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>app.on(&#39;window-all-closed&#39;, function () {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  if (process.platform !== &#39;darwin&#39;) app.quit()
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>})
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; electron/preload.cjs
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>window.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  const replaceText = (selector, text) =&gt; {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    const element = document.getElementById(selector)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    if (element) element.innerText = text
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  for (const dependency of [&#39;chrome&#39;, &#39;node&#39;, &#39;electron&#39;]) {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    replaceText(\`\${dependency}-version\`, process.versions[dependency])
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>})
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/export default/a \ \ \ \ base: &#34;./&#34;,&#39;</span> vite.config.cjs
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/version/a &#34;main&#34;: &#34;electron/main.cjs&#34;,&#39;</span> package.json
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/&#34;build/a &#34;electron&#34;: &#34;wait-on tcp:5173 &amp;&amp; cross-env NODE_ENV=development electron .&#34;,&#39;</span> package.json
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/&#34;build&#34;:/a &#34;electron:serve&#34;: &#34;concurrently -k \\\&#34;yarn dev\\\&#34; \\\&#34;yarn electron\\\&#34;\&#34;,&#39;</span> package.json
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/&#34;build&#34;:/a &#34;electron:build&#34;: &#34;vite build &amp;&amp; electron-builder&#34;,&#39;</span> package.json
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;$d&#39;</span> package.json <span style=color:#ff7b72;font-weight:700>&amp;&amp;</span> sed -i <span style=color:#a5d6ff>&#39;$d&#39;</span> package.json <span style=color:#ff7b72;font-weight:700>&amp;&amp;</span> cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt;&gt; package.json
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  },
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  &#34;build&#34;: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;appId&#34;: &#34;com.my-website.my-app&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;productName&#34;: &#34;MyApp&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;copyright&#34;: &#34;Copyright © 2022 Yuan&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;mac&#34;: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      &#34;category&#34;: &#34;public.app-category.utilities&#34;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    },
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;nsis&#34;: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      &#34;oneClick&#34;: false,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      &#34;allowToChangeInstallationDirectory&#34;: true
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    },
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;files&#34;: [
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      &#34;dist/**/*&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      &#34;electron/**/*&#34;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    ],
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;directories&#34;: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      &#34;buildResources&#34;: &#34;assets&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>      &#34;output&#34;: &#34;dist_electron&#34;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>}  
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>yarn electron:serve
-</span></span></code></pre></td></tr></table></div></div><h4 id=修正安全提示中的>修正安全提示中的</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>sed -i <span style=color:#a5d6ff>&#39;/&lt;meta name/a \ \ \ \ \&lt;meta http-equiv=&#34;Content-Security-Policy&#34; content=&#34;script-src &#39;</span><span style=color:#79c0ff>\&#39;</span><span style=color:#a5d6ff>&#39;self&#39;</span><span style=color:#79c0ff>\&#39;</span><span style=color:#a5d6ff>&#39;&#34; /\&gt;&#39;</span> index.html
-</span></span></code></pre></td></tr></table></div></div><h3 id=add-makefile>Add Makefile</h3><p>為了不用每次編譯時要下什麼指令，所以寫個 Makefile 省心 ~</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#79c0ff>TAB</span><span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;</span><span style=color:#ff7b72>$(</span>printf <span style=color:#a5d6ff>&#39;\t&#39;</span><span style=color:#ff7b72>)</span><span style=color:#a5d6ff>&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; Makefile
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>all: run
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>build:
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>${TAB}yarn electron:build
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>.PHONY: web
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>web:
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>${TAB}yarn dev
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>.PHONY: run
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>run:
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>${TAB}yarn electron:serve
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>.PHONY: clean
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>clean:
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>${TAB}\$(RM) -r dist dist_electron
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span></code></pre></td></tr></table></div></div><h3 id=額外記下來的>額外記下來的</h3><p>順手記下這次有用到的一些東西。</p><h4 id=使用-axios>使用 Axios</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>yarn add axios
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>mkdir -p src/composables
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>echo <span style=color:#a5d6ff>&lt;&lt; EOF &gt; src/composables/useApi.js
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>import axios from &#39;axios&#39;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>const instance = axios.create({
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  baseURL: &#39;http://localhost:8088/&#39;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  timeout: 1000,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  headers: {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    &#34;Content-Type&#34;: &#34;application/json&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>  }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>});
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>const useAxios = ({url, method, arg}) =&gt; { 
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    return instance[method](url, arg)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>}
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>export default useAxios;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span></code></pre></td></tr></table></div></div><h4 id=electron-建立視窗後在背景做點事>Electron 建立視窗後在背景做點事</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">7
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-javascript data-lang=javascript><span style=display:flex><span>app.on(<span style=color:#a5d6ff>&#39;ready&#39;</span>, <span style=color:#ff7b72>async</span> () =&gt; {
-</span></span><span style=display:flex><span>  <span style=color:#ff7b72>const</span> { execFile } <span style=color:#ff7b72;font-weight:700>=</span> require(<span style=color:#a5d6ff>&#39;child_process&#39;</span>)
-</span></span><span style=display:flex><span>  
-</span></span><span style=display:flex><span>  execFile(<span style=color:#a5d6ff>&#39;./resources/server/CCSNoteServer.exe&#39;</span>)
-</span></span><span style=display:flex><span>  
-</span></span><span style=display:flex><span>  createWindow()
-</span></span><span style=display:flex><span>})
-</span></span></code></pre></td></tr></table></div></div><pre tabindex=0><code>const { ipcRenderer } = require(&#39;electron&#39;)
-</code></pre><h2 id=小結>小結</h2><p>筆都在這一篇快要完成的時候更新了 vite 的版本，從 vite 2.99 更新到 3.0.0。
-接下來世界就變了 🤣</p><figure><img src=/posts/how-to-use-vue-electron-and-go-to-build-an-app/images/vite-cjs.png alt="migrate to ESM"><figcaption><p>migrate to ESM</p></figcaption></figure><p>vite 預設使用的 Port 從 3000 改到了 5173。</p><figure><img src=/posts/how-to-use-vue-electron-and-go-to-build-an-app/images/vite-default-port.png alt="dev port"><figcaption><p>dev port</p></figcaption></figure><p>修正後基本上只要把上面的指令直接貼在終端機中就可以了。</p><p>最後附上執行結果！</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>make
-</span></span></code></pre></td></tr></table></div></div><figure><img src=/posts/how-to-use-vue-electron-and-go-to-build-an-app/images/vue-electron.png alt=screenshot><figcaption><p>screenshot</p></figcaption></figure><h2 id=參考連結>參考連結</h2><ul><li><a href=https://github.com/Kuari/Blog/issues/52>Vite+Electron快速构建一个VUE3桌面应用(一)</a></li><li><a href=https://juejin.cn/post/7056686048058802212>[个人项目] 用 Electron + Vue3 + Golang 做个一个桌面 Markdown 笔记软件</a></li><li><a href=https://newsn.net/say/electron-require-is-not-defined-2.html>electron12起，如何解决require is not defined的问题？</a></li><li><a href=https://github.com/cawa-93/vite-electron-builder>cawa-93/vite-electron-builder</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/macos-hold-a-key-and-repeat-it-in-vscode/ class=post-nav-prev><span class=nav-label>上一篇</span>
+目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#建立-vue-專案>建立 Vue 專案</a></li><li><a href=#加入路徑別名>加入路徑別名</a></li><li><a href=#安裝及設定-tailwindcss>安裝及設定 Tailwindcss</a></li><li><a href=#加入-unplugin-icons>加入 Unplugin Icons</a></li><li><a href=#加入-vue-router-和-vite-plugin-pages>加入 Vue Router 和 vite-plugin-pages</a></li><li><a href=#安裝及配置-electron>安裝及配置 Electron</a></li><li><a href=#add-makefile>Add Makefile</a></li><li><a href=#額外記下來的>額外記下來的</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>最近剛好有機會要寫有圖形化介面的程式。想來想去感覺可以寫寫看 Electron！於是乎本篇就這樣誕生了。</p><h2 id=主要內容>主要內容</h2><h3 id=建立-vue-專案>建立 Vue 專案</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>yarn create vite test-001 --template vue
+</span></span><span class=line><span class=ln>2</span><span class=cl><span class=nb>cd</span> test-001
+</span></span><span class=line><span class=ln>3</span><span class=cl>yarn
+</span></span><span class=line><span class=ln>4</span><span class=cl>yarn dev
+</span></span></code></pre></div><h3 id=加入路徑別名>加入路徑別名</h3><p>把專案中的 <code>src</code> 加上別名 <code>@</code>。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>mv vite.config.js vite.config.cjs.bk
+</span></span><span class=line><span class=ln> 2</span><span class=cl>
+</span></span><span class=line><span class=ln> 3</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; vite.config.cjs
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=s>import { defineConfig } from &#39;vite&#39;
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=s>import Vue from &#39;@vitejs/plugin-vue&#39;
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>import path from &#39;path&#39;
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>// https://vitejs.dev/config/
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>export default defineConfig({
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>	plugins: [
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>		Vue(),
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>	],
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>	resolve: {
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>		alias: {
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>			&#39;@&#39;: path.resolve(__dirname, &#39;./src&#39;),
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>		},
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>	},
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s>})
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></div><h3 id=安裝及設定-tailwindcss>安裝及設定 Tailwindcss</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>yarn add -D tailwindcss postcss autoprefixer
+</span></span><span class=line><span class=ln> 2</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; postcss.config.cjs
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=s>module.exports = {
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=s>  plugins: {
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=s>    tailwindcss: {},
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>    autoprefixer: {},
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>  }
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>}
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>10</span><span class=cl>
+</span></span><span class=line><span class=ln>11</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; tailwind.config.cjs
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>module.exports = {
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>  content: [
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>    &#34;./index.html&#34;,
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>    &#34;./src/**/*.{vue,js,ts,jsx,tsx}&#34;,
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>  ],
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>  theme: {
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s>    extend: {},
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=s>  },
+</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=s>  plugins: [],
+</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=s>}
+</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>23</span><span class=cl>
+</span></span><span class=line><span class=ln>24</span><span class=cl>mkdir -p src/styles
+</span></span><span class=line><span class=ln>25</span><span class=cl>
+</span></span><span class=line><span class=ln>26</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; src/styles/base.css
+</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=s>@layer base {
+</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=s>    html, body, #app {
+</span></span></span><span class=line><span class=ln>29</span><span class=cl><span class=s>        @apply h-full w-full;
+</span></span></span><span class=line><span class=ln>30</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=s>    body, #app {
+</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=s>        @apply bg-[#333333];
+</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=s>        @apply font-light;
+</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>35</span><span class=cl><span class=s>}
+</span></span></span><span class=line><span class=ln>36</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>37</span><span class=cl>
+</span></span><span class=line><span class=ln>38</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; src/styles/components.css
+</span></span></span><span class=line><span class=ln>39</span><span class=cl><span class=s>@layer components {
+</span></span></span><span class=line><span class=ln>40</span><span class=cl><span class=s>    * {
+</span></span></span><span class=line><span class=ln>41</span><span class=cl><span class=s>        @apply outline outline-1 outline-red-500;
+</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=s>}
+</span></span></span><span class=line><span class=ln>44</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>45</span><span class=cl>
+</span></span><span class=line><span class=ln>46</span><span class=cl>cat <span class=s>&lt;&lt;EOF &gt; src/styles/index.css
+</span></span></span><span class=line><span class=ln>47</span><span class=cl><span class=s>@import &#34;tailwindcss/base&#34;;
+</span></span></span><span class=line><span class=ln>48</span><span class=cl><span class=s>@import &#34;base.css&#34;;
+</span></span></span><span class=line><span class=ln>49</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>50</span><span class=cl><span class=s>@import &#34;tailwindcss/components&#34;;
+</span></span></span><span class=line><span class=ln>51</span><span class=cl><span class=s>@import &#34;components.css&#34;;
+</span></span></span><span class=line><span class=ln>52</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>53</span><span class=cl><span class=s>@import &#34;tailwindcss/utilities&#34;;
+</span></span></span><span class=line><span class=ln>54</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>55</span><span class=cl>
+</span></span><span class=line><span class=ln>56</span><span class=cl>sed -i <span class=s2>&#34;3iimport &#39;@/styles/index.css&#39;&#34;</span> src/main.js
+</span></span><span class=line><span class=ln>57</span><span class=cl>
+</span></span><span class=line><span class=ln>58</span><span class=cl>sed -i <span class=s1>&#39;/&lt;\/template&gt;/i \ \ \&lt;h1\ class=\&#34;text-red-200\&#34;\&gt;Hello\ world\&lt;\/h1\&gt;&#39;</span> src/App.vue
+</span></span></code></pre></div><h3 id=加入-unplugin-icons>加入 Unplugin Icons</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>
+</span></span><span class=line><span class=ln> 2</span><span class=cl>yarn add --dev  unplugin-vue-components unplugin-icons @iconify/json
+</span></span><span class=line><span class=ln> 3</span><span class=cl>
+</span></span><span class=line><span class=ln> 4</span><span class=cl>mkdir -p src/components
+</span></span><span class=line><span class=ln> 5</span><span class=cl>sed -i <span class=s2>&#34;4iimport Components from &#39;unplugin-vue-components/vite&#39;&#34;</span> vite.config.cjs
+</span></span><span class=line><span class=ln> 6</span><span class=cl>sed -i <span class=s2>&#34;4iimport IconsResolver from &#39;unplugin-icons/resolver&#39;&#34;</span> vite.config.cjs
+</span></span><span class=line><span class=ln> 7</span><span class=cl>sed -i <span class=s2>&#34;4iimport Icons from &#39;unplugin-icons/vite&#39;&#34;</span> vite.config.cjs
+</span></span><span class=line><span class=ln> 8</span><span class=cl>
+</span></span><span class=line><span class=ln> 9</span><span class=cl>sed -i <span class=s1>&#39;/plugins:/a \ \ \ \ \ Components({\
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s1>     dirs: [&#34;src/components&#34;],\
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s1>     resolvers: [\
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s1>	  IconsResolver({\
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s1>	      prefix: false,\
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s1>	      enabledCollections: [&#34;mdi&#34;],\
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s1>	  })\
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s1>      ],\
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s1>    }),\
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s1>    Icons(),&#39;</span> vite.config.cjs
+</span></span><span class=line><span class=ln>19</span><span class=cl>    
+</span></span><span class=line><span class=ln>20</span><span class=cl>sed -i <span class=s1>&#39;/&lt;\/template&gt;/i \ \ \&lt;mdi-account-heart\ \/\&gt;&#39;</span> src/App.vue
+</span></span></code></pre></div><h3 id=加入-vue-router-和-vite-plugin-pages>加入 Vue Router 和 vite-plugin-pages</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>yarn add vue-router@4
+</span></span><span class=line><span class=ln> 2</span><span class=cl>yarn add --dev vite-plugin-pages
+</span></span><span class=line><span class=ln> 3</span><span class=cl>
+</span></span><span class=line><span class=ln> 4</span><span class=cl>mkdir -p src/router
+</span></span><span class=line><span class=ln> 5</span><span class=cl>
+</span></span><span class=line><span class=ln> 6</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; src/router/index.js
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>import { createRouter, createWebHistory, createWebHashHistory } from &#34;vue-router&#34;;
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>import routes from &#34;~pages&#34;;
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>const router = createRouter({
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>  // refer to: https://nklayman.github.io/vue-cli-plugin-electron-builder/guide/commonIssues.html
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>  history: import.meta.env.PROD ? createWebHashHistory() : createWebHistory(import.meta.env.BASE_URL),
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>  routes,
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>});
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>export default router;
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>18</span><span class=cl>
+</span></span><span class=line><span class=ln>19</span><span class=cl>mkdir -p src/pages
+</span></span><span class=line><span class=ln>20</span><span class=cl>sed -i <span class=s2>&#34;4iimport Pages from &#39;vite-plugin-pages&#39;&#34;</span> vite.config.cjs
+</span></span><span class=line><span class=ln>21</span><span class=cl>sed -i <span class=s1>&#39;/plugins:/a \ \ \ \ \ Pages({\
+</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=s1>		dirs: [\
+</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=s1>			{ dir: &#34;src/pages&#34;, baseRoute: &#34;&#34; },\
+</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=s1>		],\
+</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=s1>	}),&#39;</span> vite.config.cjs
+</span></span><span class=line><span class=ln>26</span><span class=cl>
+</span></span><span class=line><span class=ln>27</span><span class=cl>sed -i <span class=s2>&#34;3iimport Router from &#39;./router&#39;&#34;</span> src/main.js
+</span></span><span class=line><span class=ln>28</span><span class=cl>sed -i <span class=s1>&#39;s/createApp(App)/createApp(App).use(Router)/&#39;</span> src/main.js
+</span></span><span class=line><span class=ln>29</span><span class=cl>
+</span></span><span class=line><span class=ln>30</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; src/App.vue
+</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=s>&lt;template&gt;
+</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=s>  &lt;div class=&#34;w-full h-full p-1&#34;&gt;
+</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=s>    &lt;RouterView&gt;&lt;/RouterView&gt;
+</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=s>  &lt;/div&gt;
+</span></span></span><span class=line><span class=ln>35</span><span class=cl><span class=s>&lt;/template&gt;
+</span></span></span><span class=line><span class=ln>36</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>37</span><span class=cl>
+</span></span><span class=line><span class=ln>38</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; src/pages/index.vue
+</span></span></span><span class=line><span class=ln>39</span><span class=cl><span class=s>&lt;template&gt;
+</span></span></span><span class=line><span class=ln>40</span><span class=cl><span class=s>    &lt;div class=&#34;flex w-full h-full rounded overflow-hidden&#34;&gt;
+</span></span></span><span class=line><span class=ln>41</span><span class=cl><span class=s>        &lt;div :class=&#34;[
+</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=s>            &#39;transition-all duration-500 ease-out&#39;,
+</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=s>            &#39;h-full w-0 lg:block lg:w-2/12 flex-shrink-0&#39;,
+</span></span></span><span class=line><span class=ln>44</span><span class=cl><span class=s>            &#39;max-w-xs&#39;
+</span></span></span><span class=line><span class=ln>45</span><span class=cl><span class=s>        ]&#34;&gt;&lt;/div&gt;
+</span></span></span><span class=line><span class=ln>46</span><span class=cl><span class=s>        &lt;div class=&#34;flex h-full w-full&#34;&gt;
+</span></span></span><span class=line><span class=ln>47</span><span class=cl><span class=s>          &lt;img src=&#34;@/assets/vue.svg&#34; class=&#34;w-1/4&#34; alt=&#34;Vue logo&#34; /&gt;
+</span></span></span><span class=line><span class=ln>48</span><span class=cl><span class=s>          &lt;div class=&#34;flex flex-col&#34;&gt;
+</span></span></span><span class=line><span class=ln>49</span><span class=cl><span class=s>              &lt;HelloWorld /&gt;
+</span></span></span><span class=line><span class=ln>50</span><span class=cl><span class=s>          &lt;/div&gt;
+</span></span></span><span class=line><span class=ln>51</span><span class=cl><span class=s>        &lt;/div&gt;
+</span></span></span><span class=line><span class=ln>52</span><span class=cl><span class=s>    &lt;/div&gt;
+</span></span></span><span class=line><span class=ln>53</span><span class=cl><span class=s>&lt;/template&gt;
+</span></span></span><span class=line><span class=ln>54</span><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></div><h3 id=安裝及配置-electron>安裝及配置 Electron</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>yarn add --dev electron concurrently wait-on cross-env electron-builder
+</span></span><span class=line><span class=ln> 2</span><span class=cl>
+</span></span><span class=line><span class=ln> 3</span><span class=cl>mkdir -p electron
+</span></span><span class=line><span class=ln> 4</span><span class=cl>
+</span></span><span class=line><span class=ln> 5</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; electron/main.cjs
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>const { app, BrowserWindow } = require(&#39;electron&#39;)
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>const path = require(&#39;path&#39;)
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>const NODE_ENV = process.env.NODE_ENV
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>function createWindow() {
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>  const mainWindow = new BrowserWindow({
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>    width: 800,
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>    height: 600,
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>    show: false,
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>    autoHideMenuBar: true,
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>    webPreferences: {
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s>      preload: path.join(__dirname, &#39;preload.cjs&#39;)
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=s>  })
+</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=s>  mainWindow.once(&#39;ready-to-show&#39;, () =&gt; {
+</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=s>    mainWindow.show()
+</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=s>  })
+</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>26</span><span class=cl><span class=s>  mainWindow.loadURL(
+</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=s>      NODE_ENV === &#39;development&#39;
+</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=s>      ? &#39;http://localhost:5173&#39;
+</span></span></span><span class=line><span class=ln>29</span><span class=cl><span class=s>      : \`file://\${path.join(__dirname, &#39;../dist/index.html&#39;)}\`
+</span></span></span><span class=line><span class=ln>30</span><span class=cl><span class=s>  );
+</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=s>  if (NODE_ENV === &#34;development&#34;) {
+</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=s>    mainWindow.webContents.openDevTools()
+</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=s>  }
+</span></span></span><span class=line><span class=ln>35</span><span class=cl><span class=s>}
+</span></span></span><span class=line><span class=ln>36</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>37</span><span class=cl><span class=s>app.whenReady().then(() =&gt; {
+</span></span></span><span class=line><span class=ln>38</span><span class=cl><span class=s>  createWindow()
+</span></span></span><span class=line><span class=ln>39</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>40</span><span class=cl><span class=s>  app.on(&#39;activate&#39;, function () {
+</span></span></span><span class=line><span class=ln>41</span><span class=cl><span class=s>    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=s>  })
+</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=s>})
+</span></span></span><span class=line><span class=ln>44</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>45</span><span class=cl><span class=s>app.on(&#39;window-all-closed&#39;, function () {
+</span></span></span><span class=line><span class=ln>46</span><span class=cl><span class=s>  if (process.platform !== &#39;darwin&#39;) app.quit()
+</span></span></span><span class=line><span class=ln>47</span><span class=cl><span class=s>})
+</span></span></span><span class=line><span class=ln>48</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>49</span><span class=cl>
+</span></span><span class=line><span class=ln>50</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; electron/preload.cjs
+</span></span></span><span class=line><span class=ln>51</span><span class=cl><span class=s>window.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+</span></span></span><span class=line><span class=ln>52</span><span class=cl><span class=s>  const replaceText = (selector, text) =&gt; {
+</span></span></span><span class=line><span class=ln>53</span><span class=cl><span class=s>    const element = document.getElementById(selector)
+</span></span></span><span class=line><span class=ln>54</span><span class=cl><span class=s>    if (element) element.innerText = text
+</span></span></span><span class=line><span class=ln>55</span><span class=cl><span class=s>  }
+</span></span></span><span class=line><span class=ln>56</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>57</span><span class=cl><span class=s>  for (const dependency of [&#39;chrome&#39;, &#39;node&#39;, &#39;electron&#39;]) {
+</span></span></span><span class=line><span class=ln>58</span><span class=cl><span class=s>    replaceText(\`\${dependency}-version\`, process.versions[dependency])
+</span></span></span><span class=line><span class=ln>59</span><span class=cl><span class=s>  }
+</span></span></span><span class=line><span class=ln>60</span><span class=cl><span class=s>})
+</span></span></span><span class=line><span class=ln>61</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>62</span><span class=cl>
+</span></span><span class=line><span class=ln>63</span><span class=cl>sed -i <span class=s1>&#39;/export default/a \ \ \ \ base: &#34;./&#34;,&#39;</span> vite.config.cjs
+</span></span><span class=line><span class=ln>64</span><span class=cl>
+</span></span><span class=line><span class=ln>65</span><span class=cl>sed -i <span class=s1>&#39;/version/a &#34;main&#34;: &#34;electron/main.cjs&#34;,&#39;</span> package.json
+</span></span><span class=line><span class=ln>66</span><span class=cl>
+</span></span><span class=line><span class=ln>67</span><span class=cl>sed -i <span class=s1>&#39;/&#34;build/a &#34;electron&#34;: &#34;wait-on tcp:5173 &amp;&amp; cross-env NODE_ENV=development electron .&#34;,&#39;</span> package.json
+</span></span><span class=line><span class=ln>68</span><span class=cl>sed -i <span class=s1>&#39;/&#34;build&#34;:/a &#34;electron:serve&#34;: &#34;concurrently -k \\\&#34;yarn dev\\\&#34; \\\&#34;yarn electron\\\&#34;\&#34;,&#39;</span> package.json
+</span></span><span class=line><span class=ln>69</span><span class=cl>sed -i <span class=s1>&#39;/&#34;build&#34;:/a &#34;electron:build&#34;: &#34;vite build &amp;&amp; electron-builder&#34;,&#39;</span> package.json
+</span></span><span class=line><span class=ln>70</span><span class=cl>
+</span></span><span class=line><span class=ln>71</span><span class=cl>sed -i <span class=s1>&#39;$d&#39;</span> package.json <span class=o>&amp;&amp;</span> sed -i <span class=s1>&#39;$d&#39;</span> package.json <span class=o>&amp;&amp;</span> cat <span class=s>&lt;&lt; EOF &gt;&gt; package.json
+</span></span></span><span class=line><span class=ln>72</span><span class=cl><span class=s>  },
+</span></span></span><span class=line><span class=ln>73</span><span class=cl><span class=s>  &#34;build&#34;: {
+</span></span></span><span class=line><span class=ln>74</span><span class=cl><span class=s>    &#34;appId&#34;: &#34;com.my-website.my-app&#34;,
+</span></span></span><span class=line><span class=ln>75</span><span class=cl><span class=s>    &#34;productName&#34;: &#34;MyApp&#34;,
+</span></span></span><span class=line><span class=ln>76</span><span class=cl><span class=s>    &#34;copyright&#34;: &#34;Copyright © 2022 Yuan&#34;,
+</span></span></span><span class=line><span class=ln>77</span><span class=cl><span class=s>    &#34;mac&#34;: {
+</span></span></span><span class=line><span class=ln>78</span><span class=cl><span class=s>      &#34;category&#34;: &#34;public.app-category.utilities&#34;
+</span></span></span><span class=line><span class=ln>79</span><span class=cl><span class=s>    },
+</span></span></span><span class=line><span class=ln>80</span><span class=cl><span class=s>    &#34;nsis&#34;: {
+</span></span></span><span class=line><span class=ln>81</span><span class=cl><span class=s>      &#34;oneClick&#34;: false,
+</span></span></span><span class=line><span class=ln>82</span><span class=cl><span class=s>      &#34;allowToChangeInstallationDirectory&#34;: true
+</span></span></span><span class=line><span class=ln>83</span><span class=cl><span class=s>    },
+</span></span></span><span class=line><span class=ln>84</span><span class=cl><span class=s>    &#34;files&#34;: [
+</span></span></span><span class=line><span class=ln>85</span><span class=cl><span class=s>      &#34;dist/**/*&#34;,
+</span></span></span><span class=line><span class=ln>86</span><span class=cl><span class=s>      &#34;electron/**/*&#34;
+</span></span></span><span class=line><span class=ln>87</span><span class=cl><span class=s>    ],
+</span></span></span><span class=line><span class=ln>88</span><span class=cl><span class=s>    &#34;directories&#34;: {
+</span></span></span><span class=line><span class=ln>89</span><span class=cl><span class=s>      &#34;buildResources&#34;: &#34;assets&#34;,
+</span></span></span><span class=line><span class=ln>90</span><span class=cl><span class=s>      &#34;output&#34;: &#34;dist_electron&#34;
+</span></span></span><span class=line><span class=ln>91</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>92</span><span class=cl><span class=s>  }
+</span></span></span><span class=line><span class=ln>93</span><span class=cl><span class=s>}  
+</span></span></span><span class=line><span class=ln>94</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>95</span><span class=cl>
+</span></span><span class=line><span class=ln>96</span><span class=cl>yarn electron:serve
+</span></span></code></pre></div><h4 id=修正安全提示中的>修正安全提示中的</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>sed -i <span class=s1>&#39;/&lt;meta name/a \ \ \ \ \&lt;meta http-equiv=&#34;Content-Security-Policy&#34; content=&#34;script-src &#39;</span><span class=se>\&#39;</span><span class=s1>&#39;self&#39;</span><span class=se>\&#39;</span><span class=s1>&#39;&#34; /\&gt;&#39;</span> index.html
+</span></span></code></pre></div><h3 id=add-makefile>Add Makefile</h3><p>為了不用每次編譯時要下什麼指令，所以寫個 Makefile 省心 ~</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl><span class=nv>TAB</span><span class=o>=</span><span class=s2>&#34;</span><span class=k>$(</span><span class=nb>printf</span> <span class=s1>&#39;\t&#39;</span><span class=k>)</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=ln> 2</span><span class=cl>
+</span></span><span class=line><span class=ln> 3</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; Makefile
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=s>all: run
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>build:
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>${TAB}yarn electron:build
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>.PHONY: web
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>web:
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>${TAB}yarn dev
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>.PHONY: run
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>run:
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>${TAB}yarn electron:serve
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>.PHONY: clean
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s>clean:
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=s>${TAB}\$(RM) -r dist dist_electron
+</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></div><h3 id=額外記下來的>額外記下來的</h3><p>順手記下這次有用到的一些東西。</p><h4 id=使用-axios>使用 Axios</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>yarn add axios
+</span></span><span class=line><span class=ln> 2</span><span class=cl>
+</span></span><span class=line><span class=ln> 3</span><span class=cl>mkdir -p src/composables
+</span></span><span class=line><span class=ln> 4</span><span class=cl>
+</span></span><span class=line><span class=ln> 5</span><span class=cl><span class=nb>echo</span> <span class=s>&lt;&lt; EOF &gt; src/composables/useApi.js
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>import axios from &#39;axios&#39;;
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>const instance = axios.create({
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>  baseURL: &#39;http://localhost:8088/&#39;,
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>  timeout: 1000,
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>  headers: {
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>    &#34;Content-Type&#34;: &#34;application/json&#34;,
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>  }
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>});
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>const useAxios = ({url, method, arg}) =&gt; { 
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>    return instance[method](url, arg)
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s>}
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=s>export default useAxios;
+</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></div><h4 id=electron-建立視窗後在背景做點事>Electron 建立視窗後在背景做點事</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=ln>1</span><span class=cl><span class=nx>app</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;ready&#39;</span><span class=p>,</span> <span class=kr>async</span> <span class=p>()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>2</span><span class=cl>  <span class=kr>const</span> <span class=p>{</span> <span class=nx>execFile</span> <span class=p>}</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;child_process&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>3</span><span class=cl>  
+</span></span><span class=line><span class=ln>4</span><span class=cl>  <span class=nx>execFile</span><span class=p>(</span><span class=s1>&#39;./resources/server/CCSNoteServer.exe&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>5</span><span class=cl>  
+</span></span><span class=line><span class=ln>6</span><span class=cl>  <span class=nx>createWindow</span><span class=p>()</span>
+</span></span><span class=line><span class=ln>7</span><span class=cl><span class=p>})</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=ln>1</span><span class=cl><span class=k>const</span> <span class=p>{</span> <span class=n>ipcRenderer</span> <span class=p>}</span> <span class=o>=</span> <span class=n>require</span><span class=p>(</span><span class=s1>&#39;electron&#39;</span><span class=p>)</span>
+</span></span></code></pre></div><h2 id=小結>小結</h2><p>筆都在這一篇快要完成的時候更新了 vite 的版本，從 vite 2.99 更新到 3.0.0。
+接下來世界就變了 🤣</p><figure><img src=/posts/how-to-use-vue-electron-and-go-to-build-an-app/images/vite-cjs.png alt="migrate to ESM"><figcaption><p>migrate to ESM</p></figcaption></figure><p>vite 預設使用的 Port 從 3000 改到了 5173。</p><figure><img src=/posts/how-to-use-vue-electron-and-go-to-build-an-app/images/vite-default-port.png alt="dev port"><figcaption><p>dev port</p></figcaption></figure><p>修正後基本上只要把上面的指令直接貼在終端機中就可以了。</p><p>最後附上執行結果！</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>make
+</span></span></code></pre></div><figure><img src=/posts/how-to-use-vue-electron-and-go-to-build-an-app/images/vue-electron.png alt=screenshot><figcaption><p>screenshot</p></figcaption></figure><h2 id=參考連結>參考連結</h2><ul><li><a href=https://github.com/Kuari/Blog/issues/52>Vite+Electron快速构建一个VUE3桌面应用(一)</a></li><li><a href=https://juejin.cn/post/7056686048058802212>[个人项目] 用 Electron + Vue3 + Golang 做个一个桌面 Markdown 笔记软件</a></li><li><a href=https://newsn.net/say/electron-require-is-not-defined-2.html>electron12起，如何解决require is not defined的问题？</a></li><li><a href=https://github.com/cawa-93/vite-electron-builder>cawa-93/vite-electron-builder</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/macos-hold-a-key-and-repeat-it-in-vscode/ class=post-nav-prev><span class=nav-label>上一篇</span>
 <span class=nav-title>如何解決在 MacOS VS Code 按鍵無法連續輸入的問題</span>
 </a><a href=https://e61983.github.io/posts/golang-with-shared-library/ class=post-nav-next><span class=nav-label>下一篇</span>
 <span class=nav-title>Go語言、動態連結函式庫與它們的產地</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#建立-vue-專案>建立 Vue 專案</a></li><li><a href=#加入路徑別名>加入路徑別名</a></li><li><a href=#安裝及設定-tailwindcss>安裝及設定 Tailwindcss</a></li><li><a href=#加入-unplugin-icons>加入 Unplugin Icons</a></li><li><a href=#加入-vue-router-和-vite-plugin-pages>加入 Vue Router 和 vite-plugin-pages</a></li><li><a href=#安裝及配置-electron>安裝及配置 Electron</a></li><li><a href=#add-makefile>Add Makefile</a></li><li><a href=#額外記下來的>額外記下來的</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js></script><script>hljs.highlightAll()</script></body></html>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script></body></html>

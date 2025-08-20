@@ -1,9 +1,9 @@
-<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 Go 中與 Protobuf 共舞 ？！ - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 Go 中與 Protobuf 共舞 ？！ - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/go-and-protobuf/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 Go 中與 Protobuf 共舞 ？！ - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 Go 中與 Protobuf 共舞 ？！ - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/go-and-protobuf/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
 <span class=hamburger></span>
 <span class=hamburger></span>
 <span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>在 Go 中與 Protobuf 共舞 ？！</h1><div class=post-meta><time class=post-date datetime=2022-08-09T23:20:07+08:00>2022年08月09日
 </time><span class=reading-time>3 分鐘閱讀</span>
-<span class=word-count>542 字</span>
+<span class=word-count>501 字</span>
 <span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/go class=tag>go</a>
 <a href=/tags/protobuf class=tag>protobuf</a></div><div class=post-categories><a href=/categories/note class=category>note</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
@@ -11,259 +11,136 @@
 資料來源: <a href=https://zh.wikipedia.org/zh-tw/Protocol_Buffers>https://zh.wikipedia.org/zh-tw/Protocol_Buffers</a></p></blockquote><h3 id=資料型態>資料型態</h3><ul><li><p>int / int32 / int64</p></li><li><p>uint / uint32 / uint64</p></li><li><p>bool</p></li><li><p>float</p></li><li><p>double</p></li><li><p>bytes</p></li><li><p>string</p></li><li><p>enum ( Enumeration )</p><p>first defined enum value, which must be 0.</p></li><li><p>map</p></li><li><p>any</p></li><li><p>timestamp / duration</p></li></ul><p>可以參考<a href=https://developers.google.com/protocol-buffers/docs/reference/go-generated>這裡</a></p><h3 id=資料欄修飾字>資料欄修飾字</h3><ul><li>oneof</li><li>required
 表示該資料欄是必要的。</li><li>optional
 指該資料欄是可選的 (0筆或1筆)。</li><li>repeated
-指該資料欄是可以有多筆的。</li><li>reserved</li></ul><h3 id=範例>範例</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-proto data-lang=proto><span style=display:flex><span>syntax <span style=color:#ff7b72;font-weight:700>=</span> <span style=color:#a5d6ff>&#34;proto3&#34;</span>;<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span><span style=color:#ff7b72>option</span> go_package <span style=color:#ff7b72;font-weight:700>=</span> <span style=color:#a5d6ff>&#34;foo.example.idv/protobuf/example&#34;</span>;<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span><span style=color:#ff7b72>import</span> <span style=color:#a5d6ff>&#34;google/protobuf/timestamp.proto&#34;</span>;<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span><span style=color:#ff7b72>message</span> <span style=color:#f0883e;font-weight:700>Employee</span> {<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span>	<span style=color:#ff7b72>string</span> name <span style=color:#ff7b72;font-weight:700>=</span> <span style=color:#a5d6ff>1</span>;<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span>	google.protobuf.Timestamp Birthday <span style=color:#ff7b72;font-weight:700>=</span> <span style=color:#a5d6ff>2</span>;<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span>};<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span><span style=color:#ff7b72>message</span> <span style=color:#f0883e;font-weight:700>Company</span> {<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span>	<span style=color:#ff7b72>string</span> name <span style=color:#ff7b72;font-weight:700>=</span> <span style=color:#a5d6ff>1</span>;<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span>	<span style=color:#ff7b72>repeated</span> Employee employees <span style=color:#ff7b72;font-weight:700>=</span> <span style=color:#a5d6ff>2</span>;<span style=color:#f85149>
-</span></span></span><span style=display:flex><span><span style=color:#f85149></span>};<span style=color:#f85149>
-</span></span></span></code></pre></td></tr></table></div></div><h3 id=安裝-protocol-buffer-編譯器>安裝 Protocol Buffer 編譯器</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>brew install protobuf
-</span></span><span style=display:flex><span>go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-</span></span></code></pre></td></tr></table></div></div><h3 id=產生相應的-go-程式碼>產生相應的 Go 程式碼</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>protoc --go_out<span style=color:#ff7b72;font-weight:700>=</span>. <span style=color:#79c0ff>\
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span>    --go_opt<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#79c0ff>paths</span><span style=color:#ff7b72;font-weight:700>=</span>source_relative <span style=color:#79c0ff>\
-</span></span></span><span style=display:flex><span><span style=color:#79c0ff></span>    protobuf/example/foo.proto
-</span></span></code></pre></td></tr></table></div></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div><p>如果出現
+指該資料欄是可以有多筆的。</li><li>reserved</li></ul><h3 id=範例>範例</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-proto data-lang=proto><span class=line><span class=ln> 1</span><span class=cl><span class=n>syntax</span> <span class=o>=</span> <span class=s>&#34;proto3&#34;</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=err>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=err></span><span class=k>option</span> <span class=n>go_package</span> <span class=o>=</span> <span class=s>&#34;foo.example.idv/protobuf/example&#34;</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=err>
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=err></span><span class=k>import</span> <span class=s>&#34;google/protobuf/timestamp.proto&#34;</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=err>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=err></span><span class=kd>message</span> <span class=nc>Employee</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=err></span>	<span class=kt>string</span> <span class=n>name</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=err></span>	<span class=n>google.protobuf.Timestamp</span> <span class=n>Birthday</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=err></span><span class=p>};</span><span class=err>
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=err>
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=err></span><span class=kd>message</span> <span class=nc>Company</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=err></span>	<span class=kt>string</span> <span class=n>name</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=err></span>	<span class=k>repeated</span> <span class=n>Employee</span> <span class=n>employees</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=err></span><span class=p>};</span><span class=err>
+</span></span></span></code></pre></div><h3 id=安裝-protocol-buffer-編譯器>安裝 Protocol Buffer 編譯器</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>brew install protobuf
+</span></span><span class=line><span class=ln>2</span><span class=cl>go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+</span></span></code></pre></div><h3 id=產生相應的-go-程式碼>產生相應的 Go 程式碼</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>protoc --go_out<span class=o>=</span>. <span class=se>\
+</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=se></span>    --go_opt<span class=o>=</span><span class=nv>paths</span><span class=o>=</span>source_relative <span class=se>\
+</span></span></span><span class=line><span class=ln>3</span><span class=cl><span class=se></span>    protobuf/example/foo.proto
+</span></span></code></pre></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div><p>如果出現
 <code>protoc-gen-go: program not found or is not executable</code></p><p>這個錯誤，請同學先確認一下 <code>~/go/bin</code> 是否有在你的 $PATH 中。
 如果沒有就把它加進去吧！
-你可以</p><p><code>export PATH=$HOME/go/bin:$PATH</code></p></div></div><h4 id=結果>結果</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>ls
-</span></span><span style=display:flex><span>foo.pb.go foo.proto
-</span></span></code></pre></td></tr></table></div></div><h3 id=實際用看看>實際用看看</h3><p>我們來撰寫一支程式，實際的使用剛剛產生的程式碼。它會建立一個使用 protobuf 結構的序列化檔案 foo。並且再將它讀回並顯示出來。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">27
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=display:flex><span>
-</span></span><span style=display:flex><span> com <span style=color:#ff7b72;font-weight:700>:=</span> <span style=color:#ff7b72;font-weight:700>&amp;</span>example.Company{
-</span></span><span style=display:flex><span>        Name: <span style=color:#a5d6ff>&#34;FooBarBar&#34;</span>,
-</span></span><span style=display:flex><span>        Employees: []<span style=color:#ff7b72;font-weight:700>*</span>example.Employee{
-</span></span><span style=display:flex><span>            {Name:<span style=color:#a5d6ff>&#34;Alice&#34;</span>},
-</span></span><span style=display:flex><span>            {Name:<span style=color:#a5d6ff>&#34;Bonny&#34;</span>},
-</span></span><span style=display:flex><span>            {Name:<span style=color:#a5d6ff>&#34;Candy&#34;</span>},
-</span></span><span style=display:flex><span>        },
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    out, err <span style=color:#ff7b72;font-weight:700>:=</span> proto.<span style=color:#d2a8ff;font-weight:700>Marshal</span>(com)
-</span></span><span style=display:flex><span>    <span style=color:#ff7b72>if</span> err <span style=color:#ff7b72;font-weight:700>!=</span> <span style=color:#79c0ff>nil</span> {
-</span></span><span style=display:flex><span>        log.<span style=color:#d2a8ff;font-weight:700>Fatalln</span>(<span style=color:#a5d6ff>&#34;Failed to encode address book:&#34;</span>, err)
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#ff7b72>if</span> err <span style=color:#ff7b72;font-weight:700>:=</span> ioutil.<span style=color:#d2a8ff;font-weight:700>WriteFile</span>(<span style=color:#a5d6ff>&#34;foo&#34;</span>, out, <span style=color:#a5d6ff>0644</span>); err <span style=color:#ff7b72;font-weight:700>!=</span> <span style=color:#79c0ff>nil</span> {
-</span></span><span style=display:flex><span>        log.<span style=color:#d2a8ff;font-weight:700>Fatalln</span>(<span style=color:#a5d6ff>&#34;Failed to write company:&#34;</span>, err)
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    in, err <span style=color:#ff7b72;font-weight:700>:=</span> ioutil.<span style=color:#d2a8ff;font-weight:700>ReadFile</span>(<span style=color:#a5d6ff>&#34;foo&#34;</span>)
-</span></span><span style=display:flex><span>    <span style=color:#ff7b72>if</span> err <span style=color:#ff7b72;font-weight:700>!=</span> <span style=color:#79c0ff>nil</span> {
-</span></span><span style=display:flex><span>        log.<span style=color:#d2a8ff;font-weight:700>Fatalln</span>(<span style=color:#a5d6ff>&#34;Error reading file:&#34;</span>, err)
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    com2 <span style=color:#ff7b72;font-weight:700>:=</span> <span style=color:#ff7b72;font-weight:700>&amp;</span>example.Company {}
-</span></span><span style=display:flex><span>    <span style=color:#ff7b72>if</span> err <span style=color:#ff7b72;font-weight:700>:=</span> proto.<span style=color:#d2a8ff;font-weight:700>Unmarshal</span>(in, com2); err <span style=color:#ff7b72;font-weight:700>!=</span> <span style=color:#79c0ff>nil</span> {
-</span></span><span style=display:flex><span>        log.<span style=color:#d2a8ff;font-weight:700>Fatalln</span>(<span style=color:#a5d6ff>&#34;Failed to parse company:&#34;</span>, err)
-</span></span><span style=display:flex><span>    }
-</span></span></code></pre></td></tr></table></div></div><h3 id=實際來一遍>實際來一遍</h3><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">58
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">59
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">60
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">61
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">62
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">63
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">64
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">65
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">66
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">67
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">68
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">69
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>mkdir -p test/protobuf/example
-</span></span><span style=display:flex><span>cd test
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; protobuf/example/foo.proto
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>syntax = &#34;proto3&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>option go_package = &#34;foo.example.idv/protobuf/example&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>import &#34;google/protobuf/timestamp.proto&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>message Employee {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	string name = 1;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	google.protobuf.Timestamp Birthday = 2;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>};
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>message Company {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	string name = 1;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	repeated Employee employees = 2;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>};
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>cat <span style=color:#a5d6ff>&lt;&lt; EOF &gt; main.go
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>package main
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>import (
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	&#34;fmt&#34;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	&#34;io/ioutil&#34;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	&#34;log&#34;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	&#34;foo.example.idv/protobuf/example&#34;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>	&#34;google.golang.org/protobuf/proto&#34;
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>func main(){
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    com := &amp;example.Company{
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        Name: &#34;FooBarBar&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        Employees: []*example.Employee{
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            {Name:&#34;Alice&#34;},
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            {Name:&#34;Bonny&#34;},
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>            {Name:&#34;Candy&#34;},
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        },
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    fmt.Println(&#34;original&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    fmt.Println(com)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    fmt.Println(&#34;==============================&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    out, err := proto.Marshal(com)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    if err != nil {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        log.Fatalln(&#34;Failed to encode address book:&#34;, err)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    if err := ioutil.WriteFile(&#34;foo&#34;, out, 0644); err != nil {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        log.Fatalln(&#34;Failed to write company:&#34;, err)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    in, err := ioutil.ReadFile(&#34;foo&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    if err != nil {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        log.Fatalln(&#34;Error reading file:&#34;, err)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    com2 := &amp;example.Company {}
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    if err := proto.Unmarshal(in, com2); err != nil {
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>        log.Fatalln(&#34;Failed to parse company:&#34;, err)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    }
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    fmt.Println(&#34;read from file&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>    fmt.Println(com2)
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>}
-</span></span></span><span style=display:flex><span><span style=color:#a5d6ff>EOF</span>
-</span></span><span style=display:flex><span>go mod init foo.example.idv
-</span></span><span style=display:flex><span>go get google.golang.org/protobuf/proto
-</span></span><span style=display:flex><span>protoc --go_out<span style=color:#ff7b72;font-weight:700>=</span>. --go_opt<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#79c0ff>paths</span><span style=color:#ff7b72;font-weight:700>=</span>source_relative protobuf/example/foo.proto
-</span></span><span style=display:flex><span>go mod tidy
-</span></span><span style=display:flex><span>clear
-</span></span><span style=display:flex><span>go run main.go
-</span></span></code></pre></td></tr></table></div></div><h4 id=結果-1>結果</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>original
-</span></span><span style=display:flex><span>name:<span style=color:#a5d6ff>&#34;FooBarBar&#34;</span> employees:<span style=color:#ff7b72;font-weight:700>{</span>name:<span style=color:#a5d6ff>&#34;Alice&#34;</span><span style=color:#ff7b72;font-weight:700>}</span> employees:<span style=color:#ff7b72;font-weight:700>{</span>name:<span style=color:#a5d6ff>&#34;Bonny&#34;</span><span style=color:#ff7b72;font-weight:700>}</span> employees:<span style=color:#ff7b72;font-weight:700>{</span>name:<span style=color:#a5d6ff>&#34;Candy&#34;</span><span style=color:#ff7b72;font-weight:700>}</span>
-</span></span><span style=display:flex><span><span style=color:#ff7b72;font-weight:700>==============================</span>
-</span></span><span style=display:flex><span>read from file
-</span></span><span style=display:flex><span>name:<span style=color:#a5d6ff>&#34;FooBarBar&#34;</span> employees:<span style=color:#ff7b72;font-weight:700>{</span>name:<span style=color:#a5d6ff>&#34;Alice&#34;</span><span style=color:#ff7b72;font-weight:700>}</span> employees:<span style=color:#ff7b72;font-weight:700>{</span>name:<span style=color:#a5d6ff>&#34;Bonny&#34;</span><span style=color:#ff7b72;font-weight:700>}</span> employees:<span style=color:#ff7b72;font-weight:700>{</span>name:<span style=color:#a5d6ff>&#34;Candy&#34;</span><span style=color:#ff7b72;font-weight:700>}</span>
-</span></span></code></pre></td></tr></table></div></div><h2 id=小結>小結</h2><p>本文的介紹十分的簡約，如果想要瞭解更多可以參考官方網站的說明。
+你可以</p><p><code>export PATH=$HOME/go/bin:$PATH</code></p></div></div><h4 id=結果>結果</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>ls
+</span></span><span class=line><span class=ln>2</span><span class=cl>foo.pb.go foo.proto
+</span></span></code></pre></div><h3 id=實際用看看>實際用看看</h3><p>我們來撰寫一支程式，實際的使用剛剛產生的程式碼。它會建立一個使用 protobuf 結構的序列化檔案 foo。並且再將它讀回並顯示出來。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl>
+</span></span><span class=line><span class=ln> 2</span><span class=cl> <span class=nx>com</span> <span class=o>:=</span> <span class=o>&amp;</span><span class=nx>example</span><span class=p>.</span><span class=nx>Company</span><span class=p>{</span>
+</span></span><span class=line><span class=ln> 3</span><span class=cl>        <span class=nx>Name</span><span class=p>:</span> <span class=s>&#34;FooBarBar&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=ln> 4</span><span class=cl>        <span class=nx>Employees</span><span class=p>:</span> <span class=p>[]</span><span class=o>*</span><span class=nx>example</span><span class=p>.</span><span class=nx>Employee</span><span class=p>{</span>
+</span></span><span class=line><span class=ln> 5</span><span class=cl>            <span class=p>{</span><span class=nx>Name</span><span class=p>:</span><span class=s>&#34;Alice&#34;</span><span class=p>},</span>
+</span></span><span class=line><span class=ln> 6</span><span class=cl>            <span class=p>{</span><span class=nx>Name</span><span class=p>:</span><span class=s>&#34;Bonny&#34;</span><span class=p>},</span>
+</span></span><span class=line><span class=ln> 7</span><span class=cl>            <span class=p>{</span><span class=nx>Name</span><span class=p>:</span><span class=s>&#34;Candy&#34;</span><span class=p>},</span>
+</span></span><span class=line><span class=ln> 8</span><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=ln> 9</span><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=ln>10</span><span class=cl>    
+</span></span><span class=line><span class=ln>11</span><span class=cl>    <span class=nx>out</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>proto</span><span class=p>.</span><span class=nf>Marshal</span><span class=p>(</span><span class=nx>com</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>12</span><span class=cl>    <span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>13</span><span class=cl>        <span class=nx>log</span><span class=p>.</span><span class=nf>Fatalln</span><span class=p>(</span><span class=s>&#34;Failed to encode address book:&#34;</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>14</span><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=ln>15</span><span class=cl>    <span class=k>if</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>ioutil</span><span class=p>.</span><span class=nf>WriteFile</span><span class=p>(</span><span class=s>&#34;foo&#34;</span><span class=p>,</span> <span class=nx>out</span><span class=p>,</span> <span class=mo>0644</span><span class=p>);</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>16</span><span class=cl>        <span class=nx>log</span><span class=p>.</span><span class=nf>Fatalln</span><span class=p>(</span><span class=s>&#34;Failed to write company:&#34;</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>17</span><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=ln>18</span><span class=cl>
+</span></span><span class=line><span class=ln>19</span><span class=cl>    <span class=nx>in</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>ioutil</span><span class=p>.</span><span class=nf>ReadFile</span><span class=p>(</span><span class=s>&#34;foo&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>20</span><span class=cl>    <span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>21</span><span class=cl>        <span class=nx>log</span><span class=p>.</span><span class=nf>Fatalln</span><span class=p>(</span><span class=s>&#34;Error reading file:&#34;</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>22</span><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=ln>23</span><span class=cl>    
+</span></span><span class=line><span class=ln>24</span><span class=cl>    <span class=nx>com2</span> <span class=o>:=</span> <span class=o>&amp;</span><span class=nx>example</span><span class=p>.</span><span class=nx>Company</span> <span class=p>{}</span>
+</span></span><span class=line><span class=ln>25</span><span class=cl>    <span class=k>if</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>proto</span><span class=p>.</span><span class=nf>Unmarshal</span><span class=p>(</span><span class=nx>in</span><span class=p>,</span> <span class=nx>com2</span><span class=p>);</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>26</span><span class=cl>        <span class=nx>log</span><span class=p>.</span><span class=nf>Fatalln</span><span class=p>(</span><span class=s>&#34;Failed to parse company:&#34;</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>27</span><span class=cl>    <span class=p>}</span>
+</span></span></code></pre></div><h3 id=實際來一遍>實際來一遍</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>mkdir -p test/protobuf/example
+</span></span><span class=line><span class=ln> 2</span><span class=cl><span class=nb>cd</span> <span class=nb>test</span>
+</span></span><span class=line><span class=ln> 3</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; protobuf/example/foo.proto
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=s>syntax = &#34;proto3&#34;;
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=s>option go_package = &#34;foo.example.idv/protobuf/example&#34;;
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>import &#34;google/protobuf/timestamp.proto&#34;;
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>message Employee {
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>	string name = 1;
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>	google.protobuf.Timestamp Birthday = 2;
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>};
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>message Company {
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>	string name = 1;
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>	repeated Employee employees = 2;
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>};
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>19</span><span class=cl>
+</span></span><span class=line><span class=ln>20</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; main.go
+</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=s>package main
+</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=s>import (
+</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=s>	&#34;fmt&#34;
+</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=s>	&#34;io/ioutil&#34;
+</span></span></span><span class=line><span class=ln>26</span><span class=cl><span class=s>	&#34;log&#34;
+</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=s>	&#34;foo.example.idv/protobuf/example&#34;
+</span></span></span><span class=line><span class=ln>29</span><span class=cl><span class=s>	&#34;google.golang.org/protobuf/proto&#34;
+</span></span></span><span class=line><span class=ln>30</span><span class=cl><span class=s>)
+</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=s>func main(){
+</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=s>    com := &amp;example.Company{
+</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=s>        Name: &#34;FooBarBar&#34;,
+</span></span></span><span class=line><span class=ln>35</span><span class=cl><span class=s>        Employees: []*example.Employee{
+</span></span></span><span class=line><span class=ln>36</span><span class=cl><span class=s>            {Name:&#34;Alice&#34;},
+</span></span></span><span class=line><span class=ln>37</span><span class=cl><span class=s>            {Name:&#34;Bonny&#34;},
+</span></span></span><span class=line><span class=ln>38</span><span class=cl><span class=s>            {Name:&#34;Candy&#34;},
+</span></span></span><span class=line><span class=ln>39</span><span class=cl><span class=s>        },
+</span></span></span><span class=line><span class=ln>40</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>41</span><span class=cl><span class=s>    fmt.Println(&#34;original&#34;)
+</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=s>    fmt.Println(com)
+</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=s>    fmt.Println(&#34;==============================&#34;)
+</span></span></span><span class=line><span class=ln>44</span><span class=cl><span class=s>    out, err := proto.Marshal(com)
+</span></span></span><span class=line><span class=ln>45</span><span class=cl><span class=s>    if err != nil {
+</span></span></span><span class=line><span class=ln>46</span><span class=cl><span class=s>        log.Fatalln(&#34;Failed to encode address book:&#34;, err)
+</span></span></span><span class=line><span class=ln>47</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>48</span><span class=cl><span class=s>    if err := ioutil.WriteFile(&#34;foo&#34;, out, 0644); err != nil {
+</span></span></span><span class=line><span class=ln>49</span><span class=cl><span class=s>        log.Fatalln(&#34;Failed to write company:&#34;, err)
+</span></span></span><span class=line><span class=ln>50</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>51</span><span class=cl><span class=s>
+</span></span></span><span class=line><span class=ln>52</span><span class=cl><span class=s>    in, err := ioutil.ReadFile(&#34;foo&#34;)
+</span></span></span><span class=line><span class=ln>53</span><span class=cl><span class=s>    if err != nil {
+</span></span></span><span class=line><span class=ln>54</span><span class=cl><span class=s>        log.Fatalln(&#34;Error reading file:&#34;, err)
+</span></span></span><span class=line><span class=ln>55</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>56</span><span class=cl><span class=s>    com2 := &amp;example.Company {}
+</span></span></span><span class=line><span class=ln>57</span><span class=cl><span class=s>    if err := proto.Unmarshal(in, com2); err != nil {
+</span></span></span><span class=line><span class=ln>58</span><span class=cl><span class=s>        log.Fatalln(&#34;Failed to parse company:&#34;, err)
+</span></span></span><span class=line><span class=ln>59</span><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=ln>60</span><span class=cl><span class=s>    fmt.Println(&#34;read from file&#34;)
+</span></span></span><span class=line><span class=ln>61</span><span class=cl><span class=s>    fmt.Println(com2)
+</span></span></span><span class=line><span class=ln>62</span><span class=cl><span class=s>}
+</span></span></span><span class=line><span class=ln>63</span><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=ln>64</span><span class=cl>go mod init foo.example.idv
+</span></span><span class=line><span class=ln>65</span><span class=cl>go get google.golang.org/protobuf/proto
+</span></span><span class=line><span class=ln>66</span><span class=cl>protoc --go_out<span class=o>=</span>. --go_opt<span class=o>=</span><span class=nv>paths</span><span class=o>=</span>source_relative protobuf/example/foo.proto
+</span></span><span class=line><span class=ln>67</span><span class=cl>go mod tidy
+</span></span><span class=line><span class=ln>68</span><span class=cl>clear
+</span></span><span class=line><span class=ln>69</span><span class=cl>go run main.go
+</span></span></code></pre></div><h4 id=結果-1>結果</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>original
+</span></span><span class=line><span class=ln>2</span><span class=cl>name:<span class=s2>&#34;FooBarBar&#34;</span> employees:<span class=o>{</span>name:<span class=s2>&#34;Alice&#34;</span><span class=o>}</span> employees:<span class=o>{</span>name:<span class=s2>&#34;Bonny&#34;</span><span class=o>}</span> employees:<span class=o>{</span>name:<span class=s2>&#34;Candy&#34;</span><span class=o>}</span>
+</span></span><span class=line><span class=ln>3</span><span class=cl><span class=o>==============================</span>
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=nb>read</span> from file
+</span></span><span class=line><span class=ln>5</span><span class=cl>name:<span class=s2>&#34;FooBarBar&#34;</span> employees:<span class=o>{</span>name:<span class=s2>&#34;Alice&#34;</span><span class=o>}</span> employees:<span class=o>{</span>name:<span class=s2>&#34;Bonny&#34;</span><span class=o>}</span> employees:<span class=o>{</span>name:<span class=s2>&#34;Candy&#34;</span><span class=o>}</span>
+</span></span></code></pre></div><h2 id=小結>小結</h2><p>本文的介紹十分的簡約，如果想要瞭解更多可以參考官方網站的說明。
 如果對 <code>protobuf</code> 實際的資料結構有興趣不仿可以對著官方文件研究一下 <code>實際來一遍</code> 所產生的 <code>foo</code> 檔案。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://developers.google.com/protocol-buffers/docs/gotutorial>Protocol Buffer Basics: Go</a></li><li><a href=https://developers.google.com/protocol-buffers/docs/proto3#scalar>Protocol Buffer - Scalar Value Types</a></li><li><a href=https://developers.google.com/protocol-buffers/docs/reference/go-generated>Go Generated Code</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/ceh-exam-v11/ class=post-nav-prev><span class=nav-label>上一篇</span>
 <span class=nav-title>Certificated Ethical Hacker (CEH) 考試小記</span>
 </a><a href=https://e61983.github.io/posts/golang-and-websocket/ class=post-nav-next><span class=nav-label>下一篇</span>
 <span class=nav-title>在 Go 語言中使用 Websocket</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#資料型態>資料型態</a></li><li><a href=#資料欄修飾字>資料欄修飾字</a></li><li><a href=#範例>範例</a></li><li><a href=#安裝-protocol-buffer-編譯器>安裝 Protocol Buffer 編譯器</a></li><li><a href=#產生相應的-go-程式碼>產生相應的 Go 程式碼</a></li><li><a href=#實際用看看>實際用看看</a></li><li><a href=#實際來一遍>實際來一遍</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js></script><script>hljs.highlightAll()</script></body></html>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script></body></html>

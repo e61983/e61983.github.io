@@ -1,9 +1,9 @@
-<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 STM32MP1 上使用 Yocto 建置 Linux 系統 2 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/stm32mp-with-yocto-2/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 STM32MP1 上使用 Yocto 建置 Linux 系統 2 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/stm32mp-with-yocto-2/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
 <span class=hamburger></span>
 <span class=hamburger></span>
 <span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</h1><div class=post-meta><time class=post-date datetime=2021-08-12T09:22:34+08:00>2021年08月12日
-</time><span class=reading-time>4 分鐘閱讀</span>
-<span class=word-count>669 字</span>
+</time><span class=reading-time>3 分鐘閱讀</span>
+<span class=word-count>612 字</span>
 <span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/stm32mp1 class=tag>stm32mp1</a>
 <a href=/tags/yocto class=tag>yocto</a>
 <a href=/tags/linux class=tag>linux</a></div><div class=post-categories><a href=/categories/embedded-system class=category>embedded system</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
@@ -27,174 +27,104 @@ https://<code>&lt;url></code>
 詳細資訊可以參考 <a href=https://raw.githubusercontent.com/openembedded/openembedded-core/master/meta/conf/bitbake.conf>meta/conf/bitbake.conf</a></li></ul></li></ul></li><li><p>S
 獲取後、解壓縮後的源始碼路目錄。通常會配置為 <code>${WORKDIR}</code>
 <strong>如果是使用 git 來獲取程式碼，則一定要設置成</strong> <code>${WORKDIR}/git</code></p></li><li><p>FILESPATH
-本機檔案的搜尋路徑。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>FILESPATH = &#34;${@base_set_filespath([&#34;${FILE_DIRNAME}/${BP}&#34;,
-</span></span><span style=display:flex><span>			&#34;${FILE_DIRNAME}/${BPN}&#34;,&#34;${FILE_DIRNAME}/files&#34;], d)}&#34;
-</span></span></code></pre></td></tr></table></div></div></li><li><p>FILESOVERRIDES
-本機檔案的搜尋路徑。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>FILESOVERRIDES = &#34;${TRANSLATED_TARGET_ARCH}:${MACHINEOVERRIDES}:${DISTROOVERRIDES}&#34;
-</span></span></code></pre></td></tr></table></div></div></li><li><p>LIC_FILES_CHKSUM</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>LIC_FILES_CHKSUM = &#34;file://gpl.txt;md5=393a5ca...&#34;
-</span></span><span style=display:flex><span>LIC_FILES_CHKSUM =  &#34;file://main.c;beginline=3;endline=21;md5=58e...&#34;
-</span></span><span style=display:flex><span>LIC_FILES_CHKSUM =  &#34;file://${COMMON_LICENSE_DIR}/MIT;md5=083...&#34;
-</span></span></code></pre></td></tr></table></div></div></li><li><p>DEPENDS
-在編譯時期的相依套件/Package。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>DEPENDS = &#34;recipe-b&#34;
-</span></span><span style=display:flex><span>DEPENDS = &#34;recipe-b (&gt;= 1.2)&#34;
-</span></span></code></pre></td></tr></table></div></div></li><li><p>RDEPENDS
-在執行時期的相依套件/Package。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>RDEPENDS_${PN} = &#34;recipe-b&#34;
-</span></span><span style=display:flex><span>RDEPENDS_${PN} = &#34;recipe-b (&gt; 1.2)&#34;
-</span></span></code></pre></td></tr></table></div></div></li></ul><h4 id=常見的變數>常見的變數</h4><ul><li>PN
+本機檔案的搜尋路徑。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>FILESPATH = &#34;${@base_set_filespath([&#34;${FILE_DIRNAME}/${BP}&#34;,
+</span></span><span class=line><span class=ln>2</span><span class=cl>			&#34;${FILE_DIRNAME}/${BPN}&#34;,&#34;${FILE_DIRNAME}/files&#34;], d)}&#34;
+</span></span></code></pre></div></li><li><p>FILESOVERRIDES
+本機檔案的搜尋路徑。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>FILESOVERRIDES = &#34;${TRANSLATED_TARGET_ARCH}:${MACHINEOVERRIDES}:${DISTROOVERRIDES}&#34;
+</span></span></code></pre></div></li><li><p>LIC_FILES_CHKSUM</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>LIC_FILES_CHKSUM = &#34;file://gpl.txt;md5=393a5ca...&#34;
+</span></span><span class=line><span class=ln>2</span><span class=cl>LIC_FILES_CHKSUM =  &#34;file://main.c;beginline=3;endline=21;md5=58e...&#34;
+</span></span><span class=line><span class=ln>3</span><span class=cl>LIC_FILES_CHKSUM =  &#34;file://${COMMON_LICENSE_DIR}/MIT;md5=083...&#34;
+</span></span></code></pre></div></li><li><p>DEPENDS
+在編譯時期的相依套件/Package。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>DEPENDS = &#34;recipe-b&#34;
+</span></span><span class=line><span class=ln>2</span><span class=cl>DEPENDS = &#34;recipe-b (&gt;= 1.2)&#34;
+</span></span></code></pre></div></li><li><p>RDEPENDS
+在執行時期的相依套件/Package。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>RDEPENDS_${PN} = &#34;recipe-b&#34;
+</span></span><span class=line><span class=ln>2</span><span class=cl>RDEPENDS_${PN} = &#34;recipe-b (&gt; 1.2)&#34;
+</span></span></code></pre></div></li></ul><h4 id=常見的變數>常見的變數</h4><ul><li>PN
 表示 Package Name</li><li>BPN
 移除 PN 的前綴與後綴。例: nativesdk- 或是 -native。</li><li>PV
 表示 Package Version</li><li>PR
 表示 Package Revision。預設是: r0</li><li>BP
 表示 ${BPN}-${PV}</li><li>WORKDIR
 表示 Recipe 工作時期的目錄</li><li>D
-表示安裝時的目標目錄<div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>do_install() {
-</span></span><span style=display:flex><span>	install -d ${D}${bindir}
-</span></span><span style=display:flex><span>	install -m 0755 hello ${D}${bindir}
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div></li></ul><h4 id=task>Task</h4><p>在 Recipe 中有許的預設的 task，我們可以自訂、修改它們來滿足我們的需求。</p><ul><li>do_fetch</li><li>do_unpack</li><li>do_patch</li><li>do_configure</li><li>do_compile</li><li>do_install</li><li>do_package</li><li>do_rootfs</li></ul><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div>我們可以使用下列指令來顯示該 Recipe 有哪些 Task
-bitbake <code>&lt;recipe></code> -c listtasks</div></div><h5 id=加入自訂的-task>加入自訂的 Task</h5><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>do_mkimage() {
-</span></span><span style=display:flex><span>	uboot-mkimage ...
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>addtask do_mkimage after do_compile before do_install
-</span></span></code></pre></td></tr></table></div></div><h4 id=example-recipe>Example Recipe</h4><p>下列是一個 Recipe 的範例</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">22
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>DESCRIPTION = &#34;Hello world program&#34;
-</span></span><span style=display:flex><span>HOMEPAGE = &#34;http://example.net/hello/&#34;
-</span></span><span style=display:flex><span>PRIORITY = &#34;optional&#34;
-</span></span><span style=display:flex><span>SECTION = &#34;examples&#34;
-</span></span><span style=display:flex><span>LICENSE = &#34;CLOSED&#34;
-</span></span><span style=display:flex><span>LIC_FILES_CHKSUM = &#34;&#34;
-</span></span><span style=display:flex><span>FILESOVERRIDES_prepend := &#34;${THISDIR}/${PN}_${PV}:&#34;
-</span></span><span style=display:flex><span>SRC_URI = &#34; \
-</span></span><span style=display:flex><span>           file://main.c \
-</span></span><span style=display:flex><span>           file://Makefile \
-</span></span><span style=display:flex><span>           &#34;
-</span></span><span style=display:flex><span>           
-</span></span><span style=display:flex><span>S = &#34;${WORKDIR}&#34;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>do_configure () {
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>do_compile () {
-</span></span><span style=display:flex><span>	oe_runmake
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>do_install () {
-</span></span><span style=display:flex><span>    oe_runmake install &#39;DESTDIR=${D}&#39;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
-如何除錯</div><div><p>我們可以透過下列指令來看到編譯時期 pacakge 的配置。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>bitbake -e <span style=color:#a5d6ff>`</span>&lt;package&gt;<span style=color:#a5d6ff>`</span> 
-</span></span></code></pre></td></tr></table></div></div><p>我們也可以使用下列指令來喚出編譯環境進行操作。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>	bitbake -c devshell <span style=color:#a5d6ff>`</span>&lt;package&gt;<span style=color:#a5d6ff>`</span>
-</span></span></code></pre></td></tr></table></div></div></div></div><h4 id=擴展-recipe>擴展 Recipe</h4><p>通常不建議直接修改上游的配置，但常常我們又會遇到需要調整程式的需求。這時候我們可以使用 Recipe Extension (.bbappend)。
-它的命名方式為 <code>&lt;appliction>_&lt;version></code>.bbappend</p><p>recipe-b_%.bbappend:</p><blockquote><p>這要的 % 為萬用字元，在此代表任意版本。</p></blockquote><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>FILESEXTRAPATHS_prepend := &#34;${THISDIR}/files:&#34;
-</span></span><span style=display:flex><span>SRC_URI += &#34;file://custom-modification-0.patch \
-</span></span><span style=display:flex><span>            file://custom-modification-1.patch \
-</span></span><span style=display:flex><span>&#34;
-</span></span></code></pre></td></tr></table></div></div><h4 id=自訂-virtual-packages>自訂 Virtual Packages</h4><p>我們可以透過 <code>PROVIDES = "virtual/&lt;package>"</code> 來表示。</p><h4 id=class>Class</h4><p>我們可以提出共同的配置，撰寫成 <code>.bbclass</code> 。在不同的 Recipe 要使用時，就可以以 <code>inherit &lt;class></code> 來使用它。
-常見到地方有 Build System。例: cmake, make, autotools, &mldr;。更多我們可以在 <code>meta/classes</code> 中找到</p><h5 id=base-class>Base Class</h5><p>已包含了 fetch, unpack, compile, &mldr; 等 Task。可以使用 <code>oe_runmake</code> 並透過 <code>EXTRA_OEMAKE</code> 來指定參數。</p><h5 id=kernel-class>Kernel Class</h5><p>用來建置 Linux Kernel 的 Class。它已配置了 PROVIDE，並且可以使用下列幾個變數:</p><ul><li>KERNEL_IMAGETYPE</li><li>KERNEL_EXTRA_ARGS</li><li>INITRAMFS_IMAGE</li></ul><h5 id=useradd-class>Useradd Class</h5><p>用來新增系統的使用者。在使用的時候必須指定 <strong>USERADD_PACKAGES</strong>，詳情可參考 <a href=https://git.yoctoproject.org/cgit.cgi/poky/tree/meta-skeleton/recipes-skeleton/useradd/useradd-example.bb>useradd-example.bb</a>。</p><p>我們可以透過 <code>USERADD_PARAM</code> 與 <code>GROUPADD_PARAM</code> 來傳遞參數給 useradd 及 groupadd</p><p>例:</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">12
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-txt data-lang=txt><span style=display:flex><span>DESCRIPTION = &#34;useradd class usage example&#34;
-</span></span><span style=display:flex><span>PRIORITY = &#34;optional&#34;
-</span></span><span style=display:flex><span>SECTION = &#34;examples&#34;
-</span></span><span style=display:flex><span>LICENSE = &#34;MIT&#34;
-</span></span><span style=display:flex><span>SRC_URI = &#34;file://file0&#34;
-</span></span><span style=display:flex><span>LIC_FILES_CHKSUM = &#34;file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bc...&#34;
-</span></span><span style=display:flex><span>inherit useradd 
-</span></span><span style=display:flex><span>USERADD_PACKAGES = &#34;${PN}&#34;
-</span></span><span style=display:flex><span>USERADD_PARAM = &#34;-u 1000 -d /home/user0 -s /bin/bash user0&#34;
-</span></span><span style=display:flex><span>do_install() {
-</span></span><span style=display:flex><span>install -m 644 file0 ${D}/home/user0/ chown user0:user0 ${D}/home/user0/file0
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><h3 id=layer>Layer</h3><p>Layer 是以 <code>meta-&lt;LAYER_NAME></code> 的方式命名。裡面會包含這個一個或數個 Recipe。
+表示安裝時的目標目錄<div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>do_install() {
+</span></span><span class=line><span class=ln>2</span><span class=cl>	install -d ${D}${bindir}
+</span></span><span class=line><span class=ln>3</span><span class=cl>	install -m 0755 hello ${D}${bindir}
+</span></span><span class=line><span class=ln>4</span><span class=cl>}
+</span></span></code></pre></div></li></ul><h4 id=task>Task</h4><p>在 Recipe 中有許的預設的 task，我們可以自訂、修改它們來滿足我們的需求。</p><ul><li>do_fetch</li><li>do_unpack</li><li>do_patch</li><li>do_configure</li><li>do_compile</li><li>do_install</li><li>do_package</li><li>do_rootfs</li></ul><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div>我們可以使用下列指令來顯示該 Recipe 有哪些 Task
+bitbake <code>&lt;recipe></code> -c listtasks</div></div><h5 id=加入自訂的-task>加入自訂的 Task</h5><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>do_mkimage() {
+</span></span><span class=line><span class=ln>2</span><span class=cl>	uboot-mkimage ...
+</span></span><span class=line><span class=ln>3</span><span class=cl>}
+</span></span><span class=line><span class=ln>4</span><span class=cl>addtask do_mkimage after do_compile before do_install
+</span></span></code></pre></div><h4 id=example-recipe>Example Recipe</h4><p>下列是一個 Recipe 的範例</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>DESCRIPTION = &#34;Hello world program&#34;
+</span></span><span class=line><span class=ln> 2</span><span class=cl>HOMEPAGE = &#34;http://example.net/hello/&#34;
+</span></span><span class=line><span class=ln> 3</span><span class=cl>PRIORITY = &#34;optional&#34;
+</span></span><span class=line><span class=ln> 4</span><span class=cl>SECTION = &#34;examples&#34;
+</span></span><span class=line><span class=ln> 5</span><span class=cl>LICENSE = &#34;CLOSED&#34;
+</span></span><span class=line><span class=ln> 6</span><span class=cl>LIC_FILES_CHKSUM = &#34;&#34;
+</span></span><span class=line><span class=ln> 7</span><span class=cl>FILESOVERRIDES_prepend := &#34;${THISDIR}/${PN}_${PV}:&#34;
+</span></span><span class=line><span class=ln> 8</span><span class=cl>SRC_URI = &#34; \
+</span></span><span class=line><span class=ln> 9</span><span class=cl>           file://main.c \
+</span></span><span class=line><span class=ln>10</span><span class=cl>           file://Makefile \
+</span></span><span class=line><span class=ln>11</span><span class=cl>           &#34;
+</span></span><span class=line><span class=ln>12</span><span class=cl>           
+</span></span><span class=line><span class=ln>13</span><span class=cl>S = &#34;${WORKDIR}&#34;
+</span></span><span class=line><span class=ln>14</span><span class=cl>
+</span></span><span class=line><span class=ln>15</span><span class=cl>do_configure () {
+</span></span><span class=line><span class=ln>16</span><span class=cl>}
+</span></span><span class=line><span class=ln>17</span><span class=cl>do_compile () {
+</span></span><span class=line><span class=ln>18</span><span class=cl>	oe_runmake
+</span></span><span class=line><span class=ln>19</span><span class=cl>}
+</span></span><span class=line><span class=ln>20</span><span class=cl>do_install () {
+</span></span><span class=line><span class=ln>21</span><span class=cl>    oe_runmake install &#39;DESTDIR=${D}&#39;
+</span></span><span class=line><span class=ln>22</span><span class=cl>}
+</span></span></code></pre></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
+如何除錯</div><div><p>我們可以透過下列指令來看到編譯時期 pacakge 的配置。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>bitbake -e <span class=sb>`</span>&lt;package&gt;<span class=sb>`</span> 
+</span></span></code></pre></div><p>我們也可以使用下列指令來喚出編譯環境進行操作。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>	bitbake -c devshell <span class=sb>`</span>&lt;package&gt;<span class=sb>`</span>
+</span></span></code></pre></div></div></div><h4 id=擴展-recipe>擴展 Recipe</h4><p>通常不建議直接修改上游的配置，但常常我們又會遇到需要調整程式的需求。這時候我們可以使用 Recipe Extension (.bbappend)。
+它的命名方式為 <code>&lt;appliction>_&lt;version></code>.bbappend</p><p>recipe-b_%.bbappend:</p><blockquote><p>這要的 % 為萬用字元，在此代表任意版本。</p></blockquote><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>FILESEXTRAPATHS_prepend := &#34;${THISDIR}/files:&#34;
+</span></span><span class=line><span class=ln>2</span><span class=cl>SRC_URI += &#34;file://custom-modification-0.patch \
+</span></span><span class=line><span class=ln>3</span><span class=cl>            file://custom-modification-1.patch \
+</span></span><span class=line><span class=ln>4</span><span class=cl>&#34;
+</span></span></code></pre></div><h4 id=自訂-virtual-packages>自訂 Virtual Packages</h4><p>我們可以透過 <code>PROVIDES = "virtual/&lt;package>"</code> 來表示。</p><h4 id=class>Class</h4><p>我們可以提出共同的配置，撰寫成 <code>.bbclass</code> 。在不同的 Recipe 要使用時，就可以以 <code>inherit &lt;class></code> 來使用它。
+常見到地方有 Build System。例: cmake, make, autotools, &mldr;。更多我們可以在 <code>meta/classes</code> 中找到</p><h5 id=base-class>Base Class</h5><p>已包含了 fetch, unpack, compile, &mldr; 等 Task。可以使用 <code>oe_runmake</code> 並透過 <code>EXTRA_OEMAKE</code> 來指定參數。</p><h5 id=kernel-class>Kernel Class</h5><p>用來建置 Linux Kernel 的 Class。它已配置了 PROVIDE，並且可以使用下列幾個變數:</p><ul><li>KERNEL_IMAGETYPE</li><li>KERNEL_EXTRA_ARGS</li><li>INITRAMFS_IMAGE</li></ul><h5 id=useradd-class>Useradd Class</h5><p>用來新增系統的使用者。在使用的時候必須指定 <strong>USERADD_PACKAGES</strong>，詳情可參考 <a href=https://git.yoctoproject.org/cgit.cgi/poky/tree/meta-skeleton/recipes-skeleton/useradd/useradd-example.bb>useradd-example.bb</a>。</p><p>我們可以透過 <code>USERADD_PARAM</code> 與 <code>GROUPADD_PARAM</code> 來傳遞參數給 useradd 及 groupadd</p><p>例:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>DESCRIPTION = &#34;useradd class usage example&#34;
+</span></span><span class=line><span class=ln> 2</span><span class=cl>PRIORITY = &#34;optional&#34;
+</span></span><span class=line><span class=ln> 3</span><span class=cl>SECTION = &#34;examples&#34;
+</span></span><span class=line><span class=ln> 4</span><span class=cl>LICENSE = &#34;MIT&#34;
+</span></span><span class=line><span class=ln> 5</span><span class=cl>SRC_URI = &#34;file://file0&#34;
+</span></span><span class=line><span class=ln> 6</span><span class=cl>LIC_FILES_CHKSUM = &#34;file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bc...&#34;
+</span></span><span class=line><span class=ln> 7</span><span class=cl>inherit useradd 
+</span></span><span class=line><span class=ln> 8</span><span class=cl>USERADD_PACKAGES = &#34;${PN}&#34;
+</span></span><span class=line><span class=ln> 9</span><span class=cl>USERADD_PARAM = &#34;-u 1000 -d /home/user0 -s /bin/bash user0&#34;
+</span></span><span class=line><span class=ln>10</span><span class=cl>do_install() {
+</span></span><span class=line><span class=ln>11</span><span class=cl>install -m 644 file0 ${D}/home/user0/ chown user0:user0 ${D}/home/user0/file0
+</span></span><span class=line><span class=ln>12</span><span class=cl>}
+</span></span></code></pre></div><h3 id=layer>Layer</h3><p>Layer 是以 <code>meta-&lt;LAYER_NAME></code> 的方式命名。裡面會包含這個一個或數個 Recipe。
 Bitbake 會獲取 <code>${BUILDDIR}/conf/bblayers.conf</code> 中每個 Layer 的配置，進而開始建置系統。
-所以，如果我們想要加入 Layer 時，必須將其加入至 <code>BBLAYERS</code> 變數中。</p><h4 id=meta-bootlinlabs>meta-bootlinlabs</h4><p>建立 meta-bootlinlabs 並加入 <code>BBLAYERS</code> 中。</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>cd <span style=color:#a5d6ff>${</span><span style=color:#79c0ff>BUILDDIR</span><span style=color:#a5d6ff>}</span>
-</span></span><span style=display:flex><span>bitbake-layers create-layer -p <span style=color:#a5d6ff>7</span> ../meta-bootlinlabs
-</span></span><span style=display:flex><span>bitbake-layers add-layer ../meta-bootlinlabs/
-</span></span></code></pre></td></tr></table></div></div><h4 id=加入-recipe-ninvaders>加入 recipe-ninvaders</h4><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>pushd ../meta-bootlinlabs
-</span></span><span style=display:flex><span>mkdir -p recipes-ninvaders/ninvaders
-</span></span><span style=display:flex><span>recipetool create -o recipes-ninvaders/ninvaders/ninvaders_git.bb https://github.com/TheZ3ro/ninvaders
-</span></span><span style=display:flex><span>popd
-</span></span><span style=display:flex><span>bitbake ninvaders
-</span></span></code></pre></td></tr></table></div></div><div class="notice notice-error" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
+所以，如果我們想要加入 Layer 時，必須將其加入至 <code>BBLAYERS</code> 變數中。</p><h4 id=meta-bootlinlabs>meta-bootlinlabs</h4><p>建立 meta-bootlinlabs 並加入 <code>BBLAYERS</code> 中。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nb>cd</span> <span class=si>${</span><span class=nv>BUILDDIR</span><span class=si>}</span>
+</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake-layers create-layer -p <span class=m>7</span> ../meta-bootlinlabs
+</span></span><span class=line><span class=ln>3</span><span class=cl>bitbake-layers add-layer ../meta-bootlinlabs/
+</span></span></code></pre></div><h4 id=加入-recipe-ninvaders>加入 recipe-ninvaders</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nb>pushd</span> ../meta-bootlinlabs
+</span></span><span class=line><span class=ln>2</span><span class=cl>mkdir -p recipes-ninvaders/ninvaders
+</span></span><span class=line><span class=ln>3</span><span class=cl>recipetool create -o recipes-ninvaders/ninvaders/ninvaders_git.bb https://github.com/TheZ3ro/ninvaders
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=nb>popd</span>
+</span></span><span class=line><span class=ln>5</span><span class=cl>bitbake ninvaders
+</span></span></code></pre></div><div class="notice notice-error" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
 make: *** No rule to make target 'globals.o', needed by 'nInvaders'. Stop.</div><div><p>筆者在編譯時遇到了下列錯誤，如果有同學也遇到相同的問題，可以進行下列提到的修改。</p><p><strong>ERROR</strong>: ninvaders-1.0+gitAUTOINC+c6ab4117ba-r0 do_compile: oe_runmake failed
 <strong>ERROR</strong>: ninvaders-1.0+gitAUTOINC+c6ab4117ba-r0 do_compile: Execution of &lsquo;/home/yuan/workspace/yocto-stm32-labs/build/tmp/work/cortexa7t2hf-neon-vfpv4-poky-linux-gnueabi/ninvaders/1.0+gitAUTOINC+c6ab4117ba-r0/temp/run.do_compile.2732811&rsquo; failed with exit code 1:
 make: *** No rule to make target &lsquo;globals.o&rsquo;, needed by &rsquo;nInvaders&rsquo;. Stop.
-<strong>WARNING</strong>: exit code 1 from a shell command.</p><p>ninvaders_git.bb:</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-diff data-lang=diff><span style=display:flex><span><span style=color:#ffa198;background-color:#490202>- inherit autotools
-</span></span></span><span style=display:flex><span><span style=color:#ffa198;background-color:#490202></span><span style=color:#56d364;background-color:#0f5323>+ inherit autotools-brokensep
-</span></span></span></code></pre></td></tr></table></div></div><blockquote><p>The problem is most likely that you&rsquo;re not using automake but the
+<strong>WARNING</strong>: exit code 1 from a shell command.</p><p>ninvaders_git.bb:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-diff data-lang=diff><span class=line><span class=ln>1</span><span class=cl><span class=gd>- inherit autotools
+</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=gd></span><span class=gi>+ inherit autotools-brokensep
+</span></span></span></code></pre></div><blockquote><p>The problem is most likely that you&rsquo;re not using automake but the
 generated recipe (would have been useful to include that) is using the
 autotools class, which assumes correct use of both autoconf and
 automake. Specifically, your hand-written Makefile doesn&rsquo;t handle
-out-of-tree builds.</p><p>Source: <a href=https://www.yoctoproject.org/pipermail/yocto/2018-September/042600.html>[yocto] Adding nInvaders game package recipe</a></p></blockquote></div></div><h4 id=將-ninvaders-加入-root-filesystem-中>將 ninvaders 加入 root filesystem 中</h4><p>重新編譯後，記得要更新 NFS 分享目錄</p><div class=highlight><div style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#737679">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span>echo <span style=color:#a5d6ff>&#39;IMAGE_INSTALL_append = &#34; ninvaders&#34;&#39;</span>
-</span></span><span style=display:flex><span>bitbake core-image-miminal
-</span></span></code></pre></td></tr></table></div></div><p>接著重新啟動 STM32MP1 之後，執行 nInvaders</p><figure><img src=/posts/stm32mp-with-yocto-2/images/result-nInvaders.png alt="nInvaders 執行結果"><figcaption><p>nInvaders 執行結果</p></figcaption></figure><h2 id=小結>小結</h2><p>因為筆者手邊沒有 Nunchuk ，所以也就沒有進行 Lab 5 了。
+out-of-tree builds.</p><p>Source: <a href=https://www.yoctoproject.org/pipermail/yocto/2018-September/042600.html>[yocto] Adding nInvaders game package recipe</a></p></blockquote></div></div><h4 id=將-ninvaders-加入-root-filesystem-中>將 ninvaders 加入 root filesystem 中</h4><p>重新編譯後，記得要更新 NFS 分享目錄</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;IMAGE_INSTALL_append = &#34; ninvaders&#34;&#39;</span>
+</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake core-image-miminal
+</span></span></code></pre></div><p>接著重新啟動 STM32MP1 之後，執行 nInvaders</p><figure><img src=/posts/stm32mp-with-yocto-2/images/result-nInvaders.png alt="nInvaders 執行結果"><figcaption><p>nInvaders 執行結果</p></figcaption></figure><h2 id=小結>小結</h2><p>因為筆者手邊沒有 Nunchuk ，所以也就沒有進行 Lab 5 了。
 有興趣的同學，再自己玩玩看囉!</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://layers.openembedded.org/layerindex/branch/master/layers/>OpenEmbedded Layer Index</a></li><li><a href=https://github.com/TheZ3ro/ninvaders>TheZ3ro/ninvaders</a></li><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-slides.pdf>Bootlin/Yocto with STM32</a></li><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.pdf>Bootlin/Yocto with STM32 Lab</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/stm32mp-with-yocto/ class=post-nav-prev><span class=nav-label>上一篇</span>
 <span class=nav-title>在 STM32MP1 上使用 Yocto 建置 Linux 系統</span>
 </a><a href=https://e61983.github.io/posts/stm32mp-with-yocto-3/ class=post-nav-next><span class=nav-label>下一篇</span>
 <span class=nav-title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#recipe>Recipe</a></li><li><a href=#layer>Layer</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js></script><script>hljs.highlightAll()</script></body></html>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script></body></html>
