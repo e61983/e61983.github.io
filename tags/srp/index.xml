@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Srp on Yuan のノート</title>
+    <link>http://localhost:3000/tags/srp/</link>
+    <description>Recent content in Srp on Yuan のノート</description>
+    <generator>Hugo</generator>
+    <language>zh-tw</language>
+    <lastBuildDate>Mon, 30 Dec 2024 10:00:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:3000/tags/srp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用 Gomobile 將 Go SRP 函式庫編譯為 iOS Library 完整指南</title>
+      <link>http://localhost:3000/posts/use-gomobile-to-build-ios-library/</link>
+      <pubDate>Mon, 30 Dec 2024 10:00:00 +0800</pubDate>
+      <guid>http://localhost:3000/posts/use-gomobile-to-build-ios-library/</guid>
+      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;&#xA;&lt;p&gt;在現代跨平台開發中，我們經常需要在不同平台間共享核心業務邏輯。Gomobile 是 Google 提供的工具，讓我們能夠將 Go 語言編寫的程式碼編譯成移動平台（iOS 和 Android）可以使用的函式庫。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
