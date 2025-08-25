@@ -1,4 +1,12 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Yuan のノート</title><link>https://e61983.github.io/</link><description>Recent content on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Wed, 20 Aug 2025 23:22:42 +0800</lastBuildDate><atom:link href="https://e61983.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 Go 串接 Google reCAPTCHA Enterprise</title><link>https://e61983.github.io/posts/use-google-recaptcha/</link><pubDate>Wed, 20 Aug 2025 23:22:42 +0800</pubDate><guid>https://e61983.github.io/posts/use-google-recaptcha/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Yuan のノート</title><link>https://e61983.github.io/</link><description>Recent content on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Fri, 22 Aug 2025 20:30:22 +0800</lastBuildDate><atom:link href="https://e61983.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>OAuth 與授權流程詳解</title><link>https://e61983.github.io/posts/oauth-introduction/</link><pubDate>Fri, 22 Aug 2025 20:30:22 +0800</pubDate><guid>https://e61983.github.io/posts/oauth-introduction/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
+&lt;p>在現代應用程式開發中，&lt;strong>使用者身份驗證&lt;/strong>與&lt;strong>資源授權&lt;/strong>已成為必備功能。
+傳統帳號密碼模式存在風險，也不利於跨平台整合，因此 OAuth（Open Authorization）被提出，成為最常見的 &lt;strong>授權框架（authorization framework）&lt;/strong>。&lt;/p>
+&lt;p>它的設計目標是：&lt;/p>
+&lt;ul>
+&lt;li>使用者不需交出帳號密碼&lt;/li>
+&lt;li>第三方應用能安全存取有限的資源&lt;/li>
+&lt;li>支援 Web、Mobile、Server、IoT 等不同場景&lt;/li>
+&lt;/ul></description></item><item><title>使用 Go 串接 Google reCAPTCHA Enterprise</title><link>https://e61983.github.io/posts/use-google-recaptcha/</link><pubDate>Wed, 20 Aug 2025 23:22:42 +0800</pubDate><guid>https://e61983.github.io/posts/use-google-recaptcha/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
 &lt;p>在網站應用中，表單或登入功能常常成為機器人攻擊的目標。
 Google reCAPTCHA Enterprise 提供了更安全且彈性的防護方式，能透過 &lt;strong>風險評分 (Score)&lt;/strong> 來判斷使用者行為是否可信。&lt;/p></description></item><item><title>使用 Gomobile 建立 iOS 函式庫</title><link>https://e61983.github.io/posts/use-gomobile-to-build-ios-library/</link><pubDate>Tue, 19 Aug 2025 19:00:00 +0800</pubDate><guid>https://e61983.github.io/posts/use-gomobile-to-build-ios-library/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
 &lt;p>心之所至，隨意亂寫。&lt;/p>
