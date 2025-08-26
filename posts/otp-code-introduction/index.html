@@ -1,0 +1,105 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>OTP — 一次性密碼的原理與實作 - Yuan のノート</title><meta name=description content="深入了解 OTP（一次性密碼）的運作原理，包含 TOTP 與 HOTP 的差異，以及在 Go 中的實作範例。從序列圖到程式碼，完整解析二階段驗證的核心機制。"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="OTP — 一次性密碼的原理與實作 - Yuan のノート"><meta property="og:description" content="深入了解 OTP（一次性密碼）的運作原理，包含 TOTP 與 HOTP 的差異，以及在 Go 中的實作範例。從序列圖到程式碼，完整解析二階段驗證的核心機制。"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/otp-code-introduction/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<span class=hamburger></span>
+<span class=hamburger></span>
+<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>OTP — 一次性密碼的原理與實作</h1><div class=post-meta><time class=post-date datetime=2025-08-26T23:54:11+08:00>2025年08月26日
+</time><span class=reading-time>2 分鐘閱讀</span>
+<span class=word-count>319 字</span>
+<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/go class=tag>go</a>
+<a href=/tags/otp class=tag>otp</a>
+<a href=/tags/totp class=tag>totp</a>
+<a href=/tags/hotp class=tag>hotp</a>
+<a href=/tags/security class=tag>security</a>
+<a href=/tags/authentication class=tag>authentication</a>
+<a href=/tags/2fa class=tag>2fa</a>
+<a href=/tags/backend class=tag>backend</a></div><div class=post-categories><a href=/categories/security class=category>security</a>
+<a href=/categories/note class=category>note</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#otp-是什麼>OTP 是什麼？</a></li><li><a href=#otp-的生成方式>OTP 的生成方式</a></li><li><a href=#otp-在登入流程中的位置>OTP 在登入流程中的位置</a></li><li><a href=#otp-的好處>OTP 的好處</a></li><li><a href=#otp-的限制>OTP 的限制</a></li><li><a href=#go-程式實作>Go 程式實作</a><ul><li><a href=#範例一totp時間制-otp>範例一：TOTP（時間制 OTP）</a></li><li><a href=#範例二hotp計數制-otp>範例二：HOTP（計數制 OTP）</a></li></ul></li><li><a href=#小結>小結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>有時候我們登入服務時，螢幕會跳出一句：「你的驗證碼是 123456」。這串數字只能用一次，過了幾十秒就失效了。這種機制叫做 <strong>OTP（One-Time Password，一次性密碼）</strong>。</p><p>它看似簡單，卻是今天大多數二階段驗證（2FA）或多因子驗證（MFA）的基石。這篇文章，就來聊聊 OTP 的運作方式，最後會給一個 Go 的範例程式，讓你自己動手試試。</p><h2 id=otp-是什麼>OTP 是什麼？</h2><p>顧名思義，OTP 就是 <strong>只能使用一次的密碼</strong>。</p><p>它的目的很單純：防止密碼被竊取後還能重複使用。即便攻擊者截獲了一組 OTP，它在下一次登入時也已經過期，等於沒用了。</p><p>這樣的設計，有效降低了「重放攻擊」的風險。</p><h2 id=otp-的生成方式>OTP 的生成方式</h2><p>常見的 OTP 有兩種：</p><ol><li><p><strong>HOTP (HMAC-based One-Time Password)</strong></p><ul><li>基於計數器，每次請求遞增一次。</li><li>適合事件觸發的情境（例如交易次數）。</li></ul></li><li><p><strong>TOTP (Time-based One-Time Password)</strong></p><ul><li>基於時間，每隔 30 秒或 60 秒換一組。</li><li>更適合登入驗證（Google Authenticator、Authy 常用的就是這種）。</li></ul></li></ol><p>OTP 通常會透過幾種方式傳遞給使用者：</p><ul><li>硬體 Token（小小的驗證器）</li><li>手機 App（Google Authenticator、Microsoft Authenticator）</li><li>簡訊 / Email（雖然方便，但安全性相對較弱）</li></ul><h2 id=otp-在登入流程中的位置>OTP 在登入流程中的位置</h2><p>來看一張序列圖，幫助我們理解 OTP 在認證流程中的角色：</p><div class=mermaid>sequenceDiagram
+participant User as 使用者
+participant Server as 服務端
+participant OTP as OTP 產生器 (App/簡訊/硬體)
+User->>Server: 輸入帳號密碼
+Server-->>User: 驗證密碼成功，要求輸入 OTP
+User->>OTP: 查看 OTP (App/簡訊/硬體 Token)
+OTP-->>User: 顯示 6 位數 OTP
+User->>Server: 輸入 OTP
+Server->>Server: 驗證 OTP 是否正確 (TOTP/HOTP)
+Server-->>User: 登入成功</div><script type=module>
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+            primaryColor: '#bb2528',
+            primaryTextColor: '#fff',
+            primaryBorderColor: '#7C0000',
+            lineColor: '#F8B229',
+            background: '#0d1117',
+            mainBkg: '#161b22',
+            secondBkg: '#21262d',
+            tertiaryColor: '#21262d'
+        }
+    });
+</script><p>👉 可以看到 OTP 並不是單獨存在，而是作為 <strong>密碼驗證之後的第二步</strong>。</p><h2 id=otp-的好處>OTP 的好處</h2><ul><li><strong>安全性更強</strong>：一次性使用，舊密碼完全無效。</li><li><strong>降低密碼重用風險</strong>：即使其他服務外洩，也影響不到這裡。</li><li><strong>很適合搭配 2FA / MFA</strong>：形成額外保護層。</li></ul><h2 id=otp-的限制>OTP 的限制</h2><ul><li><strong>仍可能被釣魚</strong>：如果使用者把 OTP 輸入到假的網站，攻擊者還是能即時盜用。</li><li><strong>簡訊 OTP 風險高</strong>：可能遭遇攔截或 SIM 卡攻擊。</li><li><strong>設備同步問題</strong>：時間或 counter 不一致時，會出現驗證失敗。</li></ul><h2 id=go-程式實作>Go 程式實作</h2><p>下面給兩個小範例，一個是 <strong>TOTP</strong>，一個是 <strong>HOTP</strong>。</p><h3 id=範例一totp時間制-otp>範例一：TOTP（時間制 OTP）</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span> <span class=nx>main</span>
+</span></span><span class=line><span class=ln> 2</span><span class=cl>
+</span></span><span class=line><span class=ln> 3</span><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=ln> 4</span><span class=cl>	<span class=s>&#34;fmt&#34;</span>
+</span></span><span class=line><span class=ln> 5</span><span class=cl>	<span class=s>&#34;log&#34;</span>
+</span></span><span class=line><span class=ln> 6</span><span class=cl>	<span class=s>&#34;time&#34;</span>
+</span></span><span class=line><span class=ln> 7</span><span class=cl>
+</span></span><span class=line><span class=ln> 8</span><span class=cl>	<span class=s>&#34;github.com/pquerna/otp&#34;</span>
+</span></span><span class=line><span class=ln> 9</span><span class=cl>	<span class=s>&#34;github.com/pquerna/otp/totp&#34;</span>
+</span></span><span class=line><span class=ln>10</span><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=ln>11</span><span class=cl>
+</span></span><span class=line><span class=ln>12</span><span class=cl><span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>13</span><span class=cl>	<span class=c1>// 建立一組新的 TOTP key</span>
+</span></span><span class=line><span class=ln>14</span><span class=cl>	<span class=nx>key</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>totp</span><span class=p>.</span><span class=nf>Generate</span><span class=p>(</span><span class=nx>totp</span><span class=p>.</span><span class=nx>GenerateOpts</span><span class=p>{</span>
+</span></span><span class=line><span class=ln>15</span><span class=cl>		<span class=nx>Issuer</span><span class=p>:</span>      <span class=s>&#34;ExampleCorp&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=ln>16</span><span class=cl>		<span class=nx>AccountName</span><span class=p>:</span> <span class=s>&#34;alice@example.com&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=ln>17</span><span class=cl>		<span class=nx>Period</span><span class=p>:</span>      <span class=mi>30</span><span class=p>,</span>
+</span></span><span class=line><span class=ln>18</span><span class=cl>		<span class=nx>Digits</span><span class=p>:</span>      <span class=nx>otp</span><span class=p>.</span><span class=nx>DigitsSix</span><span class=p>,</span>
+</span></span><span class=line><span class=ln>19</span><span class=cl>		<span class=nx>Algorithm</span><span class=p>:</span>   <span class=nx>otp</span><span class=p>.</span><span class=nx>AlgorithmSHA1</span><span class=p>,</span>
+</span></span><span class=line><span class=ln>20</span><span class=cl>	<span class=p>})</span>
+</span></span><span class=line><span class=ln>21</span><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>22</span><span class=cl>		<span class=nx>log</span><span class=p>.</span><span class=nf>Fatal</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>23</span><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=ln>24</span><span class=cl>
+</span></span><span class=line><span class=ln>25</span><span class=cl>	<span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;Secret:&#34;</span><span class=p>,</span> <span class=nx>key</span><span class=p>.</span><span class=nf>Secret</span><span class=p>())</span>
+</span></span><span class=line><span class=ln>26</span><span class=cl>	<span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;Provisioning URI:&#34;</span><span class=p>,</span> <span class=nx>key</span><span class=p>.</span><span class=nf>URL</span><span class=p>())</span>
+</span></span><span class=line><span class=ln>27</span><span class=cl>
+</span></span><span class=line><span class=ln>28</span><span class=cl>	<span class=c1>// 產生當下的 OTP</span>
+</span></span><span class=line><span class=ln>29</span><span class=cl>	<span class=nx>code</span><span class=p>,</span> <span class=nx>_</span> <span class=o>:=</span> <span class=nx>totp</span><span class=p>.</span><span class=nf>GenerateCode</span><span class=p>(</span><span class=nx>key</span><span class=p>.</span><span class=nf>Secret</span><span class=p>(),</span> <span class=nx>time</span><span class=p>.</span><span class=nf>Now</span><span class=p>())</span>
+</span></span><span class=line><span class=ln>30</span><span class=cl>	<span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;Current OTP:&#34;</span><span class=p>,</span> <span class=nx>code</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>31</span><span class=cl>
+</span></span><span class=line><span class=ln>32</span><span class=cl>	<span class=c1>// 驗證使用者輸入</span>
+</span></span><span class=line><span class=ln>33</span><span class=cl>	<span class=nx>ok</span> <span class=o>:=</span> <span class=nx>totp</span><span class=p>.</span><span class=nf>Validate</span><span class=p>(</span><span class=nx>code</span><span class=p>,</span> <span class=nx>key</span><span class=p>.</span><span class=nf>Secret</span><span class=p>())</span>
+</span></span><span class=line><span class=ln>34</span><span class=cl>	<span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;驗證結果:&#34;</span><span class=p>,</span> <span class=nx>ok</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>35</span><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>👉 <code>key.URL()</code> 可以直接用來產生 QR code，讓 Google Authenticator 掃描。</p><h3 id=範例二hotp計數制-otp>範例二：HOTP（計數制 OTP）</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span> <span class=nx>main</span>
+</span></span><span class=line><span class=ln> 2</span><span class=cl>
+</span></span><span class=line><span class=ln> 3</span><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=ln> 4</span><span class=cl>	<span class=s>&#34;fmt&#34;</span>
+</span></span><span class=line><span class=ln> 5</span><span class=cl>	<span class=s>&#34;log&#34;</span>
+</span></span><span class=line><span class=ln> 6</span><span class=cl>
+</span></span><span class=line><span class=ln> 7</span><span class=cl>	<span class=s>&#34;github.com/pquerna/otp/hotp&#34;</span>
+</span></span><span class=line><span class=ln> 8</span><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=ln> 9</span><span class=cl>
+</span></span><span class=line><span class=ln>10</span><span class=cl><span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>11</span><span class=cl>	<span class=nx>secret</span> <span class=o>:=</span> <span class=s>&#34;JBSWY3DPEHPK3PXP&#34;</span>
+</span></span><span class=line><span class=ln>12</span><span class=cl>	<span class=nx>counter</span> <span class=o>:=</span> <span class=nb>uint64</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>13</span><span class=cl>
+</span></span><span class=line><span class=ln>14</span><span class=cl>	<span class=c1>// 產生 OTP</span>
+</span></span><span class=line><span class=ln>15</span><span class=cl>	<span class=nx>code</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>hotp</span><span class=p>.</span><span class=nf>GenerateCode</span><span class=p>(</span><span class=nx>secret</span><span class=p>,</span> <span class=nx>counter</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>16</span><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>17</span><span class=cl>		<span class=nx>log</span><span class=p>.</span><span class=nf>Fatal</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>18</span><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=ln>19</span><span class=cl>	<span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;HOTP:&#34;</span><span class=p>,</span> <span class=nx>code</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>20</span><span class=cl>
+</span></span><span class=line><span class=ln>21</span><span class=cl>	<span class=c1>// 驗證</span>
+</span></span><span class=line><span class=ln>22</span><span class=cl>	<span class=nx>ok</span> <span class=o>:=</span> <span class=nx>hotp</span><span class=p>.</span><span class=nf>Validate</span><span class=p>(</span><span class=nx>code</span><span class=p>,</span> <span class=nx>secret</span><span class=p>,</span> <span class=nx>counter</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>23</span><span class=cl>	<span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;驗證結果:&#34;</span><span class=p>,</span> <span class=nx>ok</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>24</span><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>👉 實際應用中，伺服器需要保存並更新 <code>counter</code>。</p><h2 id=小結>小結</h2><p>OTP 的定位很清楚：</p><ul><li>它不是取代密碼，而是 <strong>強化認證流程</strong> 的一環。</li><li>TOTP 與 HOTP 各有應用場景，但 TOTP 在日常帳號登入上更常見。</li><li>雖然 OTP 提升了安全性，但仍要注意釣魚與簡訊風險。</li></ul><p>對開發者來說，Go 已經有現成套件（<code>pquerna/otp</code>），幾行程式就能完成 OTP 的產生與驗證。</p></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/passkey-introduction/ class=post-nav-prev><span class=nav-label>上一篇</span>
+<span class=nav-title>用 Go 打造 Passkey（WebAuthn）最小可行產品：從原理到 MVP 實作</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#otp-是什麼>OTP 是什麼？</a></li><li><a href=#otp-的生成方式>OTP 的生成方式</a></li><li><a href=#otp-在登入流程中的位置>OTP 在登入流程中的位置</a></li><li><a href=#otp-的好處>OTP 的好處</a></li><li><a href=#otp-的限制>OTP 的限制</a></li><li><a href=#go-程式實作>Go 程式實作</a><ul><li><a href=#範例一totp時間制-otp>範例一：TOTP（時間制 OTP）</a></li><li><a href=#範例二hotp計數制-otp>範例二：HOTP（計數制 OTP）</a></li></ul></li><li><a href=#小結>小結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{send_page_view:!0,anonymize_ip:!0,allow_google_signals:!1,allow_ad_personalization_signals:!1})</script></body></html>
