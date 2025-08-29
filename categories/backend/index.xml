@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Backend on Yuan のノート</title><link>https://e61983.github.io/categories/backend/</link><description>Recent content in Backend on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Wed, 27 Aug 2025 23:24:29 +0800</lastBuildDate><atom:link href="https://e61983.github.io/categories/backend/index.xml" rel="self" type="application/rss+xml"/><item><title>Dockerfile 與 Docker Compose 寫法全攻略</title><link>https://e61983.github.io/posts/docker-compose-introduction/</link><pubDate>Wed, 27 Aug 2025 23:24:29 +0800</pubDate><guid>https://e61983.github.io/posts/docker-compose-introduction/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
-&lt;p>各位同學們應該常常聽到一句話：「有了 Docker，環境跑起來就不怕！」
-不過當真的要寫 Dockerfile 或是 compose.yaml 的時候，十之八九就會卡在格式，或是跑一跑把主機資源吃爆。&lt;/p>
-&lt;p>這篇文章就來隨性聊聊：&lt;/p>
+&lt;p>各位同學應該常常聽到一句話：「有了 Docker，環境跑起來就不怕！」&lt;br>
+但真的要寫 Dockerfile 或 compose.yaml 的時候，十之八九還是會卡在格式，或不小心讓主機資源爆掉。&lt;/p>
+&lt;p>這篇文章就來整理一下 2025 年的實務寫法：&lt;/p>
 &lt;ol>
 &lt;li>Dockerfile 怎麼寫。&lt;/li>
 &lt;li>Compose（compose.yaml）怎麼寫。&lt;/li>
