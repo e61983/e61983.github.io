@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Containerization on Yuan のノート</title><link>https://e61983.github.io/tags/containerization/</link><description>Recent content in Containerization on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Wed, 27 Aug 2025 23:24:29 +0800</lastBuildDate><atom:link href="https://e61983.github.io/tags/containerization/index.xml" rel="self" type="application/rss+xml"/><item><title>Dockerfile 與 Docker Compose 寫法全攻略</title><link>https://e61983.github.io/posts/docker-compose-introduction/</link><pubDate>Wed, 27 Aug 2025 23:24:29 +0800</pubDate><guid>https://e61983.github.io/posts/docker-compose-introduction/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
-&lt;p>各位同學應該常常聽到一句話：「有了 Docker，環境跑起來就不怕！」&lt;br>
-但真的要寫 Dockerfile 或 compose.yaml 的時候，十之八九還是會卡在格式，或不小心讓主機資源爆掉。&lt;/p>
-&lt;p>這篇文章就來整理一下 2025 年的實務寫法：&lt;/p>
-&lt;ol>
-&lt;li>Dockerfile 怎麼寫。&lt;/li>
-&lt;li>Compose（compose.yaml）怎麼寫。&lt;/li>
-&lt;li>怎麼限制資源，避免主機 GG。&lt;/li>
-&lt;/ol></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Containerization on Yuan のノート</title><link>https://e61983.github.io/tags/containerization/</link><description>Recent content in Containerization on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Wed, 27 Aug 2025 23:24:29 +0800</lastBuildDate><atom:link href="https://e61983.github.io/tags/containerization/index.xml" rel="self" type="application/rss+xml"/><item><title>Dockerfile 與 Docker Compose 寫法全攻略</title><link>https://e61983.github.io/posts/docker-compose-introduction/</link><pubDate>Wed, 27 Aug 2025 23:24:29 +0800</pubDate><guid>https://e61983.github.io/posts/docker-compose-introduction/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;各位同學應該常常聽到一句話：「有了 Docker，環境跑起來就不怕！」&lt;br&gt;
+但真的要寫 Dockerfile 或 compose.yaml 的時候，十之八九還是會卡在格式，或不小心讓主機資源爆掉。&lt;/p&gt;
+&lt;p&gt;這篇文章就來整理一下 2025 年的實務寫法：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Dockerfile 怎麼寫。&lt;/li&gt;
+&lt;li&gt;Compose（compose.yaml）怎麼寫。&lt;/li&gt;
+&lt;li&gt;怎麼限制資源，避免主機 GG。&lt;/li&gt;
+&lt;/ol&gt;</description></item></channel></rss>

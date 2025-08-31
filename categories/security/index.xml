@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security on Yuan のノート</title><link>https://e61983.github.io/categories/security/</link><description>Recent content in Security on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Tue, 26 Aug 2025 23:54:11 +0800</lastBuildDate><atom:link href="https://e61983.github.io/categories/security/index.xml" rel="self" type="application/rss+xml"/><item><title>OTP — 一次性密碼的原理與實作</title><link>https://e61983.github.io/posts/otp-code-introduction/</link><pubDate>Tue, 26 Aug 2025 23:54:11 +0800</pubDate><guid>https://e61983.github.io/posts/otp-code-introduction/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
-&lt;p>有時候我們登入服務時，螢幕會跳出一句：「你的驗證碼是 123456」。這串數字只能用一次，過了幾十秒就失效了。這種機制叫做 &lt;strong>OTP（One-Time Password，一次性密碼）&lt;/strong>。&lt;/p>
-&lt;p>它看似簡單，卻是今天大多數二階段驗證（2FA）或多因子驗證（MFA）的基石。這篇文章，就來聊聊 OTP 的運作方式，最後會給一個 Go 的範例程式，讓你自己動手試試。&lt;/p></description></item><item><title>用 Go 打造 Passkey（WebAuthn）最小可行產品：從原理到 MVP 實作</title><link>https://e61983.github.io/posts/passkey-introduction/</link><pubDate>Mon, 25 Aug 2025 23:45:30 +0800</pubDate><guid>https://e61983.github.io/posts/passkey-introduction/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
-&lt;p>「把密碼換成裝置裡的私鑰」——這就是 Passkey 的核心概念。
-我們用最小可行的方式，寫一個可以真的註冊與登入的 WebAuthn 小服務。&lt;/p></description></item><item><title>OAuth 與授權流程詳解</title><link>https://e61983.github.io/posts/oauth-introduction/</link><pubDate>Fri, 22 Aug 2025 20:30:22 +0800</pubDate><guid>https://e61983.github.io/posts/oauth-introduction/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
-&lt;p>在現代應用程式開發中，&lt;strong>使用者身份驗證&lt;/strong>與&lt;strong>資源授權&lt;/strong>已成為必備功能。
-傳統帳號密碼模式存在風險，也不利於跨平台整合，因此 OAuth（Open Authorization）被提出，成為最常見的 &lt;strong>授權框架（authorization framework）&lt;/strong>。&lt;/p>
-&lt;p>它的設計目標是：&lt;/p>
-&lt;ul>
-&lt;li>使用者不需交出帳號密碼&lt;/li>
-&lt;li>第三方應用能安全存取有限的資源&lt;/li>
-&lt;li>支援 Web、Mobile、Server、IoT 等不同場景&lt;/li>
-&lt;/ul></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security on Yuan のノート</title><link>https://e61983.github.io/categories/security/</link><description>Recent content in Security on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Tue, 26 Aug 2025 23:54:11 +0800</lastBuildDate><atom:link href="https://e61983.github.io/categories/security/index.xml" rel="self" type="application/rss+xml"/><item><title>OTP — 一次性密碼的原理與實作</title><link>https://e61983.github.io/posts/otp-code-introduction/</link><pubDate>Tue, 26 Aug 2025 23:54:11 +0800</pubDate><guid>https://e61983.github.io/posts/otp-code-introduction/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;有時候我們登入服務時，螢幕會跳出一句：「你的驗證碼是 123456」。這串數字只能用一次，過了幾十秒就失效了。這種機制叫做 &lt;strong&gt;OTP（One-Time Password，一次性密碼）&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;它看似簡單，卻是今天大多數二階段驗證（2FA）或多因子驗證（MFA）的基石。這篇文章，就來聊聊 OTP 的運作方式，最後會給一個 Go 的範例程式，讓你自己動手試試。&lt;/p&gt;</description></item><item><title>用 Go 打造 Passkey（WebAuthn）最小可行產品：從原理到 MVP 實作</title><link>https://e61983.github.io/posts/passkey-introduction/</link><pubDate>Mon, 25 Aug 2025 23:45:30 +0800</pubDate><guid>https://e61983.github.io/posts/passkey-introduction/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;「把密碼換成裝置裡的私鑰」——這就是 Passkey 的核心概念。
+我們用最小可行的方式，寫一個可以真的註冊與登入的 WebAuthn 小服務。&lt;/p&gt;</description></item><item><title>OAuth 與授權流程詳解</title><link>https://e61983.github.io/posts/oauth-introduction/</link><pubDate>Fri, 22 Aug 2025 20:30:22 +0800</pubDate><guid>https://e61983.github.io/posts/oauth-introduction/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;在現代應用程式開發中，&lt;strong&gt;使用者身份驗證&lt;/strong&gt;與&lt;strong&gt;資源授權&lt;/strong&gt;已成為必備功能。
+傳統帳號密碼模式存在風險，也不利於跨平台整合，因此 OAuth（Open Authorization）被提出，成為最常見的 &lt;strong&gt;授權框架（authorization framework）&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;它的設計目標是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用者不需交出帳號密碼&lt;/li&gt;
+&lt;li&gt;第三方應用能安全存取有限的資源&lt;/li&gt;
+&lt;li&gt;支援 Web、Mobile、Server、IoT 等不同場景&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

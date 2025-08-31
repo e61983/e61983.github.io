@@ -1,381 +1,195 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在 Go 裡直接抓 Docker 容器 IP，連線 PostgreSQL - Yuan のノート</title>
-    
-    
-    
-        <meta name="description" content="心之所至，隨意亂書">
-    
-    
-    
-    
-        <meta name="keywords" content="golang,embedded,linux,backend,programming">
-    
-    
-    
-    <meta name="author" content="Yuan">
-    
-    
-    <meta property="og:title" content="在 Go 裡直接抓 Docker 容器 IP，連線 PostgreSQL - Yuan のノート">
-    <meta property="og:description" content="心之所至，隨意亂書">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="http://localhost:3000/posts/use-docker-api-query-container-ip/">
-    
-    
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg">
-    <meta name="theme-color" content="#0d1117">
-    
-    
-    
-    <link rel="stylesheet" href="http://localhost:3000/yuan/css/main.min.css">
-    
-    
-    
-    <link rel="stylesheet" href="http://localhost:3000/yuan/css/chroma.min.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="theme-dark">
-    <div class="layout">
-        
-        <header class="header">
-    <div class="container">
-        <div class="header-content">
-            
-            <div class="header-brand">
-                <a href="http://localhost:3000/" class="brand-link">
-                    <span class="brand-text">Yuan のノート</span>
-                </a>
-                
-                    <p class="brand-subtitle">心之所至，隨意亂書</p>
-                
-            </div>
-            
-            
-            <nav class="nav">
-                <ul class="nav-list">
-                    
-                        <li class="nav-item">
-                            <a href="/" class="nav-link ">
-                                首頁
-                            </a>
-                        </li>
-                    
-                        <li class="nav-item">
-                            <a href="/posts/" class="nav-link ">
-                                文章
-                            </a>
-                        </li>
-                    
-                        <li class="nav-item">
-                            <a href="/categories/" class="nav-link ">
-                                分類
-                            </a>
-                        </li>
-                    
-                        <li class="nav-item">
-                            <a href="/tags/" class="nav-link ">
-                                標籤
-                            </a>
-                        </li>
-                    
-                        <li class="nav-item">
-                            <a href="/archive/" class="nav-link ">
-                                歸檔
-                            </a>
-                        </li>
-                    
-                </ul>
-            </nav>
-            
-            
-            <button class="mobile-menu-toggle" aria-label="Toggle menu">
-                <span class="hamburger"></span>
-                <span class="hamburger"></span>
-                <span class="hamburger"></span>
-            </button>
-        </div>
-    </div>
-</header>
-
-        
-        
-        <main class="main">
-            
-<div class="container">
-    <div class="post-layout">
-        
-        <article class="post">
-            
-            <header class="post-header">
-                <h1 class="post-title">在 Go 裡直接抓 Docker 容器 IP，連線 PostgreSQL</h1>
-                
-                <div class="post-meta">
-                    <time class="post-date" datetime="2025-08-28T00:47:35&#43;08:00">
-                        2025年08月28日
-                    </time>
-                    
-                    
-                        <span class="reading-time">2 分鐘閱讀</span>
-                    
-                    
-                    
-                        <span class="word-count">342 字</span>
-                    
-                    
-                    
-                </div>
-                
-                
-                
-                
-                
-                
-            </header>
-            
-            
-            
-                <div class="mobile-toc-toggle">
-                    <button class="toc-toggle-btn" aria-label="顯示/隱藏目錄">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/>
-                        </svg>
-                        目錄
-                    </button>
-                    <nav class="mobile-toc">
-                        <h3 class="toc-title">目錄</h3>
-                        <nav id="TableOfContents">
-  <ul>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#docker-compose-範例">Docker Compose 範例</a></li>
-    <li><a href="#go-程式實作">Go 程式實作</a></li>
-    <li><a href="#執行測試">執行測試</a></li>
-    <li><a href="#注意事項">注意事項</a></li>
-    <li><a href="#小結">小結</a></li>
-  </ul>
-</nav>
-                    </nav>
-                </div>
-            
-            
-            
-            <div class="post-content">
-                <h2 id="前言">前言</h2>
-<p>開發環境裡，我們常用 <strong>Docker Compose</strong> 來啟動資料庫。像是 PostgreSQL 這種服務，我們通常會這樣做：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="ln">1</span><span class="cl"><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="w">  </span>- <span class="s2">&#34;5432:5432&#34;</span><span class="w">
-</span></span></span></code></pre></div><p>這樣就能用 <code>localhost:5432</code> 直接連資料庫，簡單又方便。</p>
-<p>不過有些時候，我們不想把資料庫埠口對外暴露，想完全在 Docker network 裡面連線。<br>
-問題是，容器的 IP 會變啊，每次重啟都不一樣，怎麼辦？</p>
-<p>答案是：別手動 <code>docker inspect</code>，直接在 Go 裡用 <strong>Docker API</strong> 查 IP 就好。<br>
-查完 IP，再用它去連 PostgreSQL，完全自動化，安全又乾淨。</p>
-<h2 id="docker-compose-範例">Docker Compose 範例</h2>
-<p>最小化的 <code>docker-compose.yaml</code> 長這樣：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;3.9&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="w">  </span><span class="nt">db</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">postgres:16</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">always</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l">user</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l">password</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l">demo</span><span class="w">
-</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="w">      </span>- <span class="l">db-data:/var/lib/postgresql/data</span><span class="w">
-</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="w"></span><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="w">  </span><span class="nt">db-data</span><span class="p">:</span><span class="w">
-</span></span></span></code></pre></div><p>注意：這裡沒有 <code>ports:</code>，資料庫只在 Docker network 裡對外提供服務。</p>
-<h2 id="go-程式實作">Go 程式實作</h2>
-<p>我們會用兩個套件：</p>
-<ul>
-<li><code>github.com/docker/docker/client</code> → 查容器資訊</li>
-<li><code>github.com/jackc/pgx/v5</code> → 連 PostgreSQL</li>
-</ul>
-<p>程式流程很簡單：</p>
-<ol>
-<li>先用 Docker API <code>ContainerInspect</code> 拿容器資訊</li>
-<li>從 <code>NetworkSettings.Networks</code> 讀 IP</li>
-<li>拼成連線字串，丟給 pgx 連資料庫</li>
-</ol>
-<p>程式碼如下：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
-</span></span><span class="line"><span class="ln"> 2</span><span class="cl">
-</span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="kn">import</span> <span class="p">(</span>
-</span></span><span class="line"><span class="ln"> 4</span><span class="cl">	<span class="s">&#34;context&#34;</span>
-</span></span><span class="line"><span class="ln"> 5</span><span class="cl">	<span class="s">&#34;fmt&#34;</span>
-</span></span><span class="line"><span class="ln"> 6</span><span class="cl">	<span class="s">&#34;log&#34;</span>
-</span></span><span class="line"><span class="ln"> 7</span><span class="cl">
-</span></span><span class="line"><span class="ln"> 8</span><span class="cl">	<span class="s">&#34;github.com/docker/docker/client&#34;</span>
-</span></span><span class="line"><span class="ln"> 9</span><span class="cl">	<span class="s">&#34;github.com/jackc/pgx/v5&#34;</span>
-</span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="p">)</span>
-</span></span><span class="line"><span class="ln">11</span><span class="cl">
-</span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="c1">// 拿容器 IP</span>
-</span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="kd">func</span> <span class="nf">getContainerIP</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">containerName</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="ln">14</span><span class="cl">	<span class="nx">cli</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">NewClientWithOpts</span><span class="p">(</span><span class="nx">client</span><span class="p">.</span><span class="nx">FromEnv</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">15</span><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="ln">16</span><span class="cl">		<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;無法建立 Docker client: %w&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">17</span><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="ln">18</span><span class="cl">	<span class="k">defer</span> <span class="nx">cli</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
-</span></span><span class="line"><span class="ln">19</span><span class="cl">
-</span></span><span class="line"><span class="ln">20</span><span class="cl">	<span class="nx">containerJSON</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cli</span><span class="p">.</span><span class="nf">ContainerInspect</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">containerName</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">21</span><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="ln">22</span><span class="cl">		<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;無法 inspect 容器: %w&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">23</span><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="ln">24</span><span class="cl">
-</span></span><span class="line"><span class="ln">25</span><span class="cl">	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">network</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">containerJSON</span><span class="p">.</span><span class="nx">NetworkSettings</span><span class="p">.</span><span class="nx">Networks</span> <span class="p">{</span>
-</span></span><span class="line"><span class="ln">26</span><span class="cl">		<span class="k">return</span> <span class="nx">network</span><span class="p">.</span><span class="nx">IPAddress</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="ln">27</span><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="ln">28</span><span class="cl">
-</span></span><span class="line"><span class="ln">29</span><span class="cl">	<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;找不到容器的 IP&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">30</span><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="ln">31</span><span class="cl">
-</span></span><span class="line"><span class="ln">32</span><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="ln">33</span><span class="cl">	<span class="nx">ctx</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">()</span>
-</span></span><span class="line"><span class="ln">34</span><span class="cl">
-</span></span><span class="line"><span class="ln">35</span><span class="cl">	<span class="nx">ip</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">getContainerIP</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;db&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">36</span><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="ln">37</span><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;查 IP 失敗: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">38</span><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="ln">39</span><span class="cl">
-</span></span><span class="line"><span class="ln">40</span><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;找到容器 IP:&#34;</span><span class="p">,</span> <span class="nx">ip</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">41</span><span class="cl">
-</span></span><span class="line"><span class="ln">42</span><span class="cl">	<span class="nx">connStr</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;postgres://user:password@%s:5432/demo&#34;</span><span class="p">,</span> <span class="nx">ip</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">43</span><span class="cl">
-</span></span><span class="line"><span class="ln">44</span><span class="cl">	<span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">pgx</span><span class="p">.</span><span class="nf">Connect</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">connStr</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">45</span><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="ln">46</span><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;無法連線資料庫: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">47</span><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="ln">48</span><span class="cl">	<span class="k">defer</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">Close</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">49</span><span class="cl">
-</span></span><span class="line"><span class="ln">50</span><span class="cl">	<span class="kd">var</span> <span class="nx">now</span> <span class="kt">string</span>
-</span></span><span class="line"><span class="ln">51</span><span class="cl">	<span class="nx">err</span> <span class="p">=</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">QueryRow</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;SELECT now()&#34;</span><span class="p">).</span><span class="nf">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">now</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">52</span><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="ln">53</span><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;查詢失敗: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">54</span><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="ln">55</span><span class="cl">
-</span></span><span class="line"><span class="ln">56</span><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;成功連上資料庫，現在時間:&#34;</span><span class="p">,</span> <span class="nx">now</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">57</span><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="執行測試">執行測試</h2>
-<ol>
-<li>先啟動 PostgreSQL 容器：</li>
-</ol>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">docker compose up -d db
-</span></span></code></pre></div><ol start="2">
-<li>執行 Go 程式：</li>
-</ol>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">go run main.go
-</span></span></code></pre></div><ol start="3">
-<li>會看到類似輸出：</li>
-</ol>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="ln">1</span><span class="cl">找到容器 IP: 172.19.0.2
-</span></span><span class="line"><span class="ln">2</span><span class="cl">成功連上資料庫，現在時間: 2025-08-28 01:00:00.123456+00
-</span></span></code></pre></div><h2 id="注意事項">注意事項</h2>
-<ul>
-<li>這段程式會呼叫 <strong>Docker Daemon API</strong>，需要存取 <code>/var/run/docker.sock</code>。
-如果 Go 程式也跑在容器裡，記得掛進去：</li>
-</ul>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="ln">1</span><span class="cl"><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="w">  </span>- <span class="l">/var/run/docker.sock:/var/run/docker.sock</span><span class="w">
-</span></span></span></code></pre></div><ul>
-<li>
-<p>多個 network 時，程式會拿第一個 network 的 IP。實務上可以指定 network 名稱。</p>
-</li>
-<li>
-<p>容器 IP 只在 Docker network 裡有效，外部機器無法直接用。</p>
-</li>
-</ul>
-<h2 id="小結">小結</h2>
-<p>這樣做比直接開 <code>ports:</code> 麻煩一點，但更安全。<br>
-對內網環境或安全要求高的專案，這種方式非常適合。</p>
-            </div>
-            
-            
-            <footer class="post-footer">
-                
-                <div class="post-nav">
-                    
-                        <a href="http://localhost:3000/posts/docker-compose-introduction/" class="post-nav-prev">
-                            <span class="nav-label">上一篇</span>
-                            <span class="nav-title">Dockerfile 與 Docker Compose 寫法全攻略</span>
-                        </a>
-                    
-                    
-                    
-                </div>
-            </footer>
-        </article>
-        
-        
-        
-            <aside class="post-sidebar">
-                <nav class="toc desktop-toc">
-                    <h3 class="toc-title">目錄</h3>
-                    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#docker-compose-範例">Docker Compose 範例</a></li>
-    <li><a href="#go-程式實作">Go 程式實作</a></li>
-    <li><a href="#執行測試">執行測試</a></li>
-    <li><a href="#注意事項">注意事項</a></li>
-    <li><a href="#小結">小結</a></li>
-  </ul>
-</nav>
-                </nav>
-            </aside>
-        
-    </div>
-</div>
-
-
-<button id="backToTop" class="back-to-top" aria-label="回到頂部">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
-    </svg>
-</button>
-
-        </main>
-        
-        
-        <footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            
-            
-                <div class="social-links">
-                    <a href="https://github.com/e61983" target="_blank" rel="noopener" class="social-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        GitHub
-                    </a>
-                </div>
-            
-            
-            
-            <div class="copyright">
-                <p>&copy; 2025 Yuan. All rights reserved.</p>
-                <p>Powered by <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a> & Yuan Theme</p>
-            </div>
-        </div>
-    </div>
-</footer>
-
-    </div>
-    
-    
-    
-    <script src="http://localhost:3000/yuan/js/main.min.js"></script>
-    
-    
-    
-</body>
-</html>
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 Go 裡直接抓 Docker 容器 IP，連線 PostgreSQL - Yuan のノート</title><meta name=description content="透過 Docker API 自動查詢容器 IP 地址，無需暴露 port 即可從 Go 應用連接 PostgreSQL 資料庫，實現更安全的開發環境配置"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 Go 裡直接抓 Docker 容器 IP，連線 PostgreSQL - Yuan のノート"><meta property="og:description" content="透過 Docker API 自動查詢容器 IP 地址，無需暴露 port 即可從 Go 應用連接 PostgreSQL 資料庫，實現更安全的開發環境配置"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/use-docker-api-query-container-ip/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<span class=hamburger></span>
+<span class=hamburger></span>
+<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>在 Go 裡直接抓 Docker 容器 IP，連線 PostgreSQL</h1><div class=post-meta><time class=post-date datetime=2025-08-31T23:03:35+08:00>2025年08月31日
+</time><span class=reading-time>4 分鐘閱讀</span>
+<span class=word-count>733 字</span>
+<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/go class=tag>go</a>
+<a href=/tags/docker class=tag>docker</a>
+<a href=/tags/postgresql class=tag>postgresql</a>
+<a href=/tags/api class=tag>api</a>
+<a href=/tags/compose class=tag>compose</a>
+<a href=/tags/backend class=tag>backend</a></div><div class=post-categories><a href=/categories/backend class=category>backend</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#docker-compose-範例>Docker Compose 範例</a></li><li><a href=#go-程式實作>Go 程式實作</a></li><li><a href=#執行測試>執行測試</a></li><li><a href=#調整使用的-docker-socket-路徑>調整使用的 Docker Socket 路徑</a><ul><li><a href=#環境變數>環境變數</a></li><li><a href=#在程式中指定>在程式中指定</a></li><li><a href=#遠端-docker-daemon>遠端 Docker Daemon</a></li><li><a href=#安全考量>安全考量</a></li></ul></li><li><a href=#小結>小結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>開發環境裡，我們常用 <strong>Docker Compose</strong> 來啟動資料庫。像是 PostgreSQL 這種服務，我們通常會這樣做：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=ln>1</span><span class=cl><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=w>  </span>- <span class=s2>&#34;5432:5432&#34;</span><span class=w>
+</span></span></span></code></pre></div><p>這樣就能用 <code>localhost:5432</code> 直接連資料庫，簡單又方便。</p><p>最近在思考，如果我們不想把資料庫連接埠對外暴露，想完全在 Docker network 裡面連線。<br>但容器的 IP 每次重啟都不一樣，我們該怎麼辦？</p><p>答案是：別手動 <code>docker inspect</code>，直接在 Go 裡用 <strong>Docker API</strong> 查 IP 就好。<br>查完 IP，再用它去連 PostgreSQL，完全自動化，安全又乾淨。</p><h2 id=docker-compose-範例>Docker Compose 範例</h2><p>最小化的 <code>docker-compose.yaml</code> 長這樣：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=ln> 1</span><span class=cl><span class=nt>services</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>  </span><span class=nt>db</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>postgres:16</span><span class=w>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w>      </span><span class=nt>POSTGRES_USER</span><span class=p>:</span><span class=w> </span><span class=l>user</span><span class=w>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>      </span><span class=nt>POSTGRES_PASSWORD</span><span class=p>:</span><span class=w> </span><span class=l>password</span><span class=w>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>      </span><span class=nt>POSTGRES_DB</span><span class=p>:</span><span class=w> </span><span class=l>demo</span><span class=w>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>      </span>- <span class=l>db-data:/var/lib/postgresql/data</span><span class=w>
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=w></span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=w>  </span><span class=nt>db-data</span><span class=p>:</span><span class=w>
+</span></span></span></code></pre></div><p>注意：這裡沒有 <code>ports:</code>，資料庫只在 Docker network 裡對外提供服務。</p><h2 id=go-程式實作>Go 程式實作</h2><p>我們會用三個套件：</p><ul><li><code>github.com/docker/docker/client</code> → 查容器資訊</li><li><code>github.com/jackc/pgx/v5</code> → 連 PostgreSQL</li><li><code>github.com/compose-spec/compose-go/v2/cli</code> → 解析 docker-compose.yml</li></ul><p>程式流程：</p><ol><li>用 compose-go 解析 <code>docker-compose.yml</code>，自動獲取專案名稱</li><li>根據專案名稱和服務名稱，組合出容器名稱</li><li>用 Docker API <code>ContainerInspect</code> 拿容器資訊</li><li>從 <code>NetworkSettings.Networks</code> 讀 IP</li><li>拼成連線字串，丟給 pgx 連資料庫</li></ol><p>程式碼如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln>  1</span><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
+</span></span></span><span class=line><span class=ln>  2</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>  3</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=ln>  4</span><span class=cl><span class=w>	</span><span class=s>&#34;context&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln>  5</span><span class=cl><span class=w>	</span><span class=s>&#34;fmt&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln>  6</span><span class=cl><span class=w>	</span><span class=s>&#34;log&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln>  7</span><span class=cl><span class=w>	</span><span class=s>&#34;time&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln>  8</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>  9</span><span class=cl><span class=w>	</span><span class=s>&#34;github.com/compose-spec/compose-go/v2/cli&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 10</span><span class=cl><span class=w>	</span><span class=s>&#34;github.com/docker/docker/client&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 11</span><span class=cl><span class=w>	</span><span class=s>&#34;github.com/jackc/pgx/v5&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 12</span><span class=cl><span class=w></span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 13</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 14</span><span class=cl><span class=w></span><span class=c1>// 從 docker-compose.yml 獲取專案資訊</span><span class=w>
+</span></span></span><span class=line><span class=ln> 15</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>getProjectInfo</span><span class=p>(</span><span class=nx>composePath</span><span class=w> </span><span class=kt>string</span><span class=p>)</span><span class=w> </span><span class=p>(</span><span class=nx>projectName</span><span class=w> </span><span class=kt>string</span><span class=p>,</span><span class=w> </span><span class=nx>serviceName</span><span class=w> </span><span class=kt>string</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=kt>error</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 16</span><span class=cl><span class=w>	</span><span class=c1>// 使用 compose-go 載入專案設定</span><span class=w>
+</span></span></span><span class=line><span class=ln> 17</span><span class=cl><span class=w>	</span><span class=nx>options</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>cli</span><span class=p>.</span><span class=nf>NewProjectOptions</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=ln> 18</span><span class=cl><span class=w>		</span><span class=p>[]</span><span class=kt>string</span><span class=p>{</span><span class=nx>composePath</span><span class=p>},</span><span class=w>
+</span></span></span><span class=line><span class=ln> 19</span><span class=cl><span class=w>		</span><span class=nx>cli</span><span class=p>.</span><span class=nx>WithOsEnv</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=ln> 20</span><span class=cl><span class=w>		</span><span class=nx>cli</span><span class=p>.</span><span class=nx>WithDotEnv</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=ln> 21</span><span class=cl><span class=w>	</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 22</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 23</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;無法建立專案選項: %w&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 24</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 25</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 26</span><span class=cl><span class=w>	</span><span class=nx>project</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>options</span><span class=p>.</span><span class=nf>LoadProject</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nf>Background</span><span class=p>())</span><span class=w>
+</span></span></span><span class=line><span class=ln> 27</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 28</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;無法載入專案: %w&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 29</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 30</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 31</span><span class=cl><span class=w>	</span><span class=c1>// 取得專案名稱</span><span class=w>
+</span></span></span><span class=line><span class=ln> 32</span><span class=cl><span class=w>	</span><span class=nx>projectName</span><span class=w> </span><span class=p>=</span><span class=w> </span><span class=nx>project</span><span class=p>.</span><span class=nx>Name</span><span class=w>
+</span></span></span><span class=line><span class=ln> 33</span><span class=cl><span class=w>	
+</span></span></span><span class=line><span class=ln> 34</span><span class=cl><span class=w>	</span><span class=c1>// 尋找資料庫服務（這裡假設名稱是 &#34;db&#34;）</span><span class=w>
+</span></span></span><span class=line><span class=ln> 35</span><span class=cl><span class=w>	</span><span class=k>for</span><span class=w> </span><span class=nx>name</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=k>range</span><span class=w> </span><span class=nx>project</span><span class=p>.</span><span class=nx>Services</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 36</span><span class=cl><span class=w>		</span><span class=k>if</span><span class=w> </span><span class=nx>name</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=s>&#34;db&#34;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 37</span><span class=cl><span class=w>			</span><span class=nx>serviceName</span><span class=w> </span><span class=p>=</span><span class=w> </span><span class=nx>name</span><span class=w>
+</span></span></span><span class=line><span class=ln> 38</span><span class=cl><span class=w>			</span><span class=k>break</span><span class=w>
+</span></span></span><span class=line><span class=ln> 39</span><span class=cl><span class=w>		</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 40</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 41</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 42</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>serviceName</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 43</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;找不到名為 &#39;db&#39; 的服務&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 44</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 45</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 46</span><span class=cl><span class=w>	</span><span class=k>return</span><span class=w> </span><span class=nx>projectName</span><span class=p>,</span><span class=w> </span><span class=nx>serviceName</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=w>
+</span></span></span><span class=line><span class=ln> 47</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 48</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 49</span><span class=cl><span class=w></span><span class=c1>// 拿容器 IP</span><span class=w>
+</span></span></span><span class=line><span class=ln> 50</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>getContainerIP</span><span class=p>(</span><span class=nx>ctx</span><span class=w> </span><span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>,</span><span class=w> </span><span class=nx>containerName</span><span class=w> </span><span class=kt>string</span><span class=p>)</span><span class=w> </span><span class=p>(</span><span class=kt>string</span><span class=p>,</span><span class=w> </span><span class=kt>error</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 51</span><span class=cl><span class=w>	</span><span class=nx>cli</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>client</span><span class=p>.</span><span class=nf>NewClientWithOpts</span><span class=p>(</span><span class=nx>client</span><span class=p>.</span><span class=nx>FromEnv</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 52</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 53</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;無法建立 Docker client: %w&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 54</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 55</span><span class=cl><span class=w>	</span><span class=k>defer</span><span class=w> </span><span class=nx>cli</span><span class=p>.</span><span class=nf>Close</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=ln> 56</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 57</span><span class=cl><span class=w>	</span><span class=nx>containerJSON</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>cli</span><span class=p>.</span><span class=nf>ContainerInspect</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span><span class=w> </span><span class=nx>containerName</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 58</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 59</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;無法 inspect 容器: %w&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 60</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 61</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 62</span><span class=cl><span class=w>	</span><span class=k>for</span><span class=w> </span><span class=nx>_</span><span class=p>,</span><span class=w> </span><span class=nx>network</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=k>range</span><span class=w> </span><span class=nx>containerJSON</span><span class=p>.</span><span class=nx>NetworkSettings</span><span class=p>.</span><span class=nx>Networks</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 63</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=nx>network</span><span class=p>.</span><span class=nx>IPAddress</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=w>
+</span></span></span><span class=line><span class=ln> 64</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 65</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 66</span><span class=cl><span class=w>	</span><span class=k>return</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;找不到容器的 IP&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 67</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 68</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 69</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 70</span><span class=cl><span class=w>	</span><span class=nx>ctx</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>context</span><span class=p>.</span><span class=nf>Background</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=ln> 71</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 72</span><span class=cl><span class=w>	</span><span class=c1>// 自動從 compose.yml 獲取專案資訊</span><span class=w>
+</span></span></span><span class=line><span class=ln> 73</span><span class=cl><span class=w>	</span><span class=nx>composePath</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=s>&#34;compose.yml&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 74</span><span class=cl><span class=w>	</span><span class=nx>projectName</span><span class=p>,</span><span class=w> </span><span class=nx>serviceName</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nf>getProjectInfo</span><span class=p>(</span><span class=nx>composePath</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 75</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 76</span><span class=cl><span class=w>		</span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;無法獲取專案資訊: %v&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 77</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 78</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 79</span><span class=cl><span class=w>	</span><span class=c1>// Docker Compose 的容器命名規則: projectName-serviceName-1</span><span class=w>
+</span></span></span><span class=line><span class=ln> 80</span><span class=cl><span class=w>	</span><span class=nx>containerName</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Sprintf</span><span class=p>(</span><span class=s>&#34;%s-%s-1&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>projectName</span><span class=p>,</span><span class=w> </span><span class=nx>serviceName</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 81</span><span class=cl><span class=w>	</span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Printf</span><span class=p>(</span><span class=s>&#34;專案名稱: %s, 服務名稱: %s, 容器名稱: %s\n&#34;</span><span class=p>,</span><span class=w> 
+</span></span></span><span class=line><span class=ln> 82</span><span class=cl><span class=w>		</span><span class=nx>projectName</span><span class=p>,</span><span class=w> </span><span class=nx>serviceName</span><span class=p>,</span><span class=w> </span><span class=nx>containerName</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 83</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 84</span><span class=cl><span class=w>	</span><span class=nx>ip</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nf>getContainerIP</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span><span class=w> </span><span class=nx>containerName</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 85</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 86</span><span class=cl><span class=w>		</span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;查 IP 失敗: %v&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 87</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 88</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 89</span><span class=cl><span class=w>	</span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;找到容器 IP:&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>ip</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 90</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 91</span><span class=cl><span class=w>	</span><span class=nx>connStr</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Sprintf</span><span class=p>(</span><span class=s>&#34;postgres://user:password@%s:5432/demo&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>ip</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 92</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 93</span><span class=cl><span class=w>	</span><span class=nx>conn</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>pgx</span><span class=p>.</span><span class=nf>Connect</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span><span class=w> </span><span class=nx>connStr</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 94</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 95</span><span class=cl><span class=w>		</span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;無法連線資料庫: %v&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 96</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 97</span><span class=cl><span class=w>	</span><span class=k>defer</span><span class=w> </span><span class=nx>conn</span><span class=p>.</span><span class=nf>Close</span><span class=p>(</span><span class=nx>ctx</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 98</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 99</span><span class=cl><span class=w>	</span><span class=kd>var</span><span class=w> </span><span class=nx>now</span><span class=w> </span><span class=nx>time</span><span class=p>.</span><span class=nx>Time</span><span class=w>
+</span></span></span><span class=line><span class=ln>100</span><span class=cl><span class=w>	</span><span class=nx>err</span><span class=w> </span><span class=p>=</span><span class=w> </span><span class=nx>conn</span><span class=p>.</span><span class=nf>QueryRow</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span><span class=w> </span><span class=s>&#34;SELECT now()&#34;</span><span class=p>).</span><span class=nf>Scan</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>now</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>101</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>102</span><span class=cl><span class=w>		</span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;查詢失敗: %v&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>103</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>104</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>105</span><span class=cl><span class=w>	</span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;成功連上資料庫，現在時間:&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>now</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>106</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><div class="notice notice-warning" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#f39c12;background-color:#fef9e7;color:#8a6d3b"><div style=font-weight:700;margin-bottom:.5rem>⚠️
+常見問題與解決方案</div><div><p>如果你遇到類似以下的錯誤：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=ln>1</span><span class=cl>github.com/docker/docker/client: github.com/docker/docker/client@v0.1.0-alpha.0: parsing go.mod:
+</span></span><span class=line><span class=ln>2</span><span class=cl>module declares its path as: github.com/moby/moby/client
+</span></span><span class=line><span class=ln>3</span><span class=cl>        but was required as: github.com/docker/docker/client
+</span></span></code></pre></div><ol><li>初始化 go.mod（如果還沒有的話）：</li></ol><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go mod init your-project-name
+</span></span></code></pre></div><ol start=2><li>在 <code>go.mod</code> 修改依賴：</li></ol><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln>1</span><span class=cl><span class=nx>replace</span><span class=w> </span><span class=nx>github</span><span class=p>.</span><span class=nx>com</span><span class=o>/</span><span class=nx>docker</span><span class=o>/</span><span class=nx>docker</span><span class=w> </span><span class=p>=&gt;</span><span class=w> </span><span class=nx>github</span><span class=p>.</span><span class=nx>com</span><span class=o>/</span><span class=nx>moby</span><span class=o>/</span><span class=nx>moby</span><span class=w> </span><span class=nx>latest</span><span class=w>
+</span></span></span></code></pre></div><ol start=3><li>下載依賴套件：</li></ol><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go mod tidy
+</span></span></code></pre></div></div></div><h2 id=執行測試>執行測試</h2><ol><li>先啟動 PostgreSQL 容器：</li></ol><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>docker compose up -d db
+</span></span></code></pre></div><ol start=2><li>執行 Go 程式：</li></ol><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go run main.go
+</span></span></code></pre></div><ol start=3><li>會看到類似輸出：</li></ol><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=ln>1</span><span class=cl>專案名稱: blog, 服務名稱: db, 容器名稱: blog-db-1
+</span></span><span class=line><span class=ln>2</span><span class=cl>找到容器 IP: 172.19.0.2
+</span></span><span class=line><span class=ln>3</span><span class=cl>成功連上資料庫，現在時間: 2025-08-31 23:05:00.389548 +0800 CST
+</span></span></code></pre></div><p><strong>說明：</strong></p><ul><li><code>blog</code> 是自動從目錄名稱推導出的專案名稱</li><li><code>blog-db-1</code> 是 Docker Compose 的標準容器命名格式</li><li>程式會自動解析 <code>docker-compose.yml</code> 來取得這些資訊</li></ul><h2 id=調整使用的-docker-socket-路徑>調整使用的 Docker Socket 路徑</h2><h3 id=環境變數>環境變數</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>import</span><span class=w> </span><span class=s>&#34;os&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w>    </span><span class=c1>// 設定自定義 Docker socket 路徑</span><span class=w>
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w>    </span><span class=nx>os</span><span class=p>.</span><span class=nf>Setenv</span><span class=p>(</span><span class=s>&#34;DOCKER_HOST&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;unix:///tmp/docker.sock&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>    </span><span class=c1>// 其他程式碼保持不變</span><span class=w>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>    </span><span class=nx>cli</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>client</span><span class=p>.</span><span class=nf>NewClientWithOpts</span><span class=p>(</span><span class=nx>client</span><span class=p>.</span><span class=nx>FromEnv</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>    </span><span class=c1>// ...</span><span class=w>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h3 id=在程式中指定>在程式中指定</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln>1</span><span class=cl><span class=nx>cli</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>client</span><span class=p>.</span><span class=nf>NewClientWithOpts</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=w>    </span><span class=nx>client</span><span class=p>.</span><span class=nf>WithHost</span><span class=p>(</span><span class=s>&#34;unix:///tmp/docker.sock&#34;</span><span class=p>),</span><span class=w>
+</span></span></span><span class=line><span class=ln>3</span><span class=cl><span class=w></span><span class=p>)</span><span class=w>
+</span></span></span></code></pre></div><h3 id=遠端-docker-daemon>遠端 Docker Daemon</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=c1>// TCP 連接</span><span class=w>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w></span><span class=nx>cli</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>client</span><span class=p>.</span><span class=nf>NewClientWithOpts</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w>    </span><span class=nx>client</span><span class=p>.</span><span class=nf>WithHost</span><span class=p>(</span><span class=s>&#34;tcp://remote-docker-host:2376&#34;</span><span class=p>),</span><span class=w>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w>    </span><span class=nx>client</span><span class=p>.</span><span class=nf>WithTLSClientConfig</span><span class=p>(</span><span class=s>&#34;/path/to/ca.pem&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;/path/to/cert.pem&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;/path/to/key.pem&#34;</span><span class=p>),</span><span class=w>
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w></span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w></span><span class=c1>// 或使用環境變數</span><span class=w>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w></span><span class=nx>os</span><span class=p>.</span><span class=nf>Setenv</span><span class=p>(</span><span class=s>&#34;DOCKER_HOST&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;tcp://remote-docker-host:2376&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w></span><span class=nx>os</span><span class=p>.</span><span class=nf>Setenv</span><span class=p>(</span><span class=s>&#34;DOCKER_TLS_VERIFY&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;1&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w></span><span class=nx>os</span><span class=p>.</span><span class=nf>Setenv</span><span class=p>(</span><span class=s>&#34;DOCKER_CERT_PATH&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;/path/to/certs&#34;</span><span class=p>)</span><span class=w>
+</span></span></span></code></pre></div><h3 id=安全考量>安全考量</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=ln> 1</span><span class=cl><span class=c># 只給 read-only 權限（如果支援）</span><span class=w>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w></span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w>  </span>- <span class=l>/var/run/docker.sock:/var/run/docker.sock:ro</span><span class=w>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w>  
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w></span><span class=c># 或使用 Docker-in-Docker (DinD)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>  </span><span class=nt>app</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>your-app</span><span class=w>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>    </span><span class=nt>depends_on</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>      </span>- <span class=l>docker</span><span class=w>
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w>  </span><span class=nt>docker</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>docker:dind</span><span class=w>
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=w>    </span><span class=nt>privileged</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=w>      </span><span class=nt>DOCKER_TLS_CERTDIR</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;&#34;</span><span class=w>
+</span></span></span></code></pre></div><ul><li><p><strong>專案名稱推導規則</strong>：</p><ul><li>如果沒有在 <code>docker-compose.yml</code> 中指定 <code>name:</code>，compose-spec/compose-go 會使用目錄名稱當專案名稱</li><li>也可以在 compose 檔案中明確指定：</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=ln>1</span><span class=cl><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>my-custom-project-name</span><span class=w>
+</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln>3</span><span class=cl><span class=w>  </span><span class=nt>db</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=ln>4</span><span class=cl><span class=w>    </span><span class=c># ...</span><span class=w>
+</span></span></span></code></pre></div></li><li><p><strong>容器命名格式</strong>：Docker Compose 使用 <code>{projectName}-{serviceName}-{instance}</code> 格式</p><ul><li>舊版本使用底線：<code>{projectName}_{serviceName}_{instance}</code></li><li>新版本使用破折號：<code>{projectName}-{serviceName}-{instance}</code></li></ul></li><li><p><strong>指定不同的 compose 檔案</strong>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln>1</span><span class=cl><span class=nx>composePath</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=s>&#34;path/to/your/docker-compose.yml&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=w></span><span class=nx>projectName</span><span class=p>,</span><span class=w> </span><span class=nx>serviceName</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nf>getProjectInfo</span><span class=p>(</span><span class=nx>composePath</span><span class=p>)</span><span class=w>
+</span></span></span></code></pre></div></li><li><p>多個 network 時，程式會拿第一個 network 的 IP。實務上可以指定 network 名稱。</p></li><li><p>容器 IP 只在 Docker network 裡有效，外部機器無法直接用。</p></li></ul><h2 id=小結>小結</h2><p>透過結合 <a href=https://github.com/compose-spec/compose-go>compose-spec/compose-go</a> 套件，我們實現了完全自動化的容器 IP 查詢：</p><ol><li><strong>自動解析</strong> docker-compose.yml 檔案</li><li><strong>智能推導</strong> 專案名稱和容器名稱</li><li><strong>動態查詢</strong> 容器 IP 地址</li><li><strong>無需 hardcode</strong> 任何容器相關資訊</li></ol><p>這樣做比直接開 <code>ports</code> 麻煩一點，但更安全更靈活。
+對內網環境或安全要求高的專案，這種方式非常適合。當你的專案有多個環境或經常變更容器配置時，這種自動化方法能大幅減少維護成本。</p></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/docker-compose-introduction/ class=post-nav-prev><span class=nav-label>上一篇</span>
+<span class=nav-title>Dockerfile 與 Docker Compose 寫法全攻略</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#docker-compose-範例>Docker Compose 範例</a></li><li><a href=#go-程式實作>Go 程式實作</a></li><li><a href=#執行測試>執行測試</a></li><li><a href=#調整使用的-docker-socket-路徑>調整使用的 Docker Socket 路徑</a><ul><li><a href=#環境變數>環境變數</a></li><li><a href=#在程式中指定>在程式中指定</a></li><li><a href=#遠端-docker-daemon>遠端 Docker Daemon</a></li><li><a href=#安全考量>安全考量</a></li></ul></li><li><a href=#小結>小結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{send_page_view:!0,anonymize_ip:!0,allow_google_signals:!1,allow_ad_personalization_signals:!1})</script></body></html>

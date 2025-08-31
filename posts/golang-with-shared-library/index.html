@@ -13,22 +13,22 @@
 Build the listed main package, plus all packages it imports,
 into a C shared library. The only callable symbols will
 be those functions exported using a cgo //export comment.
-Requires exactly one main package to be listed.</p></blockquote><h4 id=程式碼-hellogo>程式碼 (hello.go)</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span> <span class=nx>main</span>
-</span></span><span class=line><span class=ln> 2</span><span class=cl>
-</span></span><span class=line><span class=ln> 3</span><span class=cl><span class=kn>import</span> <span class=s>&#34;C&#34;</span>
-</span></span><span class=line><span class=ln> 4</span><span class=cl>
-</span></span><span class=line><span class=ln> 5</span><span class=cl><span class=c1>//export hello</span>
-</span></span><span class=line><span class=ln> 6</span><span class=cl><span class=kd>func</span> <span class=nf>hello</span><span class=p>()</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln> 7</span><span class=cl>	<span class=nb>println</span><span class=p>(</span><span class=s>&#34;Hello, world! Library&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=ln> 8</span><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=ln> 9</span><span class=cl>
-</span></span><span class=line><span class=ln>10</span><span class=cl><span class=cm>/* 
+Requires exactly one main package to be listed.</p></blockquote><h4 id=程式碼-hellogo>程式碼 (hello.go)</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w></span><span class=cp>//export hello</span><span class=w>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>hello</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>	</span><span class=nb>println</span><span class=p>(</span><span class=s>&#34;Hello, world! Library&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w></span><span class=cm>/* 
 </span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=cm>   We need the main function to make possible 
 </span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=cm>   cgo compiler to compile the package as c shared 
 </span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=cm>   library.
-</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=cm>*/</span>
-</span></span><span class=line><span class=ln>15</span><span class=cl><span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{}</span>
-</span></span></code></pre></div><h4 id=編譯>編譯</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -buildmode<span class=o>=</span>c-shared -o libhello.so hello.go
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=cm>*/</span><span class=w>
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span></code></pre></div><h4 id=編譯>編譯</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -buildmode<span class=o>=</span>c-shared -o libhello.so hello.go
 </span></span></code></pre></div><h4 id=結果>結果</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>libhello.h libhello.so
 </span></span></code></pre></div><h3 id=c-語言程式>C 語言程式</h3><p>main.c</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=ln>1</span><span class=cl><span class=cp>#import &lt;stdio.h&gt;
 </span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=cp>#import &#34;libhello.h&#34;
@@ -42,77 +42,77 @@ Requires exactly one main package to be listed.</p></blockquote><h4 id=程式碼
 </span></span></code></pre></div><h4 id=結果-1>結果</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>./main_c.out
 </span></span><span class=line><span class=ln>2</span><span class=cl>Hello world C !
 </span></span><span class=line><span class=ln>3</span><span class=cl>Hello, world! Library
-</span></span></code></pre></div><h3 id=go-語言程式-v1>Go 語言程式 v1</h3><p>main.go</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span> <span class=nx>main</span>
-</span></span><span class=line><span class=ln> 2</span><span class=cl>
-</span></span><span class=line><span class=ln> 3</span><span class=cl><span class=c1>// #cgo LDFLAGS: -lhello -L.</span>
-</span></span><span class=line><span class=ln> 4</span><span class=cl><span class=c1>// #include &lt;libhello.h&gt;</span>
-</span></span><span class=line><span class=ln> 5</span><span class=cl><span class=kn>import</span> <span class=s>&#34;C&#34;</span>
-</span></span><span class=line><span class=ln> 6</span><span class=cl><span class=kn>import</span> <span class=s>&#34;fmt&#34;</span>
-</span></span><span class=line><span class=ln> 7</span><span class=cl>
-</span></span><span class=line><span class=ln> 8</span><span class=cl><span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln> 9</span><span class=cl>	<span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;Hello world Go!&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>10</span><span class=cl>	<span class=nx>C</span><span class=p>.</span><span class=nf>hello</span><span class=p>()</span>
-</span></span><span class=line><span class=ln>11</span><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h4 id=編譯-2>編譯</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -o main_go.out  main.go
-</span></span></code></pre></div><h3 id=go-語言程式-v2>Go 語言程式 v2</h3><p>main_dl.go</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span> <span class=nx>main</span>
-</span></span><span class=line><span class=ln> 2</span><span class=cl>
-</span></span><span class=line><span class=ln> 3</span><span class=cl><span class=c1>// #cgo LDFLAGS: -ldl</span>
-</span></span><span class=line><span class=ln> 4</span><span class=cl><span class=c1>// #include &lt;dlfcn.h&gt;</span>
-</span></span><span class=line><span class=ln> 5</span><span class=cl><span class=kn>import</span> <span class=s>&#34;C&#34;</span>
-</span></span><span class=line><span class=ln> 6</span><span class=cl><span class=kn>import</span> <span class=p>(</span>
-</span></span><span class=line><span class=ln> 7</span><span class=cl>	<span class=s>&#34;fmt&#34;</span>
-</span></span><span class=line><span class=ln> 8</span><span class=cl>	<span class=s>&#34;unsafe&#34;</span>
-</span></span><span class=line><span class=ln> 9</span><span class=cl><span class=p>)</span>
-</span></span><span class=line><span class=ln>10</span><span class=cl>
-</span></span><span class=line><span class=ln>11</span><span class=cl><span class=c1>// load dynamic library</span>
-</span></span><span class=line><span class=ln>12</span><span class=cl><span class=kd>func</span> <span class=nf>load</span><span class=p>(</span><span class=nx>path</span> <span class=kt>string</span><span class=p>)</span> <span class=p>(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>13</span><span class=cl>	<span class=nx>handle</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>C</span><span class=p>.</span><span class=nf>dlopen</span><span class=p>(</span><span class=nx>C</span><span class=p>.</span><span class=nf>CString</span><span class=p>(</span><span class=nx>path</span><span class=p>),</span> <span class=nx>C</span><span class=p>.</span><span class=nx>RTLD_LAZY</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>14</span><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>15</span><span class=cl>		<span class=k>return</span> <span class=kc>nil</span><span class=p>,</span> <span class=nx>err</span>
-</span></span><span class=line><span class=ln>16</span><span class=cl>	<span class=p>}</span>
-</span></span><span class=line><span class=ln>17</span><span class=cl>	<span class=k>return</span> <span class=nx>handle</span><span class=p>,</span> <span class=kc>nil</span>
-</span></span><span class=line><span class=ln>18</span><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=ln>19</span><span class=cl>
-</span></span><span class=line><span class=ln>20</span><span class=cl><span class=c1>// get symbol </span>
-</span></span><span class=line><span class=ln>21</span><span class=cl><span class=kd>func</span> <span class=nf>findSym</span><span class=p>(</span><span class=nx>lib</span> <span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>,</span> <span class=nx>sym</span> <span class=kt>string</span><span class=p>)</span> <span class=p>(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>22</span><span class=cl>	<span class=nx>pc</span> <span class=o>:=</span> <span class=nx>C</span><span class=p>.</span><span class=nf>dlsym</span><span class=p>(</span><span class=nx>lib</span><span class=p>,</span> <span class=nx>C</span><span class=p>.</span><span class=nf>CString</span><span class=p>(</span><span class=nx>sym</span><span class=p>))</span>
-</span></span><span class=line><span class=ln>23</span><span class=cl>	<span class=k>if</span> <span class=nx>pc</span> <span class=o>==</span> <span class=kc>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>24</span><span class=cl>		<span class=k>return</span> <span class=kc>nil</span><span class=p>,</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;find symbol %s failed&#34;</span><span class=p>,</span> <span class=nx>sym</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>25</span><span class=cl>	<span class=p>}</span>
-</span></span><span class=line><span class=ln>26</span><span class=cl>	<span class=k>return</span> <span class=nx>pc</span><span class=p>,</span> <span class=kc>nil</span>
-</span></span><span class=line><span class=ln>27</span><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=ln>28</span><span class=cl>
-</span></span><span class=line><span class=ln>29</span><span class=cl><span class=c1>// unload dynamic library</span>
-</span></span><span class=line><span class=ln>30</span><span class=cl><span class=kd>func</span> <span class=nf>unload</span><span class=p>(</span><span class=nx>lib</span> <span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>)</span> <span class=kt>error</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>31</span><span class=cl>	<span class=k>if</span> <span class=nx>C</span><span class=p>.</span><span class=nf>dlclose</span><span class=p>(</span><span class=nx>lib</span><span class=p>)</span> <span class=o>!=</span> <span class=mi>0</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>32</span><span class=cl>		<span class=k>return</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;unload library failed&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>33</span><span class=cl>	<span class=p>}</span>
-</span></span><span class=line><span class=ln>34</span><span class=cl>	<span class=k>return</span> <span class=kc>nil</span>
-</span></span><span class=line><span class=ln>35</span><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=ln>36</span><span class=cl>
-</span></span><span class=line><span class=ln>37</span><span class=cl><span class=c1>// entry point function</span>
-</span></span><span class=line><span class=ln>38</span><span class=cl><span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>39</span><span class=cl>	<span class=nb>println</span><span class=p>(</span><span class=s>&#34;Hello World&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>40</span><span class=cl>
-</span></span><span class=line><span class=ln>41</span><span class=cl>	<span class=nx>lib</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nf>load</span><span class=p>(</span><span class=s>&#34;./libhello.so&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>42</span><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>43</span><span class=cl>		<span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>44</span><span class=cl>	<span class=p>}</span>
-</span></span><span class=line><span class=ln>45</span><span class=cl>	<span class=k>defer</span> <span class=nf>unload</span><span class=p>(</span><span class=nx>lib</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>46</span><span class=cl>
-</span></span><span class=line><span class=ln>47</span><span class=cl>	<span class=nx>addr</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nf>findSym</span><span class=p>(</span><span class=nx>lib</span><span class=p>,</span> <span class=s>&#34;hello&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>48</span><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>49</span><span class=cl>		<span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>50</span><span class=cl>	<span class=p>}</span>
-</span></span><span class=line><span class=ln>51</span><span class=cl>
-</span></span><span class=line><span class=ln>52</span><span class=cl>	<span class=kd>var</span> <span class=nx>hello</span> <span class=kd>func</span><span class=p>()</span>
-</span></span><span class=line><span class=ln>53</span><span class=cl>
-</span></span><span class=line><span class=ln>54</span><span class=cl>	<span class=nx>p</span> <span class=o>:=</span> <span class=o>&amp;</span><span class=nx>addr</span>
-</span></span><span class=line><span class=ln>55</span><span class=cl>	<span class=nx>hello</span> <span class=p>=</span> <span class=o>*</span><span class=p>(</span><span class=o>*</span><span class=kd>func</span><span class=p>())(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nf>Pointer</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>p</span><span class=p>))</span>
-</span></span><span class=line><span class=ln>56</span><span class=cl>	
-</span></span><span class=line><span class=ln>57</span><span class=cl>	<span class=nf>hello</span><span class=p>()</span>
-</span></span><span class=line><span class=ln>58</span><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h4 id=編譯-3>編譯</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -o main_go_dl.out  main_dl.go
+</span></span></code></pre></div><h3 id=go-語言程式-v1>Go 語言程式 v1</h3><p>main.go</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w></span><span class=c1>// #cgo LDFLAGS: -lhello -L.</span><span class=w>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w></span><span class=c1>// #include &lt;libhello.h&gt;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=s>&#34;fmt&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>	</span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;Hello world Go!&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>	</span><span class=nx>C</span><span class=p>.</span><span class=nf>hello</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h4 id=編譯-2>編譯</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -o main_go.out  main.go
+</span></span></code></pre></div><h3 id=go-語言程式-v2>Go 語言程式 v2</h3><p>main_dl.go</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w></span><span class=c1>// #cgo LDFLAGS: -ldl</span><span class=w>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w></span><span class=c1>// #include &lt;dlfcn.h&gt;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>	</span><span class=s>&#34;fmt&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>	</span><span class=s>&#34;unsafe&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w></span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w></span><span class=c1>// load dynamic library</span><span class=w>
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>load</span><span class=p>(</span><span class=nx>path</span><span class=w> </span><span class=kt>string</span><span class=p>)</span><span class=w> </span><span class=p>(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>,</span><span class=w> </span><span class=kt>error</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=w>	</span><span class=nx>handle</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nf>dlopen</span><span class=p>(</span><span class=nx>C</span><span class=p>.</span><span class=nf>CString</span><span class=p>(</span><span class=nx>path</span><span class=p>),</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nx>RTLD_LAZY</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=kc>nil</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w>
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=w>	</span><span class=k>return</span><span class=w> </span><span class=nx>handle</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=w>
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=w></span><span class=c1>// get symbol </span><span class=w>
+</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>findSym</span><span class=p>(</span><span class=nx>lib</span><span class=w> </span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>,</span><span class=w> </span><span class=nx>sym</span><span class=w> </span><span class=kt>string</span><span class=p>)</span><span class=w> </span><span class=p>(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>,</span><span class=w> </span><span class=kt>error</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=w>	</span><span class=nx>pc</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nf>dlsym</span><span class=p>(</span><span class=nx>lib</span><span class=p>,</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nf>CString</span><span class=p>(</span><span class=nx>sym</span><span class=p>))</span><span class=w>
+</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>pc</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=kc>nil</span><span class=p>,</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;find symbol %s failed&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>sym</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>26</span><span class=cl><span class=w>	</span><span class=k>return</span><span class=w> </span><span class=nx>pc</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=w>
+</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>29</span><span class=cl><span class=w></span><span class=c1>// unload dynamic library</span><span class=w>
+</span></span></span><span class=line><span class=ln>30</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>unload</span><span class=p>(</span><span class=nx>lib</span><span class=w> </span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>)</span><span class=w> </span><span class=kt>error</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nf>dlclose</span><span class=p>(</span><span class=nx>lib</span><span class=p>)</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=mi>0</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;unload library failed&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=w>	</span><span class=k>return</span><span class=w> </span><span class=kc>nil</span><span class=w>
+</span></span></span><span class=line><span class=ln>35</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>36</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>37</span><span class=cl><span class=w></span><span class=c1>// entry point function</span><span class=w>
+</span></span></span><span class=line><span class=ln>38</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>39</span><span class=cl><span class=w>	</span><span class=nb>println</span><span class=p>(</span><span class=s>&#34;Hello World&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>40</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>41</span><span class=cl><span class=w>	</span><span class=nx>lib</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nf>load</span><span class=p>(</span><span class=s>&#34;./libhello.so&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=w>		</span><span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>44</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>45</span><span class=cl><span class=w>	</span><span class=k>defer</span><span class=w> </span><span class=nf>unload</span><span class=p>(</span><span class=nx>lib</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>46</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>47</span><span class=cl><span class=w>	</span><span class=nx>addr</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nf>findSym</span><span class=p>(</span><span class=nx>lib</span><span class=p>,</span><span class=w> </span><span class=s>&#34;hello&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>48</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>49</span><span class=cl><span class=w>		</span><span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>50</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>51</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>52</span><span class=cl><span class=w>	</span><span class=kd>var</span><span class=w> </span><span class=nx>hello</span><span class=w> </span><span class=kd>func</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=ln>53</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>54</span><span class=cl><span class=w>	</span><span class=nx>p</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=o>&amp;</span><span class=nx>addr</span><span class=w>
+</span></span></span><span class=line><span class=ln>55</span><span class=cl><span class=w>	</span><span class=nx>hello</span><span class=w> </span><span class=p>=</span><span class=w> </span><span class=o>*</span><span class=p>(</span><span class=o>*</span><span class=kd>func</span><span class=p>())(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nf>Pointer</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>p</span><span class=p>))</span><span class=w>
+</span></span></span><span class=line><span class=ln>56</span><span class=cl><span class=w>	
+</span></span></span><span class=line><span class=ln>57</span><span class=cl><span class=w>	</span><span class=nf>hello</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=ln>58</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h4 id=編譯-3>編譯</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -o main_go_dl.out  main_dl.go
 </span></span></code></pre></div><h2 id=小結>小結</h2><p>原本也想試試 Node.js 的使用動態連結函式庫的部份。但是相關的函式庫 <code>ffi</code> 一直無法正常的安裝，最後就沒有往下測了。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://pkg.go.dev/cmd/go#hdr-Build_modes>go build mode</a></li><li><a href=https://www.twblogs.net/a/5b7d13442b71770a43ddcac9>Golang生成共享庫(shared library)以及Golang生成C可調用的動態庫.so和靜態庫.a</a></li><li><a href=https://github.com/vladimirvivien/go-cshared-examples>vladimirvivien/go-cshared-examples</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/how-to-use-vue-electron-and-go-to-build-an-app/ class=post-nav-prev><span class=nav-label>上一篇</span>
 <span class=nav-title>使用 Vue、Electron 以及 Go 建立一個小工具</span>
 </a><a href=https://e61983.github.io/posts/go-module-using-private-repository/ class=post-nav-next><span class=nav-label>下一篇</span>
