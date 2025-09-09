@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Elf on Yuan のノート</title><link>https://e61983.github.io/tags/elf/</link><description>Recent content in Elf on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Tue, 09 Sep 2025 21:27:28 +0800</lastBuildDate><atom:link href="https://e61983.github.io/tags/elf/index.xml" rel="self" type="application/rss+xml"/><item><title>去找吧！我把所有資料都藏在那了 - 通向 Section 航道的旅程</title><link>https://e61983.github.io/posts/use-go-update-elf-section/</link><pubDate>Tue, 09 Sep 2025 21:27:28 +0800</pubDate><guid>https://e61983.github.io/posts/use-go-update-elf-section/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;「我要成為海賊王！」&lt;br&gt;
+這句話大家應該不陌生吧。對我來說，寫程式有時候就像在 &lt;strong&gt;偉大航道上尋寶&lt;/strong&gt;。&lt;br&gt;
+這次的寶藏不是什麼「One Piece」，而是──&lt;strong&gt;把設定檔藏在 ELF Binary 裡的秘密空間&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;最近剛好遇到一個需求：想把資料包進程式裡，方便部署，但又不想讓人隨便亂改。&lt;br&gt;
+就像在跟同學們玩「海上捉迷藏」一樣，所以筆者決定把設定藏進一個 &lt;strong&gt;神秘的 section&lt;/strong&gt;，然後用小工具去 patch。&lt;/p&gt;
+&lt;p&gt;於是乎本篇就誕生了。&lt;/p&gt;</description></item></channel></rss>

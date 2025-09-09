@@ -1,402 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在 Go Binary 裡，與可寫 section 共舞？！ - Yuan のノート</title>
-    
-    
-    
-        <meta name="description" content="心之所至，隨意亂書">
-    
-    
-    
-    
-        <meta name="keywords" content="golang,embedded,linux,backend,programming">
-    
-    
-    
-    <meta name="author" content="Yuan">
-    
-    
-    <meta property="og:title" content="在 Go Binary 裡，與可寫 section 共舞？！ - Yuan のノート">
-    <meta property="og:description" content="心之所至，隨意亂書">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="http://localhost:3000/posts/use-go-update-elf-section/">
-    
-    
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg">
-    <meta name="theme-color" content="#0d1117">
-    
-    
-    
-    <link rel="stylesheet" href="http://localhost:3000/yuan/css/main.min.css">
-    
-    
-    
-    <link rel="stylesheet" href="http://localhost:3000/yuan/css/chroma.min.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="theme-dark">
-    <div class="layout">
-        
-        <header class="header">
-    <div class="container">
-        <div class="header-content">
-            
-            <div class="header-brand">
-                <a href="http://localhost:3000/" class="brand-link">
-                    <span class="brand-text">Yuan のノート</span>
-                </a>
-                
-                    <p class="brand-subtitle">心之所至，隨意亂書</p>
-                
-            </div>
-            
-            
-            <nav class="nav">
-                <ul class="nav-list">
-                    
-                        <li class="nav-item">
-                            <a href="/" class="nav-link ">
-                                首頁
-                            </a>
-                        </li>
-                    
-                        <li class="nav-item">
-                            <a href="/posts/" class="nav-link ">
-                                文章
-                            </a>
-                        </li>
-                    
-                        <li class="nav-item">
-                            <a href="/categories/" class="nav-link ">
-                                分類
-                            </a>
-                        </li>
-                    
-                        <li class="nav-item">
-                            <a href="/tags/" class="nav-link ">
-                                標籤
-                            </a>
-                        </li>
-                    
-                        <li class="nav-item">
-                            <a href="/archive/" class="nav-link ">
-                                歸檔
-                            </a>
-                        </li>
-                    
-                </ul>
-            </nav>
-            
-            
-            <button class="mobile-menu-toggle" aria-label="Toggle menu">
-                <span class="hamburger"></span>
-                <span class="hamburger"></span>
-                <span class="hamburger"></span>
-            </button>
-        </div>
-    </div>
-</header>
-
-        
-        
-        <main class="main">
-            
-<div class="container">
-    <div class="post-layout">
-        
-        <article class="post">
-            
-            <header class="post-header">
-                <h1 class="post-title">在 Go Binary 裡，與可寫 section 共舞？！</h1>
-                
-                <div class="post-meta">
-                    <time class="post-date" datetime="2025-08-31T23:27:28&#43;08:00">
-                        2025年08月31日
-                    </time>
-                    
-                    
-                        <span class="reading-time">2 分鐘閱讀</span>
-                    
-                    
-                    
-                        <span class="word-count">404 字</span>
-                    
-                    
-                    
-                </div>
-                
-                
-                
-                
-                
-                
-            </header>
-            
-            
-            
-                <div class="mobile-toc-toggle">
-                    <button class="toc-toggle-btn" aria-label="顯示/隱藏目錄">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/>
-                        </svg>
-                        目錄
-                    </button>
-                    <nav class="mobile-toc">
-                        <h3 class="toc-title">目錄</h3>
-                        <nav id="TableOfContents">
-  <ul>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#核心概念">核心概念</a></li>
-    <li><a href="#實作步驟">實作步驟</a>
-      <ul>
-        <li><a href="#1-建立自訂-section-放入設定">1. 建立自訂 section 放入設定</a></li>
-        <li><a href="#2-patch-工具讀寫-section">2. Patch 工具讀寫 section</a></li>
-      </ul>
-    </li>
-    <li><a href="#完整範例程式碼">完整範例程式碼</a></li>
-    <li><a href="#小結">小結</a></li>
-  </ul>
-</nav>
-                    </nav>
-                </div>
-            
-            
-            
-            <div class="post-content">
-                <h2 id="前言">前言</h2>
-<p>最近有同學在問：能不能把設定 embed 進 Go binary 裡，然後「不中斷運行」就能改？<br>
-Go 經典做法是 <code>//go:embed</code>，但 embed 起來的配置只能讀不能改。 那…如果我們真的想直接 patch binary 裡的 section，可以怎麼做呢？<br>
-於是乎這篇就出現了。</p>
-<h2 id="核心概念">核心概念</h2>
-<p>我們這裡講的是 ELF（Linux）或 PE（Windows） binary 裡的 <code>.rodata</code> 或自訂 section，屬於不可執行但可以讀出的區段。如果我們把預設設定寫進去，編譯完成後本來是讀不寫的；但只要：</p>
-<ul>
-<li>在編譯時 <strong>保留固定長度的空間</strong>；</li>
-<li>準備一個小工具，在 binary 上下 patch 那段 byte（只能覆寫、不能增減長度）；</li>
-</ul>
-<p>就能實現「binary global file」的功能──在 deploy 後仍能動態改設定，還不用重 build。</p>
-<h2 id="實作步驟">實作步驟</h2>
-<h3 id="1-建立自訂-section-放入設定">1. 建立自訂 section 放入設定</h3>
-<p>在 Go 程式裡，透過 <code>//go:embed</code> 或 <code>ldflags</code>，把設定放進一個自訂 section（例如 <code>.configdata</code>），並且靜默留下一些 padding 確保後續 patch 有空間。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln">1</span><span class="cl"><span class="cp">//go:embed default_config.json</span><span class="w">
-</span></span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="w"></span><span class="kd">var</span><span class="w"> </span><span class="nx">defaultConfig</span><span class="w"> </span><span class="p">[]</span><span class="kt">byte</span><span class="w">
-</span></span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln">4</span><span class="cl"><span class="w"></span><span class="kd">var</span><span class="w"> </span><span class="nx">configData</span><span class="w"> </span><span class="p">[</span><span class="mi">1024</span><span class="p">]</span><span class="kt">byte</span><span class="w">
-</span></span></span><span class="line"><span class="ln">5</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln">6</span><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">init</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="ln">7</span><span class="cl"><span class="w">    </span><span class="nb">copy</span><span class="p">(</span><span class="nx">configData</span><span class="p">[:],</span><span class="w"> </span><span class="nx">defaultConfig</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">8</span><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><p>在 linker 語法裡，也可以指定 section name（例如使用 <code>-ldflags &quot;-X main.configSection=...&quot;</code>）。</p>
-<h3 id="2-patch-工具讀寫-section">2. Patch 工具讀寫 section</h3>
-<p>實作一個小工具（用 Go 寫），流程如下：</p>
-<ol>
-<li>用 <code>debug/elf</code> 或 <code>debug/pe</code> 開啟目標 binary。</li>
-<li>掃描找出 <code>.configdata</code> section 的 offset 與 size。</li>
-<li>Seek 到該區段裡你要替換的位元組位置。</li>
-<li>覆寫新的設定內容（長度不可超過原本空間）。</li>
-<li>重新寫回 binary。</li>
-</ol>
-<p>這樣一來，你就能在 binary 裡 embed 預設值 + patchable 區塊，即便 binary 不重新 build，deploy 後也能動態改設定。</p>
-<h2 id="完整範例程式碼">完整範例程式碼</h2>
-<p>（這邊只擺核心片段示意，完整可再實作調整）</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="c1">// ===== app/main.go =====</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w"></span><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="w">  </span><span class="nx">_</span><span class="w"> </span><span class="s">&#34;embed&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="w">  </span><span class="s">&#34;fmt&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w"></span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w"></span><span class="cp">//go:embed default_config.json</span><span class="w">
-</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="w"></span><span class="kd">var</span><span class="w"> </span><span class="nx">defaultConfig</span><span class="w"> </span><span class="p">[]</span><span class="kt">byte</span><span class="w">
-</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="w"></span><span class="kd">var</span><span class="w"> </span><span class="nx">configData</span><span class="w"> </span><span class="p">[</span><span class="mi">1024</span><span class="p">]</span><span class="kt">byte</span><span class="w">
-</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">init</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="w">  </span><span class="nb">copy</span><span class="p">(</span><span class="nx">configData</span><span class="p">[:],</span><span class="w"> </span><span class="nx">defaultConfig</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="ln">17</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="w">  </span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;config:&#34;</span><span class="p">,</span><span class="w"> </span><span class="nb">string</span><span class="p">(</span><span class="nx">configData</span><span class="p">[:]))</span><span class="w">
-</span></span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="c1">// ===== tools/patcher.go =====</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w"></span><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="w">  </span><span class="s">&#34;bytes&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="w">  </span><span class="s">&#34;debug/elf&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w">  </span><span class="s">&#34;flag&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="w">  </span><span class="s">&#34;os&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w"></span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="w">  </span><span class="nx">binPath</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;bin&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;path to target binary&#34;</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="w">  </span><span class="nx">newCfg</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;config&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;path to new config file&#34;</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="w">  </span><span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span><span class="w">
-</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="w">  </span><span class="nx">f</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">os</span><span class="p">.</span><span class="nf">OpenFile</span><span class="p">(</span><span class="o">*</span><span class="nx">binPath</span><span class="p">,</span><span class="w"> </span><span class="nx">os</span><span class="p">.</span><span class="nx">O_RDWR</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">17</span><span class="cl"><span class="w">  </span><span class="k">defer</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span><span class="w">
-</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="w">  </span><span class="nx">ef</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">elf</span><span class="p">.</span><span class="nf">NewFile</span><span class="p">(</span><span class="nx">f</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">sec</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">ef</span><span class="p">.</span><span class="nx">Sections</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="ln">21</span><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">sec</span><span class="p">.</span><span class="nx">Name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&#34;.configdata&#34;</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="ln">22</span><span class="cl"><span class="w">      </span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">sec</span><span class="p">.</span><span class="nf">Data</span><span class="p">()</span><span class="w">
-</span></span></span><span class="line"><span class="ln">23</span><span class="cl"><span class="w">      </span><span class="nx">offset</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">bytes</span><span class="p">.</span><span class="nf">Index</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;{&#34;</span><span class="p">))</span><span class="w">
-</span></span></span><span class="line"><span class="ln">24</span><span class="cl"><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="nx">offset</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="ln">25</span><span class="cl"><span class="w">        </span><span class="nx">f</span><span class="p">.</span><span class="nf">Seek</span><span class="p">(</span><span class="nb">int64</span><span class="p">(</span><span class="nx">sec</span><span class="p">.</span><span class="nx">Offset</span><span class="p">)</span><span class="o">+</span><span class="nb">int64</span><span class="p">(</span><span class="nx">offset</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">26</span><span class="cl"><span class="w">        </span><span class="nx">newData</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">os</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="o">*</span><span class="nx">newCfg</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">27</span><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">newData</span><span class="p">)</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span><span class="o">-</span><span class="nx">offset</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="ln">28</span><span class="cl"><span class="w">          </span><span class="nb">panic</span><span class="p">(</span><span class="s">&#34;new config too large&#34;</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">29</span><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="ln">30</span><span class="cl"><span class="w">        </span><span class="nx">f</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">newData</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="ln">31</span><span class="cl"><span class="w">      </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="ln">32</span><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="ln">33</span><span class="cl"><span class="w">  </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="ln">34</span><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><p>執行：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">go build -o myapp ./app
-</span></span><span class="line"><span class="ln">2</span><span class="cl">go build -o patcher ./tools/patcher.go
-</span></span><span class="line"><span class="ln">3</span><span class="cl">./patcher -bin<span class="o">=</span>myapp -config<span class="o">=</span>new_config.json
-</span></span></code></pre></div><p>這樣 <code>myapp</code> 裡的 <code>.configdata</code> 就被 patch 成你提供的新 JSON 了！</p>
-<div class="notice notice-warning" style="
-  border-left: 4px solid;
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 0 4px 4px 0;
-  
-    border-left-color: #f39c12;
-    background-color: #fef9e7;
-    color: #8a6d3b;
-  
-">
-  
-    <div style="font-weight: bold; margin-bottom: 0.5rem;">
-      ⚠️
-      執行 patcher 出現 nil 錯誤
-    </div>
-  
-  <div>
-    <p>當出現下列錯誤訊息時</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">panic: runtime error: invalid memory address or nil pointer dereference 
-</span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="o">[</span>signal SIGSEGV: segmentation violation <span class="nv">code</span><span class="o">=</span>0x2 <span class="nv">addr</span><span class="o">=</span>0x28 <span class="nv">pc</span><span class="o">=</span>0x1024cc6b4<span class="o">]</span>
-</span></span></code></pre></div><p>可能是編譯出來的執行檔並不是 ELD 格式的。</p>
-<p>同學們可以使用 <code>file</code> 去確認它。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="ln">1</span><span class="cl">file ./myapp
-</span></span><span class="line"><span class="ln">2</span><span class="cl">./myapp: Mach-O 64-bit executable arm64
-</span></span><span class="line"><span class="ln">3</span><span class="cl">
-</span></span><span class="line"><span class="ln">4</span><span class="cl">GOOS=linux GOARCH=amd64 go build -o myapp ./app
-</span></span><span class="line"><span class="ln">5</span><span class="cl">
-</span></span><span class="line"><span class="ln">6</span><span class="cl">file ./myapp
-</span></span><span class="line"><span class="ln">7</span><span class="cl">./myapp: ./app/app: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, BuildID[sha1]=1ffa1b26eaac55e65c340df723c0d4178f2cedae, with debug_info, not stripped
-</span></span></code></pre></div>
-  </div>
-</div>
-
-<h2 id="小結">小結</h2>
-<p>將設定 embed 進 binary，在 runtime 可讀但不可寫，是 Go 預設模樣。
-但如果同學們希望 deploy 後還能動態 patch，那可以：</p>
-<ul>
-<li>在 compile 時 <strong>embed + padding</strong> 放入固定長度空間。</li>
-<li>用專屬工具 <strong>解析 binary 格式</strong>、找到 section、覆寫內容。</li>
-</ul>
-<p>這種方式兼具「部署單檔」與「運行後配置可調」的彈性，但要注意：<strong>不可改長度</strong>、<strong>alignment 要對</strong>，還有 Windows 的 code signing 可能被破壞（Linux 通常沒這問題）。</p>
-            </div>
-            
-            
-            <footer class="post-footer">
-                
-                <div class="post-nav">
-                    
-                        <a href="http://localhost:3000/posts/use-docker-api-query-container-ip/" class="post-nav-prev">
-                            <span class="nav-label">上一篇</span>
-                            <span class="nav-title">在 Go 裡直接抓 Docker 容器 IP，連線 PostgreSQL</span>
-                        </a>
-                    
-                    
-                    
-                        <a href="http://localhost:3000/posts/cgo-introduction/" class="post-nav-next">
-                            <span class="nav-label">下一篇</span>
-                            <span class="nav-title">認識 Cgo：Go 與 C 語言的橋樑</span>
-                        </a>
-                    
-                </div>
-            </footer>
-        </article>
-        
-        
-        
-            <aside class="post-sidebar">
-                <nav class="toc desktop-toc">
-                    <h3 class="toc-title">目錄</h3>
-                    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#核心概念">核心概念</a></li>
-    <li><a href="#實作步驟">實作步驟</a>
-      <ul>
-        <li><a href="#1-建立自訂-section-放入設定">1. 建立自訂 section 放入設定</a></li>
-        <li><a href="#2-patch-工具讀寫-section">2. Patch 工具讀寫 section</a></li>
-      </ul>
-    </li>
-    <li><a href="#完整範例程式碼">完整範例程式碼</a></li>
-    <li><a href="#小結">小結</a></li>
-  </ul>
-</nav>
-                </nav>
-            </aside>
-        
-    </div>
-</div>
-
-
-<button id="backToTop" class="back-to-top" aria-label="回到頂部">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
-    </svg>
-</button>
-
-        </main>
-        
-        
-        <footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            
-            
-                <div class="social-links">
-                    <a href="https://github.com/e61983" target="_blank" rel="noopener" class="social-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        GitHub
-                    </a>
-                </div>
-            
-            
-            
-            <div class="copyright">
-                <p>&copy; 2025 Yuan. All rights reserved.</p>
-                <p>Powered by <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a> & Yuan Theme</p>
-            </div>
-        </div>
-    </div>
-</footer>
-
-    </div>
-    
-    
-    
-    <script src="http://localhost:3000/yuan/js/main.min.js"></script>
-    
-    
-    
-</body>
-</html>
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>去找吧！我把所有資料都藏在那了 - 通向 Section 航道的旅程 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="去找吧！我把所有資料都藏在那了 - 通向 Section 航道的旅程 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/use-go-update-elf-section/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
+<span class=hamburger></span>
+<span class=hamburger></span>
+<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>去找吧！我把所有資料都藏在那了 - 通向 Section 航道的旅程</h1><div class=post-meta><time class=post-date datetime=2025-09-09T21:27:28+08:00>2025年09月09日
+</time><span class=reading-time>2 分鐘閱讀</span>
+<span class=word-count>334 字</span>
+<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/go class=tag>go</a>
+<a href=/tags/cgo class=tag>cgo</a>
+<a href=/tags/elf class=tag>elf</a></div><div class=post-categories><a href=/categories/note class=category>note</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#核心概念>核心概念</a><ul><li><a href=#建立自訂-section>建立自訂 Section</a></li><li><a href=#在-go-世界開啟寶藏>在 Go 世界開啟寶藏</a></li><li><a href=#patch-工具羅盤與鑰匙>Patch 工具：羅盤與鑰匙</a></li></ul></li><li><a href=#執行流程>執行流程</a></li><li><a href=#小提醒>小提醒</a></li><li><a href=#小結>小結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>「我要成為海賊王！」<br>這句話大家應該不陌生吧。對我來說，寫程式有時候就像在 <strong>偉大航道上尋寶</strong>。<br>這次的寶藏不是什麼「One Piece」，而是──<strong>把設定檔藏在 ELF Binary 裡的秘密空間</strong>。</p><p>最近剛好遇到一個需求：想把資料包進程式裡，方便部署，但又不想讓人隨便亂改。<br>就像在跟同學們玩「海上捉迷藏」一樣，所以筆者決定把設定藏進一個 <strong>神秘的 section</strong>，然後用小工具去 patch。</p><p>於是乎本篇就誕生了。</p><h2 id=核心概念>核心概念</h2><p>在 ELF（Linux）或 PE（Windows） binary 世界裡，有很多「島嶼」──每個 section 就是一個島。<br>我們要找的就是那個能保存寶藏的島，例如 <code>.rodata</code> 或自訂的 <code>.mydata</code>。</p><p>這些島有兩個特色：</p><ul><li>不能執行（safe！不怕炸掉程式）；</li><li>但可以讀出內容。</li></ul><p>於是我們的計畫就像「把寶藏藏在島上」一樣：</p><ol><li>在編譯時留下一個固定大小的空間（像是預留寶箱的大小）；</li><li>寫一個小 patch 工具，就能在航行途中把新的寶物塞進去（但記住──大小不能超過原本的寶箱）。</li></ol><h3 id=建立自訂-section>建立自訂 Section</h3><p>首先，我們要在 C 世界裡留一個「寶箱」。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln>1</span><span class=cl><span class=cm>/*
+</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=cm>const char mydata[1024] __attribute__((section(&#34;.mydata&#34;), used)) = {0};
+</span></span></span><span class=line><span class=ln>3</span><span class=cl><span class=cm>*/</span><span class=w>
+</span></span></span><span class=line><span class=ln>4</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>5</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w>
+</span></span></span></code></pre></div><p>這裡透過 <code>__attribute__((section(".mydata")))</code> 指定了寶藏島的座標，大小固定 1024 bytes。
+之後 Go 就能透過 CGO 拿到這個位置。</p><h3 id=在-go-世界開啟寶藏>在 Go 世界開啟寶藏</h3><p>我們要有個船員（函式），能幫忙把藏在島上的寶物讀出來：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=c1>// ===== app/main.go =====</span><span class=w>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w></span><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w></span><span class=cm>/*
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=cm>const char mydata[1024] __attribute__((section(&#34;.mydata&#34;), used)) = {0};
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=cm>*/</span><span class=w>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>  </span><span class=s>&#34;fmt&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w>  </span><span class=s>&#34;unsafe&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=w></span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>read</span><span class=p>()</span><span class=w> </span><span class=p>[]</span><span class=kt>byte</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=w>  </span><span class=k>return</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nf>GoBytes</span><span class=p>(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nf>Pointer</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>C</span><span class=p>.</span><span class=nx>mydata</span><span class=p>[</span><span class=mi>0</span><span class=p>]),</span><span class=w> </span><span class=mi>1024</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=w>  </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;mydata:&#34;</span><span class=p>,</span><span class=w> </span><span class=nb>string</span><span class=p>(</span><span class=nf>read</span><span class=p>()))</span><span class=w>
+</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><ul><li><code>C.mydata</code> 是陣列，要用 <code>&amp;C.mydata[0]</code> 才能拿到指標；</li><li><code>unsafe</code> 需要引入。</li></ul><h3 id=patch-工具羅盤與鑰匙>Patch 工具：羅盤與鑰匙</h3><p>接著我們需要一個「航海士」──工具程式，能找到 <code>.mydata</code> 的位置並塞進新的資料。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=c1>// ===== tools/patcher.go =====</span><span class=w>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w></span><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w>  </span><span class=s>&#34;debug/elf&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w>  </span><span class=s>&#34;flag&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>  </span><span class=s>&#34;io&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>  </span><span class=s>&#34;os&#34;</span><span class=w>
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w></span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w></span><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=w>  </span><span class=nx>binPath</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>flag</span><span class=p>.</span><span class=nf>String</span><span class=p>(</span><span class=s>&#34;bin&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;path to target binary&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=w>  </span><span class=nx>newCfg</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>flag</span><span class=p>.</span><span class=nf>String</span><span class=p>(</span><span class=s>&#34;config&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;path to new config file&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=w>  </span><span class=nx>flag</span><span class=p>.</span><span class=nf>Parse</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=w>  </span><span class=c1>// 打開寶藏地圖（binary）</span><span class=w>
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=w>  </span><span class=nx>f</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>os</span><span class=p>.</span><span class=nf>OpenFile</span><span class=p>(</span><span class=o>*</span><span class=nx>binPath</span><span class=p>,</span><span class=w> </span><span class=nx>os</span><span class=p>.</span><span class=nx>O_RDWR</span><span class=p>,</span><span class=w> </span><span class=mi>0</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=w>  </span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=w>    </span><span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=w>  </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=w>  </span><span class=k>defer</span><span class=w> </span><span class=nx>f</span><span class=p>.</span><span class=nf>Close</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=w>  </span><span class=nx>ef</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>elf</span><span class=p>.</span><span class=nf>NewFile</span><span class=p>(</span><span class=nx>f</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=w>  </span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=w>    </span><span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>26</span><span class=cl><span class=w>  </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=w>  </span><span class=nx>cfg</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>os</span><span class=p>.</span><span class=nf>ReadFile</span><span class=p>(</span><span class=o>*</span><span class=nx>newCfg</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>29</span><span class=cl><span class=w>  </span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>30</span><span class=cl><span class=w>    </span><span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=w>  </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=w>
+</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=w>  </span><span class=k>for</span><span class=w> </span><span class=nx>_</span><span class=p>,</span><span class=w> </span><span class=nx>sec</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=k>range</span><span class=w> </span><span class=nx>ef</span><span class=p>.</span><span class=nx>Sections</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=nx>sec</span><span class=p>.</span><span class=nx>Name</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=s>&#34;.mydata&#34;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>35</span><span class=cl><span class=w>      </span><span class=k>if</span><span class=w> </span><span class=nb>uint64</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=nx>cfg</span><span class=p>))</span><span class=w> </span><span class=p>&gt;</span><span class=w> </span><span class=nx>sec</span><span class=p>.</span><span class=nx>Size</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=ln>36</span><span class=cl><span class=w>        </span><span class=nb>panic</span><span class=p>(</span><span class=s>&#34;new config too big for treasure chest&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>37</span><span class=cl><span class=w>      </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>38</span><span class=cl><span class=w>      </span><span class=c1>// 移動到正確位置</span><span class=w>
+</span></span></span><span class=line><span class=ln>39</span><span class=cl><span class=w>      </span><span class=nx>f</span><span class=p>.</span><span class=nf>Seek</span><span class=p>(</span><span class=nb>int64</span><span class=p>(</span><span class=nx>sec</span><span class=p>.</span><span class=nx>Offset</span><span class=p>),</span><span class=w> </span><span class=nx>io</span><span class=p>.</span><span class=nx>SeekStart</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>40</span><span class=cl><span class=w>      </span><span class=c1>// 蓋掉舊的寶藏</span><span class=w>
+</span></span></span><span class=line><span class=ln>41</span><span class=cl><span class=w>      </span><span class=nx>f</span><span class=p>.</span><span class=nf>Write</span><span class=p>(</span><span class=nx>cfg</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=w>      </span><span class=k>break</span><span class=w>
+</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>44</span><span class=cl><span class=w>  </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=ln>45</span><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><ul><li><code>sec.Data()</code> 只是回傳內容，不能直接 patch；</li><li>必須用 <code>f.Seek(sec.Offset)</code> 定位，再 <code>f.Write()</code> 蓋掉；</li><li>記得檢查長度，避免寶藏放不下。</li></ul><h2 id=執行流程>執行流程</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -o myapp ./app
+</span></span><span class=line><span class=ln>2</span><span class=cl>go build -o patcher ./tools/patcher.go
+</span></span><span class=line><span class=ln>3</span><span class=cl>
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=c1># 放新寶藏</span>
+</span></span><span class=line><span class=ln>5</span><span class=cl>./patcher -bin<span class=o>=</span>myapp -config<span class=o>=</span>new_config.json
+</span></span><span class=line><span class=ln>6</span><span class=cl>
+</span></span><span class=line><span class=ln>7</span><span class=cl><span class=c1># 驗證</span>
+</span></span><span class=line><span class=ln>8</span><span class=cl>./myapp
+</span></span></code></pre></div><h2 id=小提醒>小提醒</h2><ul><li><p><strong>Segmentation Fault</strong>：如果 build 出來不是 ELF（例如 macOS 預設是 Mach-O），<code>debug/elf</code> 就會爆炸。要加上：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nv>GOOS</span><span class=o>=</span>linux <span class=nv>GOARCH</span><span class=o>=</span>amd64 go build -o myapp ./app
+</span></span></code></pre></div></li><li><p><strong>長度限制</strong>：寶藏箱（section）大小固定，超過就會炸。</p></li><li><p><strong>Alignment</strong>：要對齊，否則可能會在別的島上亂挖洞。</p></li><li><p><strong>Windows</strong>：PE + code signing 可能會失效，要額外注意。</p></li></ul><h2 id=小結>小結</h2><p>這趟航海之旅，我們學到怎麼把設定藏在 Binary 的 section 裡，就像 Roger 在偉大航道終點留下了寶藏一樣。</p><p>這種方式讓程式既能單檔部署，又能後續動態調整設定。
+但就像航海王世界的規則一樣，出航一定有風險在。
+同學們在實作、使用的同時也要小心才不會不小心就踩到「陷阱」。</p></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/go-cgo-static-dynamic-link/ class=post-nav-prev><span class=nav-label>上一篇</span>
+<span class=nav-title>從 glibc 到 musl : 靜態編譯上的新選擇</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#核心概念>核心概念</a><ul><li><a href=#建立自訂-section>建立自訂 Section</a></li><li><a href=#在-go-世界開啟寶藏>在 Go 世界開啟寶藏</a></li><li><a href=#patch-工具羅盤與鑰匙>Patch 工具：羅盤與鑰匙</a></li></ul></li><li><a href=#執行流程>執行流程</a></li><li><a href=#小提醒>小提醒</a></li><li><a href=#小結>小結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{send_page_view:!0,anonymize_ip:!0,allow_google_signals:!1,allow_ad_personalization_signals:!1})</script></body></html>
