@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Message Queue on Yuan のノート</title><link>https://e61983.github.io/tags/message-queue/</link><description>Recent content in Message Queue on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Mon, 22 Sep 2025 23:04:47 +0800</lastBuildDate><atom:link href="https://e61983.github.io/tags/message-queue/index.xml" rel="self" type="application/rss+xml"/><item><title>RabbitMQ！鎹鴉傳信的分工法 - 通往地獄的開始？！</title><link>https://e61983.github.io/posts/rabbitmq-introduction/</link><pubDate>Mon, 22 Sep 2025 23:04:47 +0800</pubDate><guid>https://e61983.github.io/posts/rabbitmq-introduction/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;在鬼殺隊的任務分派中，如果沒有調度中心，任務可能會亂七八糟。&lt;br&gt;
+想像一下：如果所有柱同時衝去打同一隻鬼，那些在另一邊肆虐的鬼該怎麼辦？&lt;/p&gt;
+&lt;p&gt;這時候，我們需要一個「訊息中介」來幫忙分配工作。&lt;br&gt;
+就像&lt;strong&gt;蟲柱 蝴蝶忍&lt;/strong&gt;負責調度藥物與情報，&lt;strong&gt;炎柱 煉獄杏壽郎&lt;/strong&gt;帶領隊伍作戰一樣 ——&lt;br&gt;
+這個「中介人」在系統世界裡，就是 &lt;strong&gt;RabbitMQ&lt;/strong&gt;。&lt;/p&gt;</description></item></channel></rss>
