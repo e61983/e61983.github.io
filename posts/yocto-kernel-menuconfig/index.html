@@ -1,36 +1,369 @@
-<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 Yocto 環境中調整 Linux Kernel - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="在 Yocto 環境中調整 Linux Kernel - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/yocto-kernel-menuconfig/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
-<span class=hamburger></span>
-<span class=hamburger></span>
-<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>在 Yocto 環境中調整 Linux Kernel</h1><div class=post-meta><time class=post-date datetime=2021-07-30T16:30:09+08:00>2021年07月30日
-</time><span class=reading-time>2 分鐘閱讀</span>
-<span class=word-count>301 字</span>
-<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/yocto class=tag>yocto</a>
-<a href=/tags/linux class=tag>linux</a>
-<a href=/tags/kernel class=tag>kernel</a></div><div class=post-categories><a href=/categories/embedded-system class=category>embedded system</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
-<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
-目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#找到-kernel-來源>找到 Kernel 來源</a></li><li><a href=#呼喚出熟悉的畫面>呼喚出熟悉的畫面</a></li><li><a href=#製作-configuration-fragment>製作 Configuration Fragment</a></li><li><a href=#補充說明>補充說明</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>一般來說，如果想要調整 Linux Kernel 只要在終端機輸入 <code>make menuconfig</code> 這類的指令就可以了。但如果在不同的開發流程中，就不是這麼單純了。</p><p>本文主要是針對 Yocto 開發流進行記錄，未來有機會的話，會再補充 buildroot 的開發方式。</p><h2 id=主要內容>主要內容</h2><p>下圖取自 Yocto 官網。圖中示表了，在 Yocto 環境中開發 Kernel 時的流程</p><figure><img src=/posts/yocto-kernel-menuconfig/images/kernel-dev-flow.png alt=https://docs.yoctoproject.org/current/kernel-dev/intro.html><figcaption><p><a href=https://docs.yoctoproject.org/current/kernel-dev/intro.html>https://docs.yoctoproject.org/current/kernel-dev/intro.html</a></p></figcaption></figure><p>接下來的內容，筆者已初始化完 Yocto 相關的環境變數。此步驟若不清楚，可參考 <a href=/2021-07-26-building-raspberry-pi-systems-with-yocto/#%E6%BA%96%E5%82%99-yocto-%E7%92%B0%E5%A2%83>這裡</a></p><h3 id=找到-kernel-來源>找到 Kernel 來源</h3><p>Kernel 的配置一般來說，都會放在 <code>conf/machine/</code> 中，並且會配置 <code>PREFERRED_PROVIDER_virtual/kernel</code> 來指定使用的 kernel。所以我們可以直接以 <code>*/conf/machine/*.conf</code> 來進行搜尋。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>find . -wholename <span class=s2>&#34;*/conf/machine/*.conf&#34;</span>
-</span></span></code></pre></div><figure><img src=/posts/yocto-kernel-menuconfig/images/result-search-machine-conf.png alt="找尋 machine 配置檔"><figcaption><p>找尋 machine 配置檔</p></figcaption></figure><p>以 <code>qemuarm.conf</code> 為例:</p><p>在這份檔案中我們並沒有看到 <code>PREFERRED_PROVIDER_virtual/kernel</code> 的設定。所以我們要去查看它引入的文件。</p><figure><img src=/posts/yocto-kernel-menuconfig/images/qemuarm.conf.png alt=qemuarm.conf><figcaption><p>qemuarm.conf</p></figcaption></figure><p>在 qemuarm.inc:22 ，我們看到它是配置為 <code>linux-yocto</code></p><figure><img src=/posts/yocto-kernel-menuconfig/images/qemuarm.inc.png alt=qemuarm.inc><figcaption><p>qemuarm.inc</p></figcaption></figure><p>接下來就是要去找到 <code>linux-yocto</code> 它的配置檔在哪裡了。</p><p>通常它會被放在 <code>recipes-kernel/linux</code> 中，但我們還是可以直接以搜尋的方式找到它。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>find . -iname <span class=s2>&#34;linux-yocto*&#34;</span>
-</span></span></code></pre></div><figure><img src=/posts/yocto-kernel-menuconfig/images/result-search-linux-yocto.png></figure><p>最後我們可以看 <code>SRC_URL</code> 所指定的位置，即是 Kernel 的來源。</p><figure><img src=/posts/yocto-kernel-menuconfig/images/result-linux-src.png></figure><h3 id=呼喚出熟悉的畫面>呼喚出熟悉的畫面</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>bitbake virtual/kernel -c menuconfig
-</span></span></code></pre></div><figure><img src=/posts/yocto-kernel-menuconfig/images/menuconfig.png></figure><h3 id=製作-configuration-fragment>製作 Configuration Fragment</h3><p>執行下列指令來產生 configuration fragment。產生的檔案會放置在 <code>${WORKDIR}/fragment.cfg</code>。
-而 <code>${WORKDIR}</code> 的位置可參考手冊中註明的位置: ${TMPDIR}/work/${MULTIMACH_TARGET_SYS}/${PN}/${EXTENDPE}${PV}-${PR}。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>bitbake virtual/kernel -c diffconfig
-</span></span><span class=line><span class=ln>2</span><span class=cl>
-</span></span><span class=line><span class=ln>3</span><span class=cl><span class=c1># 把透過 diffconfig 產生的 fragment.cfg 移過來</span>
-</span></span><span class=line><span class=ln>4</span><span class=cl>mv tmp/work/qemuarm-poky-linux-gnueabi/linux-yocto/5.4.129+gitAUTOINC+c5e5dc4e13_dfb9647332-r0/fragment.cfg my-local-version.cfg
-</span></span></code></pre></div><p>從內容應該可以看出來，筆者只有修改了 local version 而已。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>CONFIG_LOCALVERSION=&#34;-yuan&#34;
-</span></span></code></pre></div><p>接下來我們可以透過 recipetool 幫我們將 my-local-version.cfg 加入我們的 Layer中。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>recipetool appendsrcfile meta-first-layer linux-yocto my-local-version.cfg
-</span></span></code></pre></div><p>重新編譯 kernel</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>bitbake virtual/kernel
-</span></span><span class=line><span class=ln>2</span><span class=cl>
-</span></span><span class=line><span class=ln>3</span><span class=cl><span class=c1># 重新編譯 Image</span>
-</span></span><span class=line><span class=ln>4</span><span class=cl>bitbake core-image-minimal
-</span></span></code></pre></div><p>使用 qemu 進行驗證</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>runqemu qemuarm core-image-minimal nographic slirp
-</span></span></code></pre></div><figure><img src=/posts/yocto-kernel-menuconfig/images/result-local-version.png alt="修改 LOCALVERSION 之後的結果"><figcaption><p>修改 LOCALVERSION 之後的結果</p></figcaption></figure><h4 id=寫在最後>寫在最後</h4><p>筆者在驗證修改 LOCALVERSION 是否有修改成功時，返覆的使用下列指令進行確認。
-但時常會沒有修改成功。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>bitbake linux-yocto -c kernel_configme -f
-</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake linux-yocto -c kernel_configcheck -f
-</span></span></code></pre></div><p>若有發現原因，會再進行補充。</p><h3 id=補充說明>補充說明</h3><p>如果在執行 <code>bitbake virtual/kernel -c menuconfig</code> 遇到了下列錯誤，可以安裝 <code>screen</code> 或是 <code>tmux</code> 來解決此問題。</p><div class="notice notice-error" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div style=font-weight:700;margin-bottom:.5rem>ℹ️
-do_menuconfig: No valid terminal found, unable to open devshell.</div><div>Tried the following commands:<br>tmux split-window -c &ldquo;{cwd}&rdquo; &ldquo;do_terminal&rdquo;<br>tmux new-window -c &ldquo;{cwd}&rdquo; -n &ldquo;linux-imx Configuration&rdquo; &ldquo;do_terminal&rdquo;<br>xfce4-terminal -T &ldquo;linux-imx Configuration&rdquo; -e &ldquo;do_terminal&rdquo;<br>terminology -T=&ldquo;linux-imx Configuration&rdquo; -e do_terminal mate-terminal &ndash;disable-factory -t &ldquo;linux-imx Configuration&rdquo; -x do_terminal<br>konsole &ndash;separate &ndash;workdir . -p tabtitle=&ldquo;linux-imx Configuration&rdquo; -e do_terminal<br>gnome-terminal -t &ldquo;linux-imx Configuration&rdquo; &ndash; do_terminal<br>xterm -T &ldquo;linux-imx Configuration&rdquo; -e do_terminal<br>rxvt -T &ldquo;linux-imx Configuration&rdquo; -e do_terminal<br>tmux new -c &ldquo;{cwd}&rdquo; -d -s devshell -n devshell &ldquo;do_terminal&rdquo;<br>screen -D -m -t &ldquo;linux-imx Configuration&rdquo; -S devshell do_terminal</div></div><p>安裝方式:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>sudo apt install -y tmux
-</span></span></code></pre></div><h2 id=小結>小結</h2><p>在 Yocto 環境中調整 Kernel 其實是有許多方法的，例: 使用自己指定的 Kernel Source、使用我們給定的 defconfig，或是使用 patch 等。<br>而我們此次是透過給予 Configuration Fragments 的方式進行。<br>未來若有使用到其他方式，會再額外撰寫記錄。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://docs.yoctoproject.org/current/kernel-dev/common.html#configuring-the-kernel>Yocto Project Linux - Kernel Development Manual</a></li><li><a href="https://wiki.phytec.com/pages/viewpage.action?pageId=69501722">Yocto How to config image through layer</a></li><li><a href=https://stackoverflow.com/questions/36301504/bitbake-append-file-to-reconfigure-kernel>Bitbake append file to reconfigure kernel</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/using-bootstrap-with-hugo/ class=post-nav-prev><span class=nav-label>上一篇</span>
-<span class=nav-title>要如何在Hugo 中使用Bootstrap ?</span>
-</a><a href=https://e61983.github.io/posts/coscup-2021-day-1/ class=post-nav-next><span class=nav-label>下一篇</span>
-<span class=nav-title>COSCUP 2021 Day 1</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#找到-kernel-來源>找到 Kernel 來源</a></li><li><a href=#呼喚出熟悉的畫面>呼喚出熟悉的畫面</a></li><li><a href=#製作-configuration-fragment>製作 Configuration Fragment</a></li><li><a href=#補充說明>補充說明</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
-<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{send_page_view:!0,anonymize_ip:!0,allow_google_signals:!1,allow_ad_personalization_signals:!1})</script></body></html>
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>在 Yocto 環境中調整 Linux Kernel · Yuan のノート</title>
+  <meta name="description" content="心之所至，隨意亂書">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="在 Yocto 環境中調整 Linux Kernel">
+  <meta property="og:description" content="心之所至，隨意亂書">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://localhost:3000/posts/yocto-kernel-menuconfig/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="fade-in">
+<div class="container article">
+  <div style="max-width:760px;margin:0 auto">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
+      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 所有文章</a>
+    </div>
+    <div class="article-head">
+      
+      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/embedded-system/">embedded system</a></div>
+      
+      <h1>在 Yocto 環境中調整 Linux Kernel</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
+        <img class="avatar" width="28" height="28" loading="lazy"
+  style="width:28px;height:28px"
+  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
+  alt="Yuan">
+
+        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
+        <span class="meta" style="margin-left:4px"><span class="mono">2021.07.30</span><span class="dot"></span><span>2 分鐘閱讀</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-layout">
+    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
+      <h2 id="前言">前言</h2>
+<p>一般來說，如果想要調整 Linux Kernel 只要在終端機輸入 <code>make menuconfig</code> 這類的指令就可以了。但如果在不同的開發流程中，就不是這麼單純了。</p>
+<p>本文主要是針對 Yocto 開發流進行記錄，未來有機會的話，會再補充 buildroot 的開發方式。</p>
+<h2 id="主要內容">主要內容</h2>
+<p>下圖取自 Yocto 官網。圖中示表了，在 Yocto 環境中開發 Kernel 時的流程</p>
+<figure><img src="/posts/yocto-kernel-menuconfig/images/kernel-dev-flow.png"
+			alt="https://docs.yoctoproject.org/current/kernel-dev/intro.html"><figcaption>
+			<p><a href="https://docs.yoctoproject.org/current/kernel-dev/intro.html">https://docs.yoctoproject.org/current/kernel-dev/intro.html</a></p>
+		</figcaption>
+</figure>
+
+<p>接下來的內容，筆者已初始化完 Yocto 相關的環境變數。此步驟若不清楚，可參考 <a href="/2021-07-26-building-raspberry-pi-systems-with-yocto/#%E6%BA%96%E5%82%99-yocto-%E7%92%B0%E5%A2%83">這裡
+</a></p>
+<h3 id="找到-kernel-來源">找到 Kernel 來源</h3>
+<p>Kernel 的配置一般來說，都會放在 <code>conf/machine/</code> 中，並且會配置 <code>PREFERRED_PROVIDER_virtual/kernel</code> 來指定使用的 kernel。所以我們可以直接以 <code>*/conf/machine/*.conf</code> 來進行搜尋。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">find . -wholename <span class="s2">&#34;*/conf/machine/*.conf&#34;</span></span></span></code></pre></div>
+</div>
+<figure><img src="/posts/yocto-kernel-menuconfig/images/result-search-machine-conf.png"
+			alt="找尋 machine 配置檔"><figcaption>
+			<p>找尋 machine 配置檔</p>
+		</figcaption>
+</figure>
+
+<p>以 <code>qemuarm.conf</code> 為例:</p>
+<p>在這份檔案中我們並沒有看到 <code>PREFERRED_PROVIDER_virtual/kernel</code> 的設定。所以我們要去查看它引入的文件。</p>
+<figure><img src="/posts/yocto-kernel-menuconfig/images/qemuarm.conf.png"
+			alt="qemuarm.conf"><figcaption>
+			<p>qemuarm.conf</p>
+		</figcaption>
+</figure>
+
+<p>在 qemuarm.inc:22 ，我們看到它是配置為 <code>linux-yocto</code></p>
+<figure><img src="/posts/yocto-kernel-menuconfig/images/qemuarm.inc.png"
+			alt="qemuarm.inc"><figcaption>
+			<p>qemuarm.inc</p>
+		</figcaption>
+</figure>
+
+<p>接下來就是要去找到 <code>linux-yocto</code> 它的配置檔在哪裡了。</p>
+<p>通常它會被放在 <code>recipes-kernel/linux</code> 中，但我們還是可以直接以搜尋的方式找到它。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">find . -iname <span class="s2">&#34;linux-yocto*&#34;</span></span></span></code></pre></div>
+</div>
+<figure><img src="/posts/yocto-kernel-menuconfig/images/result-search-linux-yocto.png">
+</figure>
+
+<p>最後我們可以看 <code>SRC_URL</code> 所指定的位置，即是 Kernel 的來源。</p>
+<figure><img src="/posts/yocto-kernel-menuconfig/images/result-linux-src.png">
+</figure>
+
+<h3 id="呼喚出熟悉的畫面">呼喚出熟悉的畫面</h3>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">bitbake virtual/kernel -c menuconfig</span></span></code></pre></div>
+</div>
+<figure><img src="/posts/yocto-kernel-menuconfig/images/menuconfig.png">
+</figure>
+
+<h3 id="製作-configuration-fragment">製作 Configuration Fragment</h3>
+<p>執行下列指令來產生 configuration fragment。產生的檔案會放置在 <code>${WORKDIR}/fragment.cfg</code>。
+而 <code>${WORKDIR}</code> 的位置可參考手冊中註明的位置: ${TMPDIR}/work/${MULTIMACH_TARGET_SYS}/${PN}/${EXTENDPE}${PV}-${PR}。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">bitbake virtual/kernel -c diffconfig
+</span></span><span class="line"><span class="ln">2</span><span class="cl">
+</span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="c1"># 把透過 diffconfig 產生的 fragment.cfg 移過來</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl">mv tmp/work/qemuarm-poky-linux-gnueabi/linux-yocto/5.4.129+gitAUTOINC+c5e5dc4e13_dfb9647332-r0/fragment.cfg my-local-version.cfg</span></span></code></pre></div>
+</div>
+<p>從內容應該可以看出來，筆者只有修改了 local version 而已。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">txt</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">CONFIG_LOCALVERSION=&#34;-yuan&#34;</span></span></code></pre></div>
+</div>
+<p>接下來我們可以透過 recipetool 幫我們將 my-local-version.cfg 加入我們的 Layer中。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">recipetool appendsrcfile meta-first-layer linux-yocto my-local-version.cfg</span></span></code></pre></div>
+</div>
+<p>重新編譯 kernel</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">bitbake virtual/kernel
+</span></span><span class="line"><span class="ln">2</span><span class="cl">
+</span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="c1"># 重新編譯 Image</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl">bitbake core-image-minimal</span></span></code></pre></div>
+</div>
+<p>使用 qemu 進行驗證</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">runqemu qemuarm core-image-minimal nographic slirp</span></span></code></pre></div>
+</div>
+<figure><img src="/posts/yocto-kernel-menuconfig/images/result-local-version.png"
+			alt="修改 LOCALVERSION 之後的結果"><figcaption>
+			<p>修改 LOCALVERSION 之後的結果</p>
+		</figcaption>
+</figure>
+
+<h4 id="寫在最後">寫在最後</h4>
+<p>筆者在驗證修改 LOCALVERSION 是否有修改成功時，返覆的使用下列指令進行確認。
+但時常會沒有修改成功。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">bitbake linux-yocto -c kernel_configme -f
+</span></span><span class="line"><span class="ln">2</span><span class="cl">bitbake linux-yocto -c kernel_configcheck -f</span></span></code></pre></div>
+</div>
+<p>若有發現原因，會再進行補充。</p>
+<h3 id="補充說明">補充說明</h3>
+<p>如果在執行 <code>bitbake virtual/kernel -c menuconfig</code> 遇到了下列錯誤，可以安裝 <code>screen</code> 或是 <code>tmux</code> 來解決此問題。</p>
+<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">do_menuconfig: No valid terminal found, unable to open devshell.</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">Tried the following commands:<br>
+tmux split-window -c &ldquo;{cwd}&rdquo; &ldquo;do_terminal&rdquo;<br>
+tmux new-window -c &ldquo;{cwd}&rdquo; -n &ldquo;linux-imx Configuration&rdquo; &ldquo;do_terminal&rdquo;<br>
+xfce4-terminal -T &ldquo;linux-imx Configuration&rdquo; -e &ldquo;do_terminal&rdquo;<br>
+terminology -T=&ldquo;linux-imx Configuration&rdquo; -e do_terminal  	mate-terminal &ndash;disable-factory -t &ldquo;linux-imx Configuration&rdquo; -x do_terminal<br>
+konsole &ndash;separate &ndash;workdir . -p tabtitle=&ldquo;linux-imx Configuration&rdquo; -e do_terminal<br>
+gnome-terminal -t &ldquo;linux-imx Configuration&rdquo; &ndash; do_terminal<br>
+xterm -T &ldquo;linux-imx Configuration&rdquo; -e do_terminal<br>
+rxvt -T &ldquo;linux-imx Configuration&rdquo; -e do_terminal<br>
+tmux new -c &ldquo;{cwd}&rdquo; -d -s devshell -n devshell &ldquo;do_terminal&rdquo;<br>
+screen -D -m -t &ldquo;linux-imx Configuration&rdquo; -S devshell do_terminal</div>
+</div>
+
+<p>安裝方式:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sudo apt install -y tmux</span></span></code></pre></div>
+</div>
+<h2 id="小結">小結</h2>
+<p>在 Yocto 環境中調整 Kernel 其實是有許多方法的，例: 使用自己指定的 Kernel Source、使用我們給定的 defconfig，或是使用 patch 等。<br>
+而我們此次是透過給予 Configuration Fragments 的方式進行。<br>
+未來若有使用到其他方式，會再額外撰寫記錄。</p>
+<h2 id="參考連結">參考連結</h2>
+<ul>
+<li><a href="https://docs.yoctoproject.org/current/kernel-dev/common.html#configuring-the-kernel">Yocto Project Linux - Kernel Development Manual</a></li>
+<li><a href="https://wiki.phytec.com/pages/viewpage.action?pageId=69501722">Yocto How to config image through layer</a></li>
+<li><a href="https://stackoverflow.com/questions/36301504/bitbake-append-file-to-reconfigure-kernel">Bitbake append file to reconfigure kernel</a></li>
+</ul>
+      <div class="chips">
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+  <a class="chip" href="/tags/kernel/"><span class="hash">#</span>kernel</a>
+  
+</div>
+    </article>
+    <aside>
+      
+      <div class="toc">
+        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#主要內容">主要內容</a>
+      <ul>
+        <li><a href="#找到-kernel-來源">找到 Kernel 來源</a></li>
+        <li><a href="#呼喚出熟悉的畫面">呼喚出熟悉的畫面</a></li>
+        <li><a href="#製作-configuration-fragment">製作 Configuration Fragment</a></li>
+        <li><a href="#補充說明">補充說明</a></li>
+      </ul>
+    </li>
+    <li><a href="#小結">小結</a></li>
+    <li><a href="#參考連結">參考連結</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </aside>
+  </div>
+
+  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
+  
+  <a class="side-card" href="/posts/using-bootstrap-with-hugo/" style="text-decoration:none">
+    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 上一篇</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">要如何在Hugo 中使用Bootstrap ?</div>
+  </a>
+  
+  
+  <a class="side-card" href="/posts/coscup-2021-day-1/" style="text-align:right;text-decoration:none">
+    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">COSCUP 2021 Day 1</div>
+  </a>
+  
+</div>
+
+  <div style="height:var(--space-10)"></div>
+</div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+</button>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

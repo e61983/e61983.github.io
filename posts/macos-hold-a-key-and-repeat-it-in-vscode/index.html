@@ -1,24 +1,256 @@
-<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>如何解決在 MacOS VS Code/Cursor 按鍵無法連續輸入的問題 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="如何解決在 MacOS VS Code/Cursor 按鍵無法連續輸入的問題 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/macos-hold-a-key-and-repeat-it-in-vscode/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
-<span class=hamburger></span>
-<span class=hamburger></span>
-<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>如何解決在 MacOS VS Code/Cursor 按鍵無法連續輸入的問題</h1><div class=post-meta><time class=post-date datetime=2022-06-22T11:26:48+08:00>2022年06月22日
-</time><span class=reading-time>1 分鐘閱讀</span>
-<span class=word-count>80 字</span>
-<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/vscode class=tag>VSCode</a>
-<a href=/tags/cursor class=tag>Cursor</a>
-<a href=/tags/macos class=tag>MacOS</a>
-<a href=/tags/osascript class=tag>osascript</a></div><div class=post-categories><a href=/categories/note class=category>note</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
-<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
-目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#解決方式>解決方式</a></li></ul></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>筆者已經習慣 vim 的輸入模式。所以在使用 VS Code 或 Cursor 時，會安裝 vim 輸入模式的外掛。在鍵盤按鍵接住時，這些編輯器卻不會連續輸入。本文主要就是要來解決這個問題。</p><h2 id=主要內容>主要內容</h2><h3 id=解決方式>解決方式</h3><h4 id=針對-vs-code>針對 VS Code</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool <span class=nb>false</span>
-</span></span></code></pre></div><h4 id=針對-cursor>針對 Cursor</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>defaults write com.todesktop.230313mzl4w4u92 ApplePressAndHoldEnabled -bool <span class=nb>false</span>
-</span></span></code></pre></div><h4 id=如何找出應用程式的-bundle-identifier>如何找出應用程式的 Bundle Identifier</h4><p>如果你不確定某個應用程式的 Bundle Identifier，可以使用 <code>osascript</code> 指令來查詢：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>osascript -e <span class=s1>&#39;id of app &#34;應用程式名稱&#34;&#39;</span>
-</span></span></code></pre></div><p>例如查詢 Cursor 的 Bundle Identifier：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>osascript -e <span class=s1>&#39;id of app &#34;Cursor&#34;&#39;</span>
-</span></span><span class=line><span class=ln>2</span><span class=cl><span class=c1># 輸出：com.todesktop.230313mzl4w4u92</span>
-</span></span></code></pre></div><div class="notice notice-info" style="border-left:4px solid;padding:1rem;margin:1rem 0;border-radius:0 4px 4px 0;border-left-color:#3498db;background-color:#e8f4fd;color:#2c3e50"><div><p>如果要復原的話，則只要改成 <code>true</code> 就可以了。</p><p><strong>VS Code 復原：</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool <span class=nb>true</span>
-</span></span></code></pre></div><p><strong>Cursor 復原：</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>defaults write com.todesktop.230313mzl4w4u92 ApplePressAndHoldEnabled -bool <span class=nb>true</span>
-</span></span></code></pre></div></div></div><h2 id=參考連結>參考連結</h2><ul><li><a href=https://zihengcat.github.io/2018/08/02/simple-ways-to-set-macos-consecutive-input/>macOS 长按连续输入的简单设置方法</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/postgresql-delete-large-data/ class=post-nav-prev><span class=nav-label>上一篇</span>
-<span class=nav-title>如何在 Postgresql 資料庫中的刪除大量資料</span>
-</a><a href=https://e61983.github.io/posts/how-to-use-vue-electron-and-go-to-build-an-app/ class=post-nav-next><span class=nav-label>下一篇</span>
-<span class=nav-title>使用 Vue、Electron 以及 Go 建立一個小工具</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#解決方式>解決方式</a></li></ul></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
-<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{send_page_view:!0,anonymize_ip:!0,allow_google_signals:!1,allow_ad_personalization_signals:!1})</script></body></html>
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>如何解決在 MacOS VS Code/Cursor 按鍵無法連續輸入的問題 · Yuan のノート</title>
+  <meta name="description" content="心之所至，隨意亂書">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="如何解決在 MacOS VS Code/Cursor 按鍵無法連續輸入的問題">
+  <meta property="og:description" content="心之所至，隨意亂書">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://localhost:3000/posts/macos-hold-a-key-and-repeat-it-in-vscode/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="fade-in">
+<div class="container article">
+  <div style="max-width:760px;margin:0 auto">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
+      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 所有文章</a>
+    </div>
+    <div class="article-head">
+      
+      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/note/">note</a></div>
+      
+      <h1>如何解決在 MacOS VS Code/Cursor 按鍵無法連續輸入的問題</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
+        <img class="avatar" width="28" height="28" loading="lazy"
+  style="width:28px;height:28px"
+  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
+  alt="Yuan">
+
+        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
+        <span class="meta" style="margin-left:4px"><span class="mono">2022.06.22</span><span class="dot"></span><span>1 分鐘閱讀</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-layout">
+    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
+      <h2 id="前言">前言</h2>
+<p>筆者已經習慣 vim 的輸入模式。所以在使用 VS Code 或 Cursor 時，會安裝 vim 輸入模式的外掛。在鍵盤按鍵接住時，這些編輯器卻不會連續輸入。本文主要就是要來解決這個問題。</p>
+<h2 id="主要內容">主要內容</h2>
+<h3 id="解決方式">解決方式</h3>
+<h4 id="針對-vs-code">針對 VS Code</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false</span></span></code></pre></div>
+</div>
+<h4 id="針對-cursor">針對 Cursor</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">defaults write com.todesktop.230313mzl4w4u92 ApplePressAndHoldEnabled -bool false</span></span></code></pre></div>
+</div>
+<h4 id="如何找出應用程式的-bundle-identifier">如何找出應用程式的 Bundle Identifier</h4>
+<p>如果你不確定某個應用程式的 Bundle Identifier，可以使用 <code>osascript</code> 指令來查詢：</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">osascript -e <span class="s1">&#39;id of app &#34;應用程式名稱&#34;&#39;</span></span></span></code></pre></div>
+</div>
+<p>例如查詢 Cursor 的 Bundle Identifier：</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">osascript -e <span class="s1">&#39;id of app &#34;Cursor&#34;&#39;</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="c1"># 輸出：com.todesktop.230313mzl4w4u92</span></span></span></code></pre></div>
+</div>
+<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)"><p>如果要復原的話，則只要改成 <code>true</code> 就可以了。</p>
+<p><strong>VS Code 復原：</strong></p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool true</span></span></code></pre></div>
+</div>
+<p><strong>Cursor 復原：</strong></p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">defaults write com.todesktop.230313mzl4w4u92 ApplePressAndHoldEnabled -bool true</span></span></code></pre></div>
+</div>
+</div>
+</div>
+
+<h2 id="參考連結">參考連結</h2>
+<ul>
+<li><a href="https://zihengcat.github.io/2018/08/02/simple-ways-to-set-macos-consecutive-input/">macOS 长按连续输入的简单设置方法</a></li>
+</ul>
+      <div class="chips">
+  
+  <a class="chip" href="/tags/vscode/"><span class="hash">#</span>VSCode</a>
+  
+  <a class="chip" href="/tags/cursor/"><span class="hash">#</span>Cursor</a>
+  
+  <a class="chip" href="/tags/macos/"><span class="hash">#</span>MacOS</a>
+  
+  <a class="chip" href="/tags/osascript/"><span class="hash">#</span>osascript</a>
+  
+</div>
+    </article>
+    <aside>
+      
+      <div class="toc">
+        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#主要內容">主要內容</a>
+      <ul>
+        <li><a href="#解決方式">解決方式</a></li>
+      </ul>
+    </li>
+    <li><a href="#參考連結">參考連結</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </aside>
+  </div>
+
+  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
+  
+  <a class="side-card" href="/posts/postgresql-delete-large-data/" style="text-decoration:none">
+    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 上一篇</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">如何在 Postgresql 資料庫中的刪除大量資料</div>
+  </a>
+  
+  
+  <a class="side-card" href="/posts/how-to-use-vue-electron-and-go-to-build-an-app/" style="text-align:right;text-decoration:none">
+    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">使用 Vue、Electron 以及 Go 建立一個小工具</div>
+  </a>
+  
+</div>
+
+  <div style="height:var(--space-10)"></div>
+</div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+</button>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

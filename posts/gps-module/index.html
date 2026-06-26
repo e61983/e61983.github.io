@@ -1,39 +1,472 @@
-<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>NEO M8N GPS模組 - Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=keywords content="golang,embedded,linux,backend,programming"><meta name=author content="Yuan"><meta property="og:title" content="NEO M8N GPS模組 - Yuan のノート"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/gps-module/"><link rel=icon type=image/svg+xml href=/favicon.svg><link rel=icon type=image/x-icon href=/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=/favicon.svg><meta name=theme-color content="#0d1117"><link rel=stylesheet href=https://e61983.github.io/yuan/css/main.min.css><link rel=stylesheet href=https://e61983.github.io/yuan/css/chroma.min.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body class=theme-dark><div class=layout><header class=header><div class=container><div class=header-content><div class=header-brand><a href=https://e61983.github.io/ class=brand-link><span class=brand-text>Yuan のノート</span></a><p class=brand-subtitle>心之所至，隨意亂書</p></div><nav class=nav><ul class=nav-list><li class=nav-item><a href=/ class=nav-link>首頁</a></li><li class=nav-item><a href=/posts/ class=nav-link>文章</a></li><li class=nav-item><a href=/categories/ class=nav-link>分類</a></li><li class=nav-item><a href=/tags/ class=nav-link>標籤</a></li><li class=nav-item><a href=/archive/ class=nav-link>歸檔</a></li></ul></nav><button class=mobile-menu-toggle aria-label="Toggle menu">
-<span class=hamburger></span>
-<span class=hamburger></span>
-<span class=hamburger></span></button></div></div></header><main class=main><div class=container><div class=post-layout><article class=post><header class=post-header><h1 class=post-title>NEO M8N GPS模組</h1><div class=post-meta><time class=post-date datetime=2021-08-20T13:54:03+08:00>2021年08月20日
-</time><span class=reading-time>2 分鐘閱讀</span>
-<span class=word-count>343 字</span>
-<span class=post-author>by Yuan</span></div><div class=post-tags><a href=/tags/gps class=tag>gps</a></div><div class=post-categories><a href=/categories/gis class=category>gis</a></div></header><div class=mobile-toc-toggle><button class=toc-toggle-btn aria-label=顯示/隱藏目錄>
-<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
-目錄</button><nav class=mobile-toc><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#neo-m8n-gps模組>NEO M8N GPS模組</a></li><li><a href=#nmea-0183>NMEA-0183</a></li><li><a href=#gnggagpggabdgga-傻傻分不清楚>GNGGA，GPGGA，BDGGA 傻傻分不清楚</a></li><li><a href=#gps模組輸出>GPS模組輸出</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></div><div class=post-content><h2 id=前言>前言</h2><p>因為工作上的需求，最近接觸到了 GNSS 模組。</p><p>維基百科是這樣說的。</p><blockquote><p>衛星導航系統（Global Navigation Satellite System, GNSS）是覆蓋全球的自主地利空間定位的衛星系統，允許小巧的電子接收器確定它的所在位置（經度、緯度和高度），並且經由衛星廣播沿著視線方向傳送的時間信號精確到10米的範圍內。接收機計算的精確時間以及位置，可以作為科學實驗的參考。</p></blockquote><h2 id=主要內容>主要內容</h2><h3 id=neo-m8n-gps模組>NEO M8N GPS模組</h3><figure><img src=/posts/gps-module/images/gps-module.jpg alt=https://www.ruten.com.tw/item/show?21550304728186><figcaption><p><a href=https://www.ruten.com.tw/item/show?21550304728186>https://www.ruten.com.tw/item/show?21550304728186</a></p></figcaption></figure><figure><img src=/posts/gps-module/images/preformance.png alt="NEO-M8 Datasheet Page 6"><figcaption><p>NEO-M8 Datasheet Page 6</p></figcaption></figure><h3 id=nmea-0183>NMEA-0183</h3><h4 id=gga>GGA</h4><p>表示該語句為 GlobalPositioning System Fix Data(GGA) GPS定位信息</p><table><thead><tr><th>&lt;1></th><th>&lt;2></th><th>&lt;3></th><th>&lt;4></th><th>&lt;5></th><th>&lt;6></th><th>&lt;7></th><th>&lt;8></th><th>&lt;9></th><th>&lt;10></th><th>&lt;11></th><th>&lt;12></th></tr></thead><tbody><tr><td>UTC時間</td><td>緯度</td><td>緯度方向</td><td>經度</td><td>經度方向</td><td>GPS狀態指示</td><td>正在使用的衛星數量</td><td>HDOP水平精度因子</td><td>海平面高度</td><td>地球橢球面相對大地水準面的高度</td><td>差分GPS信息</td><td>差分站ID號</td></tr></tbody></table><h4 id=gll>GLL</h4><p>表示該語句為 Geographic Position(GLL) 地理定位信息</p><table><thead><tr><th>&lt;1></th><th>&lt;2></th><th>&lt;3></th><th>&lt;4></th><th>&lt;5></th><th>&lt;6></th><th>&lt;7></th></tr></thead><tbody><tr><td>緯度</td><td>緯度方向</td><td>經度</td><td>經度方向</td><td>UTC時間</td><td>定位狀態</td><td>校驗值</td></tr></tbody></table><h4 id=gsa>GSA</h4><p>表示該語句為 GPSDOP and Active Satellites(GSA) 當前衛星信息</p><table><thead><tr><th>&lt;1></th><th>&lt;2></th><th>&lt;3></th><th>&lt;4></th><th>&lt;5></th><th>&lt;6></th></tr></thead><tbody><tr><td>定位模式</td><td>當前狀態</td><td>PRN號</td><td>PDOP綜合位置精度因子</td><td>HDOP水平精度因子</td><td>VDOP垂直精度因子</td></tr></tbody></table><h4 id=gsv>GSV</h4><p>表示該語句為 GPSSatellites in View(GSV) 可見衛星信息</p><table><thead><tr><th>&lt;1></th><th>&lt;2></th><th>&lt;3></th><th>&lt;4></th><th>&lt;5></th><th>&lt;6></th><th>&lt;7></th></tr></thead><tbody><tr><td>GSV語句的總數目</td><td>當前GSV語句數目</td><td>顯示衛星的總數目</td><td>衛星的PRN號星號</td><td>衛星仰角</td><td>衛星鏇角</td><td>信噪比</td></tr></tbody></table><h4 id=mss>MSS</h4><p>表示該語句為 GPSSatellites in View(GSV) 可見衛星信息</p><h4 id=rmc>RMC</h4><p>表示該語句為 RecommendedMinimum Specific GPS/TRANSIT Data(RMC) 推薦最小定位信息</p><table><thead><tr><th>&lt;1></th><th>&lt;2></th><th>&lt;3></th><th>&lt;4></th><th>&lt;5></th><th>&lt;6></th><th>&lt;7></th><th>&lt;8></th><th>&lt;9></th><th>&lt;10></th><th>&lt;11></th></tr></thead><tbody><tr><td>定位時UTC時間</td><td>狀態</td><td>緯度</td><td>緯度方向</td><td>經度</td><td>經度方向</td><td>速率,節</td><td>方位角</td><td>當前UTC日期</td><td>磁偏角</td><td>磁偏角方向</td></tr></tbody></table><h4 id=vtg>VTG</h4><p>表示該語句為TrackMade Good and Ground Speed(VTG) 地面速度信息</p><table><thead><tr><th>&lt;1></th><th>&lt;2></th><th>&lt;3></th><th>&lt;4></th></tr></thead><tbody><tr><td>真實方向</td><td>相對方向</td><td>步長 Knots</td><td>速率 km/h</td></tr></tbody></table><h3 id=gnggagpggabdgga-傻傻分不清楚>GNGGA，GPGGA，BDGGA 傻傻分不清楚</h3><p>即“混合定位”（多衛星系統）、“GPS定位”、“北斗定位”</p><ul><li>BD,BDS: 北斗二代衛星系統</li><li>GP: GPS</li><li>GL: GLONASS</li><li>GA: Galileo</li><li>GN: GNSS, 全球導航衛星系統</li></ul><h3 id=gps模組輸出>GPS模組輸出</h3><h4 id=連接方式>連接方式</h4><figure><img src=/posts/gps-module/images/connection.png alt="使用 micro USB 線進行連接"><figcaption><p>使用 micro USB 線進行連接</p></figcaption></figure><h4 id=指令>指令</h4><p>筆者是在 MacOS 的環境中進行測試的，只要打開終端機開啟正確的裝置即可。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>screen -L /dev/tty.XXXX <span class=m>9600</span>
-</span></span></code></pre></div><h4 id=硬體識別>硬體識別</h4><p>在開始接收之後，一開始會顯示該模組的相關資訊:</p><ul><li>U-Blox 的歡迎訊息</li><li>硬體版本</li><li>在 FLASH 的韌體版本</li><li>在 ROM 的韌體版本</li><li>型號</li><li>通訊協定版本</li><li>GNSS 的配置</li><li>目前天線的配置</li><li>目前天線狀態</li><li>FLASH 資訊結構進入點</li><li>U-Blox 接收器配置</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>$GNTXT,01,01,02,u-blox AG - www.u-blox.com*4E                         // U-Blox 的歡迎訊息
-</span></span><span class=line><span class=ln> 2</span><span class=cl>$GNTXT,01,01,02,HW UBX-M80xx 00080000 *43                             // 硬體版本
-</span></span><span class=line><span class=ln> 3</span><span class=cl>$GNTXT,01,01,02,EXT CORE 2.01 (75350) Oct 29 2013 16:15:41*5C         // 在 FLASH 的韌體版本
-</span></span><span class=line><span class=ln> 4</span><span class=cl>$GNTXT,01,01,02,ROM BASE 2.01 (75331) Oct 29 2013 13:28:17*44         // 在 ROM 的韌體版本
-</span></span><span class=line><span class=ln> 5</span><span class=cl>$GNTXT,01,01,02,MOD NEO-M8N-0*7A                                      // 型號
-</span></span><span class=line><span class=ln> 6</span><span class=cl>$GNTXT,01,01,02,PROTVER 15.00*01                                      // 通訊協定版本
-</span></span><span class=line><span class=ln> 7</span><span class=cl>$GNTXT,01,01,02,GNSS OTP:  GPS GLO, SEL:  GPS GLO*67                  // GNSS配置
-</span></span><span class=line><span class=ln> 8</span><span class=cl>$GNTXT,01,01,02,ANTSUPERV=AC SD PDoS SR*3E                            // 目前天線的配置
-</span></span><span class=line><span class=ln> 9</span><span class=cl>$GNTXT,01,01,02,ANTSTATUS=OK*25                                       // 目前天線狀態
-</span></span><span class=line><span class=ln>10</span><span class=cl>$GNTXT,01,01,02,FIS 0xEF4015 (79189) found*2D                         // FLASH 資訊結構進入點
-</span></span><span class=line><span class=ln>11</span><span class=cl>$GNTXT,01,01,02,LLC FFFFFFFF-FFFFFFED-FFFFFFFF-FFFFFFFF-FFFFFF69*3E   // U-Blox 接收器配置
-</span></span></code></pre></div><h4 id=定位資料>定位資料</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>$GNRMC,054539.00,A,2524.04132,N,12130.71568,E,0.059,,200821,,,A*67
-</span></span><span class=line><span class=ln> 2</span><span class=cl>$GNVTG,,T,,M,0.059,N,0.109,K,A*39
-</span></span><span class=line><span class=ln> 3</span><span class=cl>$GNGGA,054539.00,2524.04132,N,12130.71568,E,1,09,1.82,35.1,M,17.8,M,,*75
-</span></span><span class=line><span class=ln> 4</span><span class=cl>$GNGSA,A,3,05,20,29,30,02,13,,,,,,,2.93,1.82,2.29*19
-</span></span><span class=line><span class=ln> 5</span><span class=cl>$GNGSA,A,3,87,72,71,,,,,,,,,,2.93,1.82,2.29*1A
-</span></span><span class=line><span class=ln> 6</span><span class=cl>$GPGSV,4,1,13,02,63,084,43,05,49,332,43,06,26,113,,07,05,051,43*7F
-</span></span><span class=line><span class=ln> 7</span><span class=cl>$GPGSV,4,2,13,11,52,086,,12,06,223,,13,76,177,21,15,46,226,16*74
-</span></span><span class=line><span class=ln> 8</span><span class=cl>$GPGSV,4,3,13,20,45,025,43,24,00,195,,25,02,252,,29,33,309,44*75
-</span></span><span class=line><span class=ln> 9</span><span class=cl>$GPGSV,4,4,13,30,21,081,42*44
-</span></span><span class=line><span class=ln>10</span><span class=cl>$GLGSV,2,1,06,65,27,246,,71,36,015,34,72,58,301,28,85,30,146,*6B
-</span></span><span class=line><span class=ln>11</span><span class=cl>$GLGSV,2,2,06,86,79,105,,87,28,336,35*62
-</span></span><span class=line><span class=ln>12</span><span class=cl>$GNGLL,2524.04132,N,12130.71568,E,054539.00,A,A*7B
-</span></span></code></pre></div><h4 id=座標轉換>座標轉換</h4><p>由於模組的輸出是 $ddmm.mmmmm$ 格式，所以我們要再自行轉換為 $dd.dddddd$</p><p>轉換方式: $ dd + \dfrac {mm.mmmmm}{60} $</p><p>例:</p><p>假設我們收到的資料為 : 2524.04132N, 12130.71568E</p><p>轉換的方式則為 $25 + \dfrac {24.04132}{60} $, $121 + \dfrac {30.71568}{60}$</p><p>$ => 25.4006886667, 121.511928$</p><h2 id=小結>小結</h2><p>本文僅先了解 GPS 模組基本輸出，尚未進行進一步的測試與研究。
-此外<a href=/posts/gps-module/#定位資料>GPS模組輸出/定位資料</a>章節的定位座標並非實際資料。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://www.ruten.com.tw/item/show?21550304728186>NEO M8N GPS模組</a></li><li><a href=https://www.u-blox.com/en/product/neo-m8-series>官方網站</a></li><li><a href="https://www.u-blox.com/en/ubx-viewer/view/u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221?url=https%3A%2F%2Fwww.u-blox.com%2Fsites%2Fdefault%2Ffiles%2Fproducts%2Fdocuments%2Fu-blox8-M8_ReceiverDescrProtSpec_UBX-13003221.pdf">NEO M8N 資料手冊</a></li><li><a href=https://www.gushiciku.cn/dc_tw/108015572>這應該是關於GPS定位寫得最詳實清晰的文章之一</a></li></ul></div><footer class=post-footer><div class=post-nav><a href=https://e61983.github.io/posts/gps-format/ class=post-nav-prev><span class=nav-label>上一篇</span>
-<span class=nav-title>在台灣常見的地理位置表示方式</span>
-</a><a href=https://e61983.github.io/posts/install-debian-11/ class=post-nav-next><span class=nav-label>下一篇</span>
-<span class=nav-title>使用 Debian 來架設工作站</span></a></div></footer></article><aside class=post-sidebar><nav class="toc desktop-toc"><h3 class=toc-title>目錄</h3><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#neo-m8n-gps模組>NEO M8N GPS模組</a></li><li><a href=#nmea-0183>NMEA-0183</a></li><li><a href=#gnggagpggabdgga-傻傻分不清楚>GNGGA，GPGGA，BDGGA 傻傻分不清楚</a></li><li><a href=#gps模組輸出>GPS模組輸出</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></nav></aside></div></div><button id=backToTop class=back-to-top aria-label=回到頂部>
-<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button></main><footer class=footer><div class=container><div class=footer-content><div class=social-links><a href=https://github.com/e61983 target=_blank rel=noopener class=social-link><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374.0.0 5.373.0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931.0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176.0.0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221.0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-GitHub</a></div><div class=copyright><p>&copy; 2025 Yuan. All rights reserved.</p><p>Powered by <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> & Yuan Theme</p></div></div></div></footer></div><script src=https://e61983.github.io/yuan/js/main.min.js></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ2NLS0SEB"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-FQ2NLS0SEB",{send_page_view:!0,anonymize_ip:!0,allow_google_signals:!1,allow_ad_personalization_signals:!1})</script></body></html>
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEO M8N GPS模組 · Yuan のノート</title>
+  <meta name="description" content="心之所至，隨意亂書">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="NEO M8N GPS模組">
+  <meta property="og:description" content="心之所至，隨意亂書">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://localhost:3000/posts/gps-module/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="fade-in">
+<div class="container article">
+  <div style="max-width:760px;margin:0 auto">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
+      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 所有文章</a>
+    </div>
+    <div class="article-head">
+      
+      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/gis/">gis</a></div>
+      
+      <h1>NEO M8N GPS模組</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
+        <img class="avatar" width="28" height="28" loading="lazy"
+  style="width:28px;height:28px"
+  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
+  alt="Yuan">
+
+        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
+        <span class="meta" style="margin-left:4px"><span class="mono">2021.08.20</span><span class="dot"></span><span>2 分鐘閱讀</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-layout">
+    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
+      <h2 id="前言">前言</h2>
+<p>因為工作上的需求，最近接觸到了 GNSS 模組。</p>
+<p>維基百科是這樣說的。</p>
+<blockquote>
+<p>衛星導航系統（Global Navigation Satellite System, GNSS）是覆蓋全球的自主地利空間定位的衛星系統，允許小巧的電子接收器確定它的所在位置（經度、緯度和高度），並且經由衛星廣播沿著視線方向傳送的時間信號精確到10米的範圍內。接收機計算的精確時間以及位置，可以作為科學實驗的參考。</p>
+</blockquote>
+<h2 id="主要內容">主要內容</h2>
+<h3 id="neo-m8n-gps模組">NEO M8N GPS模組</h3>
+<figure><img src="/posts/gps-module/images/gps-module.jpg"
+			alt="https://www.ruten.com.tw/item/show?21550304728186"><figcaption>
+			<p><a href="https://www.ruten.com.tw/item/show?21550304728186">https://www.ruten.com.tw/item/show?21550304728186</a></p>
+		</figcaption>
+</figure>
+
+<figure><img src="/posts/gps-module/images/preformance.png"
+			alt="NEO-M8 Datasheet Page 6"><figcaption>
+			<p>NEO-M8 Datasheet Page 6</p>
+		</figcaption>
+</figure>
+
+<h3 id="nmea-0183">NMEA-0183</h3>
+<h4 id="gga">GGA</h4>
+<p>表示該語句為 GlobalPositioning System Fix Data(GGA) GPS定位信息</p>
+<table>
+	<thead>
+			<tr>
+					<th>&lt;1&gt;</th>
+					<th>&lt;2&gt;</th>
+					<th>&lt;3&gt;</th>
+					<th>&lt;4&gt;</th>
+					<th>&lt;5&gt;</th>
+					<th>&lt;6&gt;</th>
+					<th>&lt;7&gt;</th>
+					<th>&lt;8&gt;</th>
+					<th>&lt;9&gt;</th>
+					<th>&lt;10&gt;</th>
+					<th>&lt;11&gt;</th>
+					<th>&lt;12&gt;</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>UTC時間</td>
+					<td>緯度</td>
+					<td>緯度方向</td>
+					<td>經度</td>
+					<td>經度方向</td>
+					<td>GPS狀態指示</td>
+					<td>正在使用的衛星數量</td>
+					<td>HDOP水平精度因子</td>
+					<td>海平面高度</td>
+					<td>地球橢球面相對大地水準面的高度</td>
+					<td>差分GPS信息</td>
+					<td>差分站ID號</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="gll">GLL</h4>
+<p>表示該語句為 Geographic Position(GLL) 地理定位信息</p>
+<table>
+	<thead>
+			<tr>
+					<th>&lt;1&gt;</th>
+					<th>&lt;2&gt;</th>
+					<th>&lt;3&gt;</th>
+					<th>&lt;4&gt;</th>
+					<th>&lt;5&gt;</th>
+					<th>&lt;6&gt;</th>
+					<th>&lt;7&gt;</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>緯度</td>
+					<td>緯度方向</td>
+					<td>經度</td>
+					<td>經度方向</td>
+					<td>UTC時間</td>
+					<td>定位狀態</td>
+					<td>校驗值</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="gsa">GSA</h4>
+<p>表示該語句為 GPSDOP and Active Satellites(GSA) 當前衛星信息</p>
+<table>
+	<thead>
+			<tr>
+					<th>&lt;1&gt;</th>
+					<th>&lt;2&gt;</th>
+					<th>&lt;3&gt;</th>
+					<th>&lt;4&gt;</th>
+					<th>&lt;5&gt;</th>
+					<th>&lt;6&gt;</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>定位模式</td>
+					<td>當前狀態</td>
+					<td>PRN號</td>
+					<td>PDOP綜合位置精度因子</td>
+					<td>HDOP水平精度因子</td>
+					<td>VDOP垂直精度因子</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="gsv">GSV</h4>
+<p>表示該語句為 GPSSatellites in View(GSV) 可見衛星信息</p>
+<table>
+	<thead>
+			<tr>
+					<th>&lt;1&gt;</th>
+					<th>&lt;2&gt;</th>
+					<th>&lt;3&gt;</th>
+					<th>&lt;4&gt;</th>
+					<th>&lt;5&gt;</th>
+					<th>&lt;6&gt;</th>
+					<th>&lt;7&gt;</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>GSV語句的總數目</td>
+					<td>當前GSV語句數目</td>
+					<td>顯示衛星的總數目</td>
+					<td>衛星的PRN號星號</td>
+					<td>衛星仰角</td>
+					<td>衛星鏇角</td>
+					<td>信噪比</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="mss">MSS</h4>
+<p>表示該語句為 GPSSatellites in View(GSV) 可見衛星信息</p>
+<h4 id="rmc">RMC</h4>
+<p>表示該語句為 RecommendedMinimum Specific GPS/TRANSIT Data(RMC) 推薦最小定位信息</p>
+<table>
+	<thead>
+			<tr>
+					<th>&lt;1&gt;</th>
+					<th>&lt;2&gt;</th>
+					<th>&lt;3&gt;</th>
+					<th>&lt;4&gt;</th>
+					<th>&lt;5&gt;</th>
+					<th>&lt;6&gt;</th>
+					<th>&lt;7&gt;</th>
+					<th>&lt;8&gt;</th>
+					<th>&lt;9&gt;</th>
+					<th>&lt;10&gt;</th>
+					<th>&lt;11&gt;</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>定位時UTC時間</td>
+					<td>狀態</td>
+					<td>緯度</td>
+					<td>緯度方向</td>
+					<td>經度</td>
+					<td>經度方向</td>
+					<td>速率,節</td>
+					<td>方位角</td>
+					<td>當前UTC日期</td>
+					<td>磁偏角</td>
+					<td>磁偏角方向</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="vtg">VTG</h4>
+<p>表示該語句為TrackMade Good and Ground Speed(VTG) 地面速度信息</p>
+<table>
+	<thead>
+			<tr>
+					<th>&lt;1&gt;</th>
+					<th>&lt;2&gt;</th>
+					<th>&lt;3&gt;</th>
+					<th>&lt;4&gt;</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>真實方向</td>
+					<td>相對方向</td>
+					<td>步長 Knots</td>
+					<td>速率 km/h</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="gnggagpggabdgga-傻傻分不清楚">GNGGA，GPGGA，BDGGA 傻傻分不清楚</h3>
+<p>即“混合定位”（多衛星系統）、“GPS定位”、“北斗定位”</p>
+<ul>
+<li>BD,BDS: 北斗二代衛星系統</li>
+<li>GP: GPS</li>
+<li>GL: GLONASS</li>
+<li>GA: Galileo</li>
+<li>GN: GNSS, 全球導航衛星系統</li>
+</ul>
+<h3 id="gps模組輸出">GPS模組輸出</h3>
+<h4 id="連接方式">連接方式</h4>
+<figure><img src="/posts/gps-module/images/connection.png"
+			alt="使用 micro USB 線進行連接"><figcaption>
+			<p>使用 micro USB 線進行連接</p>
+		</figcaption>
+</figure>
+
+<h4 id="指令">指令</h4>
+<p>筆者是在 MacOS 的環境中進行測試的，只要打開終端機開啟正確的裝置即可。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">screen -L /dev/tty.XXXX <span class="m">9600</span></span></span></code></pre></div>
+</div>
+<h4 id="硬體識別">硬體識別</h4>
+<p>在開始接收之後，一開始會顯示該模組的相關資訊:</p>
+<ul>
+<li>U-Blox 的歡迎訊息</li>
+<li>硬體版本</li>
+<li>在 FLASH 的韌體版本</li>
+<li>在 ROM 的韌體版本</li>
+<li>型號</li>
+<li>通訊協定版本</li>
+<li>GNSS 的配置</li>
+<li>目前天線的配置</li>
+<li>目前天線狀態</li>
+<li>FLASH 資訊結構進入點</li>
+<li>U-Blox 接收器配置</li>
+</ul>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">txt</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln"> 1</span><span class="cl">$GNTXT,01,01,02,u-blox AG - www.u-blox.com*4E                         // U-Blox 的歡迎訊息
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">$GNTXT,01,01,02,HW UBX-M80xx 00080000 *43                             // 硬體版本
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">$GNTXT,01,01,02,EXT CORE 2.01 (75350) Oct 29 2013 16:15:41*5C         // 在 FLASH 的韌體版本
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">$GNTXT,01,01,02,ROM BASE 2.01 (75331) Oct 29 2013 13:28:17*44         // 在 ROM 的韌體版本
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">$GNTXT,01,01,02,MOD NEO-M8N-0*7A                                      // 型號
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">$GNTXT,01,01,02,PROTVER 15.00*01                                      // 通訊協定版本
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">$GNTXT,01,01,02,GNSS OTP:  GPS GLO, SEL:  GPS GLO*67                  // GNSS配置
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">$GNTXT,01,01,02,ANTSUPERV=AC SD PDoS SR*3E                            // 目前天線的配置
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">$GNTXT,01,01,02,ANTSTATUS=OK*25                                       // 目前天線狀態
+</span></span><span class="line"><span class="ln">10</span><span class="cl">$GNTXT,01,01,02,FIS 0xEF4015 (79189) found*2D                         // FLASH 資訊結構進入點
+</span></span><span class="line"><span class="ln">11</span><span class="cl">$GNTXT,01,01,02,LLC FFFFFFFF-FFFFFFED-FFFFFFFF-FFFFFFFF-FFFFFF69*3E   // U-Blox 接收器配置</span></span></code></pre></div>
+</div>
+<h4 id="定位資料">定位資料</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">txt</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln"> 1</span><span class="cl">$GNRMC,054539.00,A,2524.04132,N,12130.71568,E,0.059,,200821,,,A*67
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">$GNVTG,,T,,M,0.059,N,0.109,K,A*39
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">$GNGGA,054539.00,2524.04132,N,12130.71568,E,1,09,1.82,35.1,M,17.8,M,,*75
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">$GNGSA,A,3,05,20,29,30,02,13,,,,,,,2.93,1.82,2.29*19
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">$GNGSA,A,3,87,72,71,,,,,,,,,,2.93,1.82,2.29*1A
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">$GPGSV,4,1,13,02,63,084,43,05,49,332,43,06,26,113,,07,05,051,43*7F
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">$GPGSV,4,2,13,11,52,086,,12,06,223,,13,76,177,21,15,46,226,16*74
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">$GPGSV,4,3,13,20,45,025,43,24,00,195,,25,02,252,,29,33,309,44*75
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">$GPGSV,4,4,13,30,21,081,42*44
+</span></span><span class="line"><span class="ln">10</span><span class="cl">$GLGSV,2,1,06,65,27,246,,71,36,015,34,72,58,301,28,85,30,146,*6B
+</span></span><span class="line"><span class="ln">11</span><span class="cl">$GLGSV,2,2,06,86,79,105,,87,28,336,35*62
+</span></span><span class="line"><span class="ln">12</span><span class="cl">$GNGLL,2524.04132,N,12130.71568,E,054539.00,A,A*7B</span></span></code></pre></div>
+</div>
+<h4 id="座標轉換">座標轉換</h4>
+<p>由於模組的輸出是 $ddmm.mmmmm$ 格式，所以我們要再自行轉換為 $dd.dddddd$</p>
+<p>轉換方式: $ dd + \dfrac {mm.mmmmm}{60} $</p>
+<p>例:</p>
+<p>假設我們收到的資料為 : 2524.04132N, 12130.71568E</p>
+<p>轉換的方式則為 $25 + \dfrac {24.04132}{60} $, $121 + \dfrac {30.71568}{60}$</p>
+<p>$ =&gt; 25.4006886667, 121.511928$</p>
+<h2 id="小結">小結</h2>
+<p>本文僅先了解 GPS 模組基本輸出，尚未進行進一步的測試與研究。
+此外<a href="/posts/gps-module/#定位資料">GPS模組輸出/定位資料</a>章節的定位座標並非實際資料。</p>
+<h2 id="參考連結">參考連結</h2>
+<ul>
+<li><a href="https://www.ruten.com.tw/item/show?21550304728186">NEO M8N GPS模組</a></li>
+<li><a href="https://www.u-blox.com/en/product/neo-m8-series">官方網站</a></li>
+<li><a href="https://www.u-blox.com/en/ubx-viewer/view/u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221?url=https%3A%2F%2Fwww.u-blox.com%2Fsites%2Fdefault%2Ffiles%2Fproducts%2Fdocuments%2Fu-blox8-M8_ReceiverDescrProtSpec_UBX-13003221.pdf">NEO M8N 資料手冊</a></li>
+<li><a href="https://www.gushiciku.cn/dc_tw/108015572">這應該是關於GPS定位寫得最詳實清晰的文章之一</a></li>
+</ul>
+      <div class="chips">
+  
+  <a class="chip" href="/tags/gps/"><span class="hash">#</span>gps</a>
+  
+</div>
+    </article>
+    <aside>
+      
+      <div class="toc">
+        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#主要內容">主要內容</a>
+      <ul>
+        <li><a href="#neo-m8n-gps模組">NEO M8N GPS模組</a></li>
+        <li><a href="#nmea-0183">NMEA-0183</a></li>
+        <li><a href="#gnggagpggabdgga-傻傻分不清楚">GNGGA，GPGGA，BDGGA 傻傻分不清楚</a></li>
+        <li><a href="#gps模組輸出">GPS模組輸出</a></li>
+      </ul>
+    </li>
+    <li><a href="#小結">小結</a></li>
+    <li><a href="#參考連結">參考連結</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </aside>
+  </div>
+
+  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
+  
+  <a class="side-card" href="/posts/gps-format/" style="text-decoration:none">
+    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 上一篇</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">在台灣常見的地理位置表示方式</div>
+  </a>
+  
+  
+  <a class="side-card" href="/posts/install-debian-11/" style="text-align:right;text-decoration:none">
+    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">使用 Debian 來架設工作站</div>
+  </a>
+  
+</div>
+
+  <div style="height:var(--space-10)"></div>
+</div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+</button>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>
