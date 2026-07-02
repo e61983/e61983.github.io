@@ -1,231 +1,69 @@
-<!DOCTYPE html>
-<html lang="zh-tw">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>C11 Generic Selections · Yuan のノート</title>
-  <meta name="description" content="心之所至，隨意亂書">
-  <meta name="author" content="Yuan">
-  <meta property="og:site_name" content="Yuan のノート">
-  <meta property="og:title" content="C11 Generic Selections">
-  <meta property="og:description" content="心之所至，隨意亂書">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="http://localhost:3000/posts/c11-generic-selections/">
-  <meta name="twitter:card" content="summary">
-  <meta name="theme-color" content="#0B0B0C">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  
-  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
-</head>
-<body>
-  <div class="app-shell">
-    <header class="nav">
-  <div class="container nav-inner">
-    <a href="/" class="nav-brand" aria-label="Yuan のノート">
-      <span class="mark">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span class="word">Yuan のノート</span>
-    </a>
-    <nav class="nav-links">
-      
-      <a href="/" class="nav-link">首頁</a>
-      
-      <a href="/posts/" class="nav-link">文章</a>
-      
-      <a href="/categories/" class="nav-link">分類</a>
-      
-      <a href="/tags/" class="nav-link">標籤</a>
-      
-      <a href="/archive/" class="nav-link">歸檔</a>
-      
-      <a href="/about/" class="nav-link">關於</a>
-      
-    </nav>
-    <div class="nav-right">
-      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a>
-      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
-        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span>
-        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
-</span>
-      </button>
-      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
-        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span>
-        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-</span>
-      </button>
-    </div>
-  </div>
-  <div class="nav-scrim" id="nav-scrim" hidden></div>
-  <nav class="nav-menu" id="nav-menu" hidden>
-    
-    <a href="/" class="nav-link">首頁</a>
-    
-    <a href="/posts/" class="nav-link">文章</a>
-    
-    <a href="/categories/" class="nav-link">分類</a>
-    
-    <a href="/tags/" class="nav-link">標籤</a>
-    
-    <a href="/archive/" class="nav-link">歸檔</a>
-    
-    <a href="/about/" class="nav-link">關於</a>
-    
-  </nav>
-</header>
-
-    <div style="flex:1 0 auto">
-      
-<div class="fade-in">
-<div class="container article">
-  <div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
-      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
- 所有文章</a>
-    </div>
-    <div class="article-head">
-      
-      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/c-language/">c language</a></div>
-      
-      <h1>C11 Generic Selections</h1>
-      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
-        <img class="avatar" width="28" height="28" loading="lazy"
-  style="width:28px;height:28px"
-  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
-  alt="Yuan">
-
-        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
-        <span class="meta" style="margin-left:4px"><span class="mono">2017.10.18</span><span class="dot"></span><span>1 分鐘閱讀</span></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="post-layout">
-    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
-      <h2 id="前言">前言</h2>
-<p>Generic 在C11上出現，我們可以透過實作出物件導向中的多型。要注意的是 Generic 是在編譯時期運作的。</p>
-<h2 id="主要內容">主要內容</h2>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">c</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>C11 Generic Selections · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="C11 Generic Selections"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/c11-generic-selections/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
+</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
+<a href=/posts/ class=nav-link>文章</a>
+<a href=/categories/ class=nav-link>分類</a>
+<a href=/tags/ class=nav-link>標籤</a>
+<a href=/archive/ class=nav-link>歸檔</a>
+<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
+<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
+</span></button>
+<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
+<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
+<a href=/posts/ class=nav-link>文章</a>
+<a href=/categories/ class=nav-link>分類</a>
+<a href=/tags/ class=nav-link>標籤</a>
+<a href=/archive/ class=nav-link>歸檔</a>
+<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class=fade-in><div class="container article"><div style="max-width:760px;margin:0 auto"><div style=display:flex;justify-content:center;margin-bottom:var(--space-4)><a class=link-arrow style=color:var(--fg-muted);font-size:var(--text-caption) href=/posts/><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+所有文章</a></div><div class=article-head><div style=display:flex;justify-content:center><a class="badge badge-accent" href=/categories/c-language/>c language</a></div><h1>C11 Generic Selections</h1><div style=display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)><img class=avatar width=28 height=28 loading=lazy style=width:28px;height:28px src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon" alt=Yuan>
+<span style=font:var(--weight-medium)var(--text-body)var(--font-text);color:var(--fg)>Yuan</span>
+<span class=meta style=margin-left:4px><span class=mono>2017.10.18</span><span class=dot></span><span>1 分鐘閱讀</span></span></div></div></div><div class=post-layout><article class=prose style="max-width:720px;margin:0 auto;width:100%"><h2 id=前言>前言</h2><p>Generic 在C11上出現，我們可以透過實作出物件導向中的多型。要注意的是 Generic 是在編譯時期運作的。</p><h2 id=主要內容>主要內容</h2><div class=code-block><div class=code-bar><span class=code-lang>c</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=ln> 1</span><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=kt>void</span> <span class=nf>funci</span><span class=p>(</span><span class=kt>int</span> <span class=n>x</span><span class=p>)</span> <span class=p>{</span> <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;func value = %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>x</span><span class=p>);</span> <span class=p>}</span>
+</span></span><span class=line><span class=ln> 3</span><span class=cl><span class=kt>void</span> <span class=nf>funcc</span><span class=p>(</span><span class=kt>char</span> <span class=n>c</span><span class=p>)</span> <span class=p>{</span> <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;func char = %c</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>c</span><span class=p>);</span> <span class=p>}</span>
+</span></span><span class=line><span class=ln> 4</span><span class=cl><span class=kt>void</span> <span class=nf>funcdef</span><span class=p>(</span><span class=kt>double</span> <span class=n>v</span><span class=p>)</span> <span class=p>{</span> <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;Def func&#39;s value = %lf</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>v</span><span class=p>);</span> <span class=p>}</span>
+</span></span><span class=line><span class=ln> 5</span><span class=cl><span class=cp>#define func(X) \
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=cp>    _Generic((X), \
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=cp>        int: funci, char: funcc, default: funcdef \
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=cp>    )(X)
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln>10</span><span class=cl>        <span class=nf>func</span><span class=p>(</span><span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=ln>11</span><span class=cl>        <span class=nf>func</span><span class=p>(</span><span class=sc>&#39;a&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=ln>12</span><span class=cl>        <span class=nf>func</span><span class=p>(</span><span class=mf>1.3</span><span class=p>);</span>
+</span></span><span class=line><span class=ln>13</span><span class=cl>        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=ln>14</span><span class=cl><span class=p>}</span></span></span></code></pre></div></div><p>在多個參數的使用上比較繁瑣，需要自行作每個參數的組合。</p><div class=code-block><div class=code-bar><span class=code-lang>c</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=ln> 1</span><span class=cl><span class=cp>#define format2(x,y) _Generic((x), \
+</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=cp>    char: _Generic((y), \
+</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=cp>        char:&#34;%c - %c\n&#34;, \ char*:&#34;%c - %s\n&#34;, \
+</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=cp>        int:&#34;%c - %d\n&#34;, \
+</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=cp>        default:&#34;error\n&#34; \
+</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=cp>        ), \
+</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=cp>    char*: _Generic((y), \
+</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=cp>        char:&#34;%s - %c\n&#34;, \
+</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=cp>        char*:&#34;%s - %s\n&#34;, \
+</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=cp>        int:&#34;%s - %d\n&#34;, \
+</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=cp>        default:&#34;error\n&#34; \
+</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=cp>        ), \
+</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=cp>    int: _Generic((y), \
+</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=cp>        char:&#34;%d - %c\n&#34;, \
+</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=cp>        char*:&#34;%d - %s\n&#34;, \
+</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=cp>        int:&#34;%d - %d\n&#34;, \
+</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=cp>        default:&#34;error\n&#34; \
+</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=cp>        ), \
+</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=cp>    default:&#34;error\n&#34; \
+</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=cp>  )
+</span></span></span><span class=line><span class=ln>21</span><span class=cl>
+</span></span><span class=line><span class=ln>22</span><span class=cl><span class=cp>#define print2(x, y) printf(format2(x,y),x,y)
+</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>**</span><span class=n>argv</span><span class=p>)</span>
+</span></span><span class=line><span class=ln>24</span><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=ln>25</span><span class=cl>    <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;test 2 parameters</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=ln>26</span><span class=cl>    <span class=nf>print2</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=sc>&#39;c&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=ln>27</span><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=ln>28</span><span class=cl><span class=p>}</span></span></span></code></pre></div></div><div class=chips><a class=chip href=/tags/c11/><span class=hash>#</span>c11</a></div></article><aside><div class=toc><div class=side-title style=margin-bottom:var(--space-3)>本頁目錄</div><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a></li></ul></nav></div></aside></div><div class=adjacent style="max-width:760px;margin:var(--space-8)auto 0"><div></div><a class=side-card href=/posts/ld-print-memory-usage/ style=text-align:right;text-decoration:none><div class=meta style=margin-bottom:6px;justify-content:flex-end>下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>GNU LD print memory usage</div></a></div><div style=height:var(--space-10)></div></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
+<a href=/about/>關於</a>
+<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
+<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
 </button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="kt">void</span> <span class="nf">funci</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span> <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;func value = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span> <span class="p">}</span>
-</span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="kt">void</span> <span class="nf">funcc</span><span class="p">(</span><span class="kt">char</span> <span class="n">c</span><span class="p">)</span> <span class="p">{</span> <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;func char = %c</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="p">}</span>
-</span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="kt">void</span> <span class="nf">funcdef</span><span class="p">(</span><span class="kt">double</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span> <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Def func&#39;s value = %lf</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span> <span class="p">}</span>
-</span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="cp">#define func(X) \
-</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="cp">    _Generic((X), \
-</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="cp">        int: funci, char: funcc, default: funcdef \
-</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="cp">    )(X)
-</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="ln">10</span><span class="cl">        <span class="nf">func</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span></span><span class="line"><span class="ln">11</span><span class="cl">        <span class="nf">func</span><span class="p">(</span><span class="sc">&#39;a&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="ln">12</span><span class="cl">        <span class="nf">func</span><span class="p">(</span><span class="mf">1.3</span><span class="p">);</span>
-</span></span><span class="line"><span class="ln">13</span><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="p">}</span></span></span></code></pre></div>
-</div>
-<p>在多個參數的使用上比較繁瑣，需要自行作每個參數的組合。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">c</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="cp">#define format2(x,y) _Generic((x), \
-</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="cp">    char: _Generic((y), \
-</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="cp">        char:&#34;%c - %c\n&#34;, \ char*:&#34;%c - %s\n&#34;, \
-</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="cp">        int:&#34;%c - %d\n&#34;, \
-</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="cp">        default:&#34;error\n&#34; \
-</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="cp">        ), \
-</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="cp">    char*: _Generic((y), \
-</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="cp">        char:&#34;%s - %c\n&#34;, \
-</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="cp">        char*:&#34;%s - %s\n&#34;, \
-</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="cp">        int:&#34;%s - %d\n&#34;, \
-</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="cp">        default:&#34;error\n&#34; \
-</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="cp">        ), \
-</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="cp">    int: _Generic((y), \
-</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="cp">        char:&#34;%d - %c\n&#34;, \
-</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="cp">        char*:&#34;%d - %s\n&#34;, \
-</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="cp">        int:&#34;%d - %d\n&#34;, \
-</span></span></span><span class="line"><span class="ln">17</span><span class="cl"><span class="cp">        default:&#34;error\n&#34; \
-</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="cp">        ), \
-</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="cp">    default:&#34;error\n&#34; \
-</span></span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="cp">  )
-</span></span></span><span class="line"><span class="ln">21</span><span class="cl">
-</span></span><span class="line"><span class="ln">22</span><span class="cl"><span class="cp">#define print2(x, y) printf(format2(x,y),x,y)
-</span></span></span><span class="line"><span class="ln">23</span><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
-</span></span><span class="line"><span class="ln">24</span><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="ln">25</span><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;test 2 parameters</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="ln">26</span><span class="cl">    <span class="nf">print2</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="sc">&#39;c&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="ln">27</span><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="ln">28</span><span class="cl"><span class="p">}</span></span></span></code></pre></div>
-</div>
-      <div class="chips">
-  
-  <a class="chip" href="/tags/c11/"><span class="hash">#</span>c11</a>
-  
-</div>
-    </article>
-    <aside>
-      
-      <div class="toc">
-        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
-        <nav id="TableOfContents">
-  <ul>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#主要內容">主要內容</a></li>
-  </ul>
-</nav>
-      </div>
-      
-    </aside>
-  </div>
-
-  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
-  <div></div>
-  
-  <a class="side-card" href="/posts/ld-print-memory-usage/" style="text-align:right;text-decoration:none">
-    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-</div>
-    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">GNU LD print memory usage</div>
-  </a>
-  
-</div>
-
-  <div style="height:var(--space-10)"></div>
-</div>
-</div>
-
-    </div>
-    <footer class="site-footer">
-  <div class="container footer-inner">
-    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
-    <div class="footer-links">
-      <a href="/posts/">文章</a>
-      <a href="/about/">關於</a>
-      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
-      <a href="/index.xml">RSS</a>
-    </div>
-  </div>
-</footer>
-
-  </div>
-  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-</button>
-  
-  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
-  
-</body>
-</html>
+<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>

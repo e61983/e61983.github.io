@@ -1,469 +1,131 @@
-<!DOCTYPE html>
-<html lang="zh-tw">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4 · Yuan のノート</title>
-  <meta name="description" content="心之所至，隨意亂書">
-  <meta name="author" content="Yuan">
-  <meta property="og:site_name" content="Yuan のノート">
-  <meta property="og:title" content="在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4">
-  <meta property="og:description" content="心之所至，隨意亂書">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="http://localhost:3000/posts/yocto-with-imx8qxp-4/">
-  <meta name="twitter:card" content="summary">
-  <meta name="theme-color" content="#0B0B0C">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  
-  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
-</head>
-<body>
-  <div class="app-shell">
-    <header class="nav">
-  <div class="container nav-inner">
-    <a href="/" class="nav-brand" aria-label="Yuan のノート">
-      <span class="mark">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span class="word">Yuan のノート</span>
-    </a>
-    <nav class="nav-links">
-      
-      <a href="/" class="nav-link">首頁</a>
-      
-      <a href="/posts/" class="nav-link">文章</a>
-      
-      <a href="/categories/" class="nav-link">分類</a>
-      
-      <a href="/tags/" class="nav-link">標籤</a>
-      
-      <a href="/archive/" class="nav-link">歸檔</a>
-      
-      <a href="/about/" class="nav-link">關於</a>
-      
-    </nav>
-    <div class="nav-right">
-      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a>
-      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
-        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span>
-        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
-</span>
-      </button>
-      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
-        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span>
-        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-</span>
-      </button>
-    </div>
-  </div>
-  <div class="nav-scrim" id="nav-scrim" hidden></div>
-  <nav class="nav-menu" id="nav-menu" hidden>
-    
-    <a href="/" class="nav-link">首頁</a>
-    
-    <a href="/posts/" class="nav-link">文章</a>
-    
-    <a href="/categories/" class="nav-link">分類</a>
-    
-    <a href="/tags/" class="nav-link">標籤</a>
-    
-    <a href="/archive/" class="nav-link">歸檔</a>
-    
-    <a href="/about/" class="nav-link">關於</a>
-    
-  </nav>
-</header>
-
-    <div style="flex:1 0 auto">
-      
-<div class="fade-in">
-<div class="container article">
-  <div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
-      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
- 所有文章</a>
-    </div>
-    <div class="article-head">
-      
-      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/embedded-system/">embedded system</a></div>
-      
-      <h1>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</h1>
-      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
-        <img class="avatar" width="28" height="28" loading="lazy"
-  style="width:28px;height:28px"
-  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
-  alt="Yuan">
-
-        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
-        <span class="meta" style="margin-left:4px"><span class="mono">2021.09.13</span><span class="dot"></span><span>3 分鐘閱讀</span></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="post-layout">
-    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
-      <h2 id="前言">前言</h2>
-<p>為了在之後開發過程中不用反覆燒寫 eMMC 與 SD 卡，本篇會設定 U-Boot 載入 Rootfs 以達到我們的目的。</p>
-<h2 id="主要內容">主要內容</h2>
-<h3 id="寫在前面">寫在前面</h3>
-<p>我們這次的目標是從 NFS 伺服器中載入 Rootfs。所以我們在開機時，U-Boot 載入的 Kernel 與裝置樹 ( Devicetree ) 仍是 eMMC/SD 卡內的。</p>
-<p>在開機的過程中，首先會要把要執行的東西載入到記憶體中執行。
+<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4 · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/yocto-with-imx8qxp-4/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
+</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
+<a href=/posts/ class=nav-link>文章</a>
+<a href=/categories/ class=nav-link>分類</a>
+<a href=/tags/ class=nav-link>標籤</a>
+<a href=/archive/ class=nav-link>歸檔</a>
+<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
+<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
+</span></button>
+<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
+<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
+<a href=/posts/ class=nav-link>文章</a>
+<a href=/categories/ class=nav-link>分類</a>
+<a href=/tags/ class=nav-link>標籤</a>
+<a href=/archive/ class=nav-link>歸檔</a>
+<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class=fade-in><div class="container article"><div style="max-width:760px;margin:0 auto"><div style=display:flex;justify-content:center;margin-bottom:var(--space-4)><a class=link-arrow style=color:var(--fg-muted);font-size:var(--text-caption) href=/posts/><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+所有文章</a></div><div class=article-head><div style=display:flex;justify-content:center><a class="badge badge-accent" href=/categories/embedded-system/>embedded system</a></div><h1>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</h1><div style=display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)><img class=avatar width=28 height=28 loading=lazy style=width:28px;height:28px src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon" alt=Yuan>
+<span style=font:var(--weight-medium)var(--text-body)var(--font-text);color:var(--fg)>Yuan</span>
+<span class=meta style=margin-left:4px><span class=mono>2021.09.13</span><span class=dot></span><span>3 分鐘閱讀</span></span></div></div></div><div class=post-layout><article class=prose style="max-width:720px;margin:0 auto;width:100%"><h2 id=前言>前言</h2><p>為了在之後開發過程中不用反覆燒寫 eMMC 與 SD 卡，本篇會設定 U-Boot 載入 Rootfs 以達到我們的目的。</p><h2 id=主要內容>主要內容</h2><h3 id=寫在前面>寫在前面</h3><p>我們這次的目標是從 NFS 伺服器中載入 Rootfs。所以我們在開機時，U-Boot 載入的 Kernel 與裝置樹 ( Devicetree ) 仍是 eMMC/SD 卡內的。</p><p>在開機的過程中，首先會要把要執行的東西載入到記憶體中執行。
 所以我們可以預期，待會我們會需要載入 Kernel 與 裝置樹。
-最後才把主控權交給 Kernel。</p>
-<p>我們要做的就是在執行時期，修改 U-Boot 傳給 Kernel 的開機參數。</p>
-<h3 id="配置-nfs-伺服器">配置 NFS 伺服器</h3>
-<p>這一個部份先前有筆記過了，如果還沒有看過的同學請參考<a href="http://localhost:3000/posts/stm32mp-with-yocto/#建置-nfs-環境">這裡</a>。</p>
-<h3 id="分析-kernel-與-devicetree-的載入命令">分析 Kernel 與 Devicetree 的載入命令</h3>
-<p>U-Boot 預設開機在基本的初始化完成後，並且在指定的秒數內沒有都收到使用者的輸入，便會開始執行 <strong>bootcmd</strong> 中的內容。
-我們可以藉由分析它，來初步的知道系統的開機流程。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">print bootcmd
-</span></span><span class="line"><span class="ln">2</span><span class="cl">
-</span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="c1"># Output:</span>
-</span></span><span class="line"><span class="ln">4</span><span class="cl"><span class="nv">bootcmd</span><span class="o">=</span>mmc dev <span class="si">${</span><span class="nv">mmcdev</span><span class="si">}</span><span class="p">;</span> <span class="k">if</span> mmc rescan<span class="p">;</span> <span class="k">then</span> <span class="k">if</span> run loadbootscript<span class="p">;</span> <span class="k">then</span> run bootscript<span class="p">;</span> <span class="k">else</span> <span class="k">if</span> <span class="nb">test</span> <span class="si">${</span><span class="nv">sec_boot</span><span class="si">}</span> <span class="o">=</span> yes<span class="p">;</span> <span class="k">then</span> <span class="k">if</span> run loadcntr<span class="p">;</span> <span class="k">then</span> run mmcboot<span class="p">;</span> <span class="k">else</span> run netboot<span class="p">;</span> <span class="k">fi</span><span class="p">;</span> <span class="k">else</span> <span class="k">if</span> run loadimage<span class="p">;</span> <span class="k">then</span> run mmcboot<span class="p">;</span> <span class="k">else</span> run netboot<span class="p">;</span> <span class="k">fi</span><span class="p">;</span> <span class="k">fi</span><span class="p">;</span> <span class="k">fi</span><span class="p">;</span> <span class="k">else</span> booti <span class="si">${</span><span class="nv">loadaddr</span><span class="si">}</span> - <span class="si">${</span><span class="nv">fdt_addr</span><span class="si">}</span><span class="p">;</span> <span class="k">fi</span></span></span></code></pre></div>
-</div>
-<p>整理過後, 我們可以觀察到它真正會執行到的指令為 <code>run loadimage </code>，接著會是 <code>run mmcboot </code></p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="nv">bootcmd</span><span class="o">=</span>
-</span></span><span class="line"><span class="ln"> 2</span><span class="cl">	mmc dev <span class="si">${</span><span class="nv">mmcdev</span><span class="si">}</span><span class="p">;</span>
-</span></span><span class="line"><span class="ln"> 3</span><span class="cl">	<span class="k">if</span> mmc rescan<span class="p">;</span> <span class="k">then</span> 
-</span></span><span class="line"><span class="ln"> 4</span><span class="cl">		<span class="k">if</span> run loadbootscript<span class="p">;</span> <span class="k">then</span> 
-</span></span><span class="line"><span class="ln"> 5</span><span class="cl">			run bootscript<span class="p">;</span> 
-</span></span><span class="line"><span class="ln"> 6</span><span class="cl">		<span class="k">else</span> 
-</span></span><span class="line"><span class="ln"> 7</span><span class="cl">			<span class="k">if</span> <span class="nb">test</span> <span class="si">${</span><span class="nv">sec_boot</span><span class="si">}</span> <span class="o">=</span> yes<span class="p">;</span> <span class="k">then</span> 
-</span></span><span class="line"><span class="ln"> 8</span><span class="cl">				<span class="k">if</span> run loadcntr<span class="p">;</span> <span class="k">then</span> 
-</span></span><span class="line"><span class="ln"> 9</span><span class="cl">					run mmcboot<span class="p">;</span> 
-</span></span><span class="line"><span class="ln">10</span><span class="cl">				<span class="k">else</span>
-</span></span><span class="line"><span class="ln">11</span><span class="cl">					run netboot<span class="p">;</span> 
-</span></span><span class="line"><span class="ln">12</span><span class="cl">				<span class="k">fi</span><span class="p">;</span>
-</span></span><span class="line"><span class="ln">13</span><span class="cl">			<span class="k">else</span>
-</span></span><span class="line"><span class="ln">14</span><span class="cl">				<span class="k">if</span> run loadimage<span class="p">;</span> <span class="k">then</span> 
-</span></span><span class="line"><span class="ln">15</span><span class="cl">					run mmcboot<span class="p">;</span> 
-</span></span><span class="line"><span class="ln">16</span><span class="cl">				<span class="k">else</span>
-</span></span><span class="line"><span class="ln">17</span><span class="cl">					run netboot<span class="p">;</span> 
-</span></span><span class="line"><span class="ln">18</span><span class="cl">				<span class="k">fi</span><span class="p">;</span> 
-</span></span><span class="line"><span class="ln">19</span><span class="cl">			<span class="k">fi</span><span class="p">;</span> 
-</span></span><span class="line"><span class="ln">20</span><span class="cl">		<span class="k">fi</span><span class="p">;</span> 
-</span></span><span class="line"><span class="ln">21</span><span class="cl">	<span class="k">else</span>
-</span></span><span class="line"><span class="ln">22</span><span class="cl">		booti <span class="si">${</span><span class="nv">loadaddr</span><span class="si">}</span> - <span class="si">${</span><span class="nv">fdt_addr</span><span class="si">}</span><span class="p">;</span> 
-</span></span><span class="line"><span class="ln">23</span><span class="cl">	<span class="k">fi</span></span></span></code></pre></div>
-</div>
-<p>從 eMMC 中把 Kernel 載到記憶體裡面</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}</span></span></code></pre></div>
-</div>
-<p>繼續展開 <code>mmcboot</code></p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln"> 1</span><span class="cl">mmcboot=
-</span></span><span class="line"><span class="ln"> 2</span><span class="cl">	echo Booting from mmc ...; 
-</span></span><span class="line"><span class="ln"> 3</span><span class="cl">	run mmcargs;
-</span></span><span class="line"><span class="ln"> 4</span><span class="cl">	if test ${sec_boot} = yes; then
-</span></span><span class="line"><span class="ln"> 5</span><span class="cl">		if run auth_os; then 
-</span></span><span class="line"><span class="ln"> 6</span><span class="cl">			run boot_os; 
-</span></span><span class="line"><span class="ln"> 7</span><span class="cl">		else
-</span></span><span class="line"><span class="ln"> 8</span><span class="cl">			echo ERR: failed to authenticate; 
-</span></span><span class="line"><span class="ln"> 9</span><span class="cl">		fi;
-</span></span><span class="line"><span class="ln">10</span><span class="cl">	else
-</span></span><span class="line"><span class="ln">11</span><span class="cl">		if test ${boot_fdt} = yes || test ${boot_fdt} = try; then 
-</span></span><span class="line"><span class="ln">12</span><span class="cl">			if run loadfdt; then 
-</span></span><span class="line"><span class="ln">13</span><span class="cl">				run boot_os; 
-</span></span><span class="line"><span class="ln">14</span><span class="cl">			else
-</span></span><span class="line"><span class="ln">15</span><span class="cl">				echo WARN: Cannot load the DT; 
-</span></span><span class="line"><span class="ln">16</span><span class="cl">			fi; 
-</span></span><span class="line"><span class="ln">17</span><span class="cl">		else
-</span></span><span class="line"><span class="ln">18</span><span class="cl">			echo wait for boot; 
-</span></span><span class="line"><span class="ln">19</span><span class="cl">		fi;
-</span></span><span class="line"><span class="ln">20</span><span class="cl">	fi;</span></span></code></pre></div>
-</div>
-<p>從 eMMC 中把 裝置樹 ( Devicetree ) 載到記憶體裡面</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}</span></span></code></pre></div>
-</div>
-<p>開始載入 Kernel ，之後就會把控制權交給 Kernel 了。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">boot_os=booti ${loadaddr} - ${fdt_addr};</span></span></code></pre></div>
-</div>
-<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">小提示</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">我們可以使用 <code>echo $?</code> 來看返回值。</div>
-</div>
-
-<h3 id="設定-u-boot-環境變數">設定 U-Boot 環境變數</h3>
-<p>從先前的分析來看，比較重要的指令有:</p>
-<ul>
-<li>loadfdt</li>
-<li>loadimage</li>
-<li>boot_os</li>
-</ul>
-<p>所以我們只要進行下列修改，即可。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln"> 1</span><span class="cl">setenv serverip &#34;NFS_SERVER_IP&#34;
-</span></span><span class="line"><span class="ln"> 2</span><span class="cl">setenv rootfs_dir &#34;/srv/rootfs&#34;
-</span></span><span class="line"><span class="ln"> 3</span><span class="cl">setenv ethaddr &#34;01:02:03:04:05:06&#34;
-</span></span><span class="line"><span class="ln"> 4</span><span class="cl">setenv image Image
-</span></span><span class="line"><span class="ln"> 5</span><span class="cl">setenv fdt_file imx8qxp-mek-rpmsg.dtb
-</span></span><span class="line"><span class="ln"> 6</span><span class="cl">
-</span></span><span class="line"><span class="ln"> 7</span><span class="cl">setenv rootfsinfo &#39;setenv bootargs ${bootargs} root=/dev/nfs ip=dhcp nfsroot=${serverip}:${rootfs_dir},v3,tcp&#39;
-</span></span><span class="line"><span class="ln"> 8</span><span class="cl">setenv bootcmd &#39;run rootfsinfo; run loadfdt; run loadimage; run boot_os&#39;
-</span></span><span class="line"><span class="ln"> 9</span><span class="cl">
-</span></span><span class="line"><span class="ln">10</span><span class="cl">saveenv</span></span></code></pre></div>
-</div>
-<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">還原回預設值</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)"><p>如我們想還原回預設值，可以使用下列指令</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">env default -a
-</span></span><span class="line"><span class="ln">2</span><span class="cl">saveenv</span></span></code></pre></div>
-</div></div>
-</div>
-
-<h3 id="結果">結果</h3>
-<p>我們可以重新啟動系統，或是直接執行 <code>boot</code> 就可以看到 U-Boot 正在開始執行我們剛才所撰寫的指令了。
-會發現，開機的時候有稍微變長了，並且在過程中可以看到 <code>NFS</code> 相關的字樣。</p>
-<p>開機完成後，我們可以在 <code>/proc/cmdline</code> 看到我們先前指定的開機參數(bootarg)。</p>
-<figure><img src="/posts/yocto-with-imx8qxp-4/images/result.png"
-			alt="從 NFS 伺服器中載入 rootfs"><figcaption>
-			<p>從 NFS 伺服器中載入 rootfs</p>
-		</figcaption>
-</figure>
-
-<h3 id="寫在最後">寫在最後</h3>
-<p>在 U-Boot 中看到的參數，在本篇並沒有多去探究。不過也別太過傷心，以後我們會專門製作一篇為大家講解。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">loadaddr=0x80280000
-</span></span><span class="line"><span class="ln">2</span><span class="cl">fdt_addr=0x83000000
-</span></span><span class="line"><span class="ln">3</span><span class="cl">image=Image
-</span></span><span class="line"><span class="ln">4</span><span class="cl">fdt_file=imx8qxp-mek-rpmsg.dtb</span></span></code></pre></div>
-</div>
-<h2 id="小結">小結</h2>
-<p>這次在撰寫本篇時，其實是想把 Kernel 與裝置樹都從網路載下來的。
+最後才把主控權交給 Kernel。</p><p>我們要做的就是在執行時期，修改 U-Boot 傳給 Kernel 的開機參數。</p><h3 id=配置-nfs-伺服器>配置 NFS 伺服器</h3><p>這一個部份先前有筆記過了，如果還沒有看過的同學請參考<a href=https://e61983.github.io/posts/stm32mp-with-yocto/#建置-nfs-環境>這裡</a>。</p><h3 id=分析-kernel-與-devicetree-的載入命令>分析 Kernel 與 Devicetree 的載入命令</h3><p>U-Boot 預設開機在基本的初始化完成後，並且在指定的秒數內沒有都收到使用者的輸入，便會開始執行 <strong>bootcmd</strong> 中的內容。
+我們可以藉由分析它，來初步的知道系統的開機流程。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>print bootcmd
+</span></span><span class=line><span class=ln>2</span><span class=cl>
+</span></span><span class=line><span class=ln>3</span><span class=cl><span class=c1># Output:</span>
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=nv>bootcmd</span><span class=o>=</span>mmc dev <span class=si>${</span><span class=nv>mmcdev</span><span class=si>}</span><span class=p>;</span> <span class=k>if</span> mmc rescan<span class=p>;</span> <span class=k>then</span> <span class=k>if</span> run loadbootscript<span class=p>;</span> <span class=k>then</span> run bootscript<span class=p>;</span> <span class=k>else</span> <span class=k>if</span> <span class=nb>test</span> <span class=si>${</span><span class=nv>sec_boot</span><span class=si>}</span> <span class=o>=</span> yes<span class=p>;</span> <span class=k>then</span> <span class=k>if</span> run loadcntr<span class=p>;</span> <span class=k>then</span> run mmcboot<span class=p>;</span> <span class=k>else</span> run netboot<span class=p>;</span> <span class=k>fi</span><span class=p>;</span> <span class=k>else</span> <span class=k>if</span> run loadimage<span class=p>;</span> <span class=k>then</span> run mmcboot<span class=p>;</span> <span class=k>else</span> run netboot<span class=p>;</span> <span class=k>fi</span><span class=p>;</span> <span class=k>fi</span><span class=p>;</span> <span class=k>fi</span><span class=p>;</span> <span class=k>else</span> booti <span class=si>${</span><span class=nv>loadaddr</span><span class=si>}</span> - <span class=si>${</span><span class=nv>fdt_addr</span><span class=si>}</span><span class=p>;</span> <span class=k>fi</span></span></span></code></pre></div></div><p>整理過後, 我們可以觀察到它真正會執行到的指令為 <code>run loadimage </code>，接著會是 <code>run mmcboot</code></p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl><span class=nv>bootcmd</span><span class=o>=</span>
+</span></span><span class=line><span class=ln> 2</span><span class=cl>	mmc dev <span class=si>${</span><span class=nv>mmcdev</span><span class=si>}</span><span class=p>;</span>
+</span></span><span class=line><span class=ln> 3</span><span class=cl>	<span class=k>if</span> mmc rescan<span class=p>;</span> <span class=k>then</span> 
+</span></span><span class=line><span class=ln> 4</span><span class=cl>		<span class=k>if</span> run loadbootscript<span class=p>;</span> <span class=k>then</span> 
+</span></span><span class=line><span class=ln> 5</span><span class=cl>			run bootscript<span class=p>;</span> 
+</span></span><span class=line><span class=ln> 6</span><span class=cl>		<span class=k>else</span> 
+</span></span><span class=line><span class=ln> 7</span><span class=cl>			<span class=k>if</span> <span class=nb>test</span> <span class=si>${</span><span class=nv>sec_boot</span><span class=si>}</span> <span class=o>=</span> yes<span class=p>;</span> <span class=k>then</span> 
+</span></span><span class=line><span class=ln> 8</span><span class=cl>				<span class=k>if</span> run loadcntr<span class=p>;</span> <span class=k>then</span> 
+</span></span><span class=line><span class=ln> 9</span><span class=cl>					run mmcboot<span class=p>;</span> 
+</span></span><span class=line><span class=ln>10</span><span class=cl>				<span class=k>else</span>
+</span></span><span class=line><span class=ln>11</span><span class=cl>					run netboot<span class=p>;</span> 
+</span></span><span class=line><span class=ln>12</span><span class=cl>				<span class=k>fi</span><span class=p>;</span>
+</span></span><span class=line><span class=ln>13</span><span class=cl>			<span class=k>else</span>
+</span></span><span class=line><span class=ln>14</span><span class=cl>				<span class=k>if</span> run loadimage<span class=p>;</span> <span class=k>then</span> 
+</span></span><span class=line><span class=ln>15</span><span class=cl>					run mmcboot<span class=p>;</span> 
+</span></span><span class=line><span class=ln>16</span><span class=cl>				<span class=k>else</span>
+</span></span><span class=line><span class=ln>17</span><span class=cl>					run netboot<span class=p>;</span> 
+</span></span><span class=line><span class=ln>18</span><span class=cl>				<span class=k>fi</span><span class=p>;</span> 
+</span></span><span class=line><span class=ln>19</span><span class=cl>			<span class=k>fi</span><span class=p>;</span> 
+</span></span><span class=line><span class=ln>20</span><span class=cl>		<span class=k>fi</span><span class=p>;</span> 
+</span></span><span class=line><span class=ln>21</span><span class=cl>	<span class=k>else</span>
+</span></span><span class=line><span class=ln>22</span><span class=cl>		booti <span class=si>${</span><span class=nv>loadaddr</span><span class=si>}</span> - <span class=si>${</span><span class=nv>fdt_addr</span><span class=si>}</span><span class=p>;</span> 
+</span></span><span class=line><span class=ln>23</span><span class=cl>	<span class=k>fi</span></span></span></code></pre></div></div><p>從 eMMC 中把 Kernel 載到記憶體裡面</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}</span></span></code></pre></div></div><p>繼續展開 <code>mmcboot</code></p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>mmcboot=
+</span></span><span class=line><span class=ln> 2</span><span class=cl>	echo Booting from mmc ...; 
+</span></span><span class=line><span class=ln> 3</span><span class=cl>	run mmcargs;
+</span></span><span class=line><span class=ln> 4</span><span class=cl>	if test ${sec_boot} = yes; then
+</span></span><span class=line><span class=ln> 5</span><span class=cl>		if run auth_os; then 
+</span></span><span class=line><span class=ln> 6</span><span class=cl>			run boot_os; 
+</span></span><span class=line><span class=ln> 7</span><span class=cl>		else
+</span></span><span class=line><span class=ln> 8</span><span class=cl>			echo ERR: failed to authenticate; 
+</span></span><span class=line><span class=ln> 9</span><span class=cl>		fi;
+</span></span><span class=line><span class=ln>10</span><span class=cl>	else
+</span></span><span class=line><span class=ln>11</span><span class=cl>		if test ${boot_fdt} = yes || test ${boot_fdt} = try; then 
+</span></span><span class=line><span class=ln>12</span><span class=cl>			if run loadfdt; then 
+</span></span><span class=line><span class=ln>13</span><span class=cl>				run boot_os; 
+</span></span><span class=line><span class=ln>14</span><span class=cl>			else
+</span></span><span class=line><span class=ln>15</span><span class=cl>				echo WARN: Cannot load the DT; 
+</span></span><span class=line><span class=ln>16</span><span class=cl>			fi; 
+</span></span><span class=line><span class=ln>17</span><span class=cl>		else
+</span></span><span class=line><span class=ln>18</span><span class=cl>			echo wait for boot; 
+</span></span><span class=line><span class=ln>19</span><span class=cl>		fi;
+</span></span><span class=line><span class=ln>20</span><span class=cl>	fi;</span></span></code></pre></div></div><p>從 eMMC 中把 裝置樹 ( Devicetree ) 載到記憶體裡面</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}</span></span></code></pre></div></div><p>開始載入 Kernel ，之後就會把控制權交給 Kernel 了。</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>boot_os=booti ${loadaddr} - ${fdt_addr};</span></span></code></pre></div></div><div class=notice style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4)var(--space-5);margin:0 0 var(--space-5)"><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px>小提示</div><div style=color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)>我們可以使用 <code>echo $?</code> 來看返回值。</div></div><h3 id=設定-u-boot-環境變數>設定 U-Boot 環境變數</h3><p>從先前的分析來看，比較重要的指令有:</p><ul><li>loadfdt</li><li>loadimage</li><li>boot_os</li></ul><p>所以我們只要進行下列修改，即可。</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>setenv serverip &#34;NFS_SERVER_IP&#34;
+</span></span><span class=line><span class=ln> 2</span><span class=cl>setenv rootfs_dir &#34;/srv/rootfs&#34;
+</span></span><span class=line><span class=ln> 3</span><span class=cl>setenv ethaddr &#34;01:02:03:04:05:06&#34;
+</span></span><span class=line><span class=ln> 4</span><span class=cl>setenv image Image
+</span></span><span class=line><span class=ln> 5</span><span class=cl>setenv fdt_file imx8qxp-mek-rpmsg.dtb
+</span></span><span class=line><span class=ln> 6</span><span class=cl>
+</span></span><span class=line><span class=ln> 7</span><span class=cl>setenv rootfsinfo &#39;setenv bootargs ${bootargs} root=/dev/nfs ip=dhcp nfsroot=${serverip}:${rootfs_dir},v3,tcp&#39;
+</span></span><span class=line><span class=ln> 8</span><span class=cl>setenv bootcmd &#39;run rootfsinfo; run loadfdt; run loadimage; run boot_os&#39;
+</span></span><span class=line><span class=ln> 9</span><span class=cl>
+</span></span><span class=line><span class=ln>10</span><span class=cl>saveenv</span></span></code></pre></div></div><div class=notice style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4)var(--space-5);margin:0 0 var(--space-5)"><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px>還原回預設值</div><div style=color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)><p>如我們想還原回預設值，可以使用下列指令</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>env default -a
+</span></span><span class=line><span class=ln>2</span><span class=cl>saveenv</span></span></code></pre></div></div></div></div><h3 id=結果>結果</h3><p>我們可以重新啟動系統，或是直接執行 <code>boot</code> 就可以看到 U-Boot 正在開始執行我們剛才所撰寫的指令了。
+會發現，開機的時候有稍微變長了，並且在過程中可以看到 <code>NFS</code> 相關的字樣。</p><p>開機完成後，我們可以在 <code>/proc/cmdline</code> 看到我們先前指定的開機參數(bootarg)。</p><figure><img src=/posts/yocto-with-imx8qxp-4/images/result.png alt="從 NFS 伺服器中載入 rootfs"><figcaption><p>從 NFS 伺服器中載入 rootfs</p></figcaption></figure><h3 id=寫在最後>寫在最後</h3><p>在 U-Boot 中看到的參數，在本篇並沒有多去探究。不過也別太過傷心，以後我們會專門製作一篇為大家講解。</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>loadaddr=0x80280000
+</span></span><span class=line><span class=ln>2</span><span class=cl>fdt_addr=0x83000000
+</span></span><span class=line><span class=ln>3</span><span class=cl>image=Image
+</span></span><span class=line><span class=ln>4</span><span class=cl>fdt_file=imx8qxp-mek-rpmsg.dtb</span></span></code></pre></div></div><h2 id=小結>小結</h2><p>這次在撰寫本篇時，其實是想把 Kernel 與裝置樹都從網路載下來的。
 但礙於筆者的網路環境比較複雜，一直無法成功的藉由 TFTP 傳輸資料。
 所以也就暫時作罷。
-未來如果有完成這個部份再來更新吧。</p>
-<p>( 附上當時的筆記 )</p>
-<h3 id="配置-tftp-伺服器">配置 TFTP 伺服器</h3>
-<h4 id="安裝-tftp">安裝 TFTP</h4>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+未來如果有完成這個部份再來更新吧。</p><p>( 附上當時的筆記 )</p><h3 id=配置-tftp-伺服器>配置 TFTP 伺服器</h3><h4 id=安裝-tftp>安裝 TFTP</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>sudo aptitude install -y tftpd-hpa</span></span></code></pre></div></div><h4 id=配置分享路徑>配置分享路徑</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>sudo cp /etc/default/tftpd-hpa<span class=o>{</span>,.bk<span class=o>}</span> 
+</span></span><span class=line><span class=ln>2</span><span class=cl>sudo sed -i <span class=s1>&#39;s#TFTP_DIRECTORY.*#TFTP_DIRECTORY=&#34;/srv/tftp_shared&#34;#g&#39;</span> /etc/default/tftpd-hpa
+</span></span><span class=line><span class=ln>3</span><span class=cl>sudo sed -i <span class=s1>&#39;s#TFTP_ADDRESS.*#TFTP_ADDRESS=&#34;:69&#34;#g&#39;</span> /etc/default/tftpd-hpa
+</span></span><span class=line><span class=ln>4</span><span class=cl>sudo sed -i <span class=s1>&#39;s#TFTP_OPTIONS.*#TFTP_OPTIONS=&#34;--secure --create&#34;#g&#39;</span> /etc/default/tftpd-hpa
+</span></span><span class=line><span class=ln>5</span><span class=cl>
+</span></span><span class=line><span class=ln>6</span><span class=cl>sudo systemctl <span class=nb>enable</span> tftpd-hpa
+</span></span><span class=line><span class=ln>7</span><span class=cl>sudo systemctl restart tftpd-hpa</span></span></code></pre></div></div><p>/etc/default/tftpd-hpa:</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl># /etc/default/tftpd-hpa
+</span></span><span class=line><span class=ln>2</span><span class=cl>TFTP_USERNAME=&#34;tftp&#34;
+</span></span><span class=line><span class=ln>3</span><span class=cl>TFTP_DIRECTORY=&#34;/srv/tftp_shared/&#34;
+</span></span><span class=line><span class=ln>4</span><span class=cl>TFTP_ADDRESS=&#34;:69&#34;
+</span></span><span class=line><span class=ln>5</span><span class=cl>TFTP_OPTIONS=&#34;--secure --create&#34;</span></span></code></pre></div></div><h4 id=配置防火牆>配置防火牆</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>sudo firewall-cmd <span class=se>\
+</span></span></span><span class=line><span class=ln>2</span><span class=cl>	--add-rich-rule<span class=o>=</span><span class=s2>&#34;rule family=&#39;ipv4&#39; source address=&#39;192.168.1.2&#39; service name=&#39;tftp&#39; accept&#34;</span> <span class=se>\
+</span></span></span><span class=line><span class=ln>3</span><span class=cl>	--permanent
+</span></span><span class=line><span class=ln>4</span><span class=cl>sudo firewall-cmd --reload</span></span></code></pre></div></div><h4 id=除錯>除錯</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>sudo netstat -nlp
+</span></span><span class=line><span class=ln>2</span><span class=cl>sudo journalctl -fu  tftpd-hpa.service</span></span></code></pre></div></div><h4 id=用戶端測試>用戶端測試</h4><p>在伺服器中建立測試用的資料</p><div class=code-block><div class=code-bar><span class=code-lang>base</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=ln>1</span><span class=cl>echo &#34;Hello word&#34; &gt; /srv/tftp_shared/hello</span></span></code></pre></div></div><p>在用戶端進行上、下載測試</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nb>echo</span> <span class=s2>&#34;I am Groot~~~~~&#34;</span> &gt; groot.txt
+</span></span><span class=line><span class=ln>2</span><span class=cl>
+</span></span><span class=line><span class=ln>3</span><span class=cl>tftp SERVER_IP
+</span></span><span class=line><span class=ln>4</span><span class=cl>tftp get hello
+</span></span><span class=line><span class=ln>5</span><span class=cl>tftp put groot.txt</span></span></code></pre></div></div><h2 id=參考連結>參考連結</h2><ul><li><a href=https://www.nxp.com/docs/en/user-guide/IMX_LINUX_USERS_GUIDE.pdf>i.MX Linux® User&rsquo;s Guide</a></li></ul><div class=chips><a class=chip href=/tags/i.mx8qxp/><span class=hash>#</span>i.mx8qxp</a>
+<a class=chip href=/tags/u-boot/><span class=hash>#</span>u-boot</a>
+<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
+<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a>
+<a class=chip href=/tags/nfs/><span class=hash>#</span>nfs</a>
+<a class=chip href=/tags/tftp/><span class=hash>#</span>tftp</a></div></article><aside><div class=toc><div class=side-title style=margin-bottom:var(--space-3)>本頁目錄</div><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#寫在前面>寫在前面</a></li><li><a href=#配置-nfs-伺服器>配置 NFS 伺服器</a></li><li><a href=#分析-kernel-與-devicetree-的載入命令>分析 Kernel 與 Devicetree 的載入命令</a></li><li><a href=#設定-u-boot-環境變數>設定 U-Boot 環境變數</a></li><li><a href=#結果>結果</a></li><li><a href=#寫在最後>寫在最後</a></li></ul></li><li><a href=#小結>小結</a><ul><li><a href=#配置-tftp-伺服器>配置 TFTP 伺服器</a></li></ul></li><li><a href=#參考連結>參考連結</a></li></ul></nav></div></aside></div><div class=adjacent style="max-width:760px;margin:var(--space-8)auto 0"><a class=side-card href=/posts/install-opnsense/ style=text-decoration:none><div class=meta style=margin-bottom:6px><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+上一篇</div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>安裝 Opnsense 並設定 OpenVPN</div></a><a class=side-card href=/posts/go-gin-web-backend/ style=text-align:right;text-decoration:none><div class=meta style=margin-bottom:6px;justify-content:flex-end>下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>使用 Gin 框架實作登入功能</div></a></div><div style=height:var(--space-10)></div></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
+<a href=/about/>關於</a>
+<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
+<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
 </button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sudo aptitude install -y tftpd-hpa</span></span></code></pre></div>
-</div>
-<h4 id="配置分享路徑">配置分享路徑</h4>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sudo cp /etc/default/tftpd-hpa<span class="o">{</span>,.bk<span class="o">}</span> 
-</span></span><span class="line"><span class="ln">2</span><span class="cl">sudo sed -i <span class="s1">&#39;s#TFTP_DIRECTORY.*#TFTP_DIRECTORY=&#34;/srv/tftp_shared&#34;#g&#39;</span> /etc/default/tftpd-hpa
-</span></span><span class="line"><span class="ln">3</span><span class="cl">sudo sed -i <span class="s1">&#39;s#TFTP_ADDRESS.*#TFTP_ADDRESS=&#34;:69&#34;#g&#39;</span> /etc/default/tftpd-hpa
-</span></span><span class="line"><span class="ln">4</span><span class="cl">sudo sed -i <span class="s1">&#39;s#TFTP_OPTIONS.*#TFTP_OPTIONS=&#34;--secure --create&#34;#g&#39;</span> /etc/default/tftpd-hpa
-</span></span><span class="line"><span class="ln">5</span><span class="cl">
-</span></span><span class="line"><span class="ln">6</span><span class="cl">sudo systemctl <span class="nb">enable</span> tftpd-hpa
-</span></span><span class="line"><span class="ln">7</span><span class="cl">sudo systemctl restart tftpd-hpa</span></span></code></pre></div>
-</div>
-<p>/etc/default/tftpd-hpa:</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl"># /etc/default/tftpd-hpa
-</span></span><span class="line"><span class="ln">2</span><span class="cl">TFTP_USERNAME=&#34;tftp&#34;
-</span></span><span class="line"><span class="ln">3</span><span class="cl">TFTP_DIRECTORY=&#34;/srv/tftp_shared/&#34;
-</span></span><span class="line"><span class="ln">4</span><span class="cl">TFTP_ADDRESS=&#34;:69&#34;
-</span></span><span class="line"><span class="ln">5</span><span class="cl">TFTP_OPTIONS=&#34;--secure --create&#34;</span></span></code></pre></div>
-</div>
-<h4 id="配置防火牆">配置防火牆</h4>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sudo firewall-cmd <span class="se">\
-</span></span></span><span class="line"><span class="ln">2</span><span class="cl">	--add-rich-rule<span class="o">=</span><span class="s2">&#34;rule family=&#39;ipv4&#39; source address=&#39;192.168.1.2&#39; service name=&#39;tftp&#39; accept&#34;</span> <span class="se">\
-</span></span></span><span class="line"><span class="ln">3</span><span class="cl">	--permanent
-</span></span><span class="line"><span class="ln">4</span><span class="cl">sudo firewall-cmd --reload</span></span></code></pre></div>
-</div>
-<h4 id="除錯">除錯</h4>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sudo netstat -nlp
-</span></span><span class="line"><span class="ln">2</span><span class="cl">sudo journalctl -fu  tftpd-hpa.service</span></span></code></pre></div>
-</div>
-<h4 id="用戶端測試">用戶端測試</h4>
-<p>在伺服器中建立測試用的資料</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">base</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="ln">1</span><span class="cl">echo &#34;Hello word&#34; &gt; /srv/tftp_shared/hello</span></span></code></pre></div>
-</div>
-<p>在用戶端進行上、下載測試</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;I am Groot~~~~~&#34;</span> &gt; groot.txt
-</span></span><span class="line"><span class="ln">2</span><span class="cl">
-</span></span><span class="line"><span class="ln">3</span><span class="cl">tftp SERVER_IP
-</span></span><span class="line"><span class="ln">4</span><span class="cl">tftp get hello
-</span></span><span class="line"><span class="ln">5</span><span class="cl">tftp put groot.txt</span></span></code></pre></div>
-</div>
-<h2 id="參考連結">參考連結</h2>
-<ul>
-<li><a href="https://www.nxp.com/docs/en/user-guide/IMX_LINUX_USERS_GUIDE.pdf">i.MX Linux® User&rsquo;s Guide</a></li>
-</ul>
-      <div class="chips">
-  
-  <a class="chip" href="/tags/i.mx8qxp/"><span class="hash">#</span>i.mx8qxp</a>
-  
-  <a class="chip" href="/tags/u-boot/"><span class="hash">#</span>u-boot</a>
-  
-  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
-  
-  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
-  
-  <a class="chip" href="/tags/nfs/"><span class="hash">#</span>nfs</a>
-  
-  <a class="chip" href="/tags/tftp/"><span class="hash">#</span>tftp</a>
-  
-</div>
-    </article>
-    <aside>
-      
-      <div class="toc">
-        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
-        <nav id="TableOfContents">
-  <ul>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#主要內容">主要內容</a>
-      <ul>
-        <li><a href="#寫在前面">寫在前面</a></li>
-        <li><a href="#配置-nfs-伺服器">配置 NFS 伺服器</a></li>
-        <li><a href="#分析-kernel-與-devicetree-的載入命令">分析 Kernel 與 Devicetree 的載入命令</a></li>
-        <li><a href="#設定-u-boot-環境變數">設定 U-Boot 環境變數</a></li>
-        <li><a href="#結果">結果</a></li>
-        <li><a href="#寫在最後">寫在最後</a></li>
-      </ul>
-    </li>
-    <li><a href="#小結">小結</a>
-      <ul>
-        <li><a href="#配置-tftp-伺服器">配置 TFTP 伺服器</a></li>
-      </ul>
-    </li>
-    <li><a href="#參考連結">參考連結</a></li>
-  </ul>
-</nav>
-      </div>
-      
-    </aside>
-  </div>
-
-  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
-  
-  <a class="side-card" href="/posts/install-opnsense/" style="text-decoration:none">
-    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
- 上一篇</div>
-    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">安裝 Opnsense 並設定 OpenVPN</div>
-  </a>
-  
-  
-  <a class="side-card" href="/posts/go-gin-web-backend/" style="text-align:right;text-decoration:none">
-    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-</div>
-    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">使用 Gin 框架實作登入功能</div>
-  </a>
-  
-</div>
-
-  <div style="height:var(--space-10)"></div>
-</div>
-</div>
-
-    </div>
-    <footer class="site-footer">
-  <div class="container footer-inner">
-    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
-    <div class="footer-links">
-      <a href="/posts/">文章</a>
-      <a href="/about/">關於</a>
-      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
-      <a href="/index.xml">RSS</a>
-    </div>
-  </div>
-</footer>
-
-  </div>
-  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-</button>
-  
-  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
-  
-</body>
-</html>
+<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>

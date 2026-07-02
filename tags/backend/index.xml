@@ -1,45 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-	<channel>
-		<title>Backend on Yuan のノート</title>
-		<link>http://localhost:3000/tags/backend/</link>
-		<description>Recent content in Backend on Yuan のノート</description>
-		<generator>Hugo</generator>
-		<language>zh-tw</language>
-		
-		
-		
-		
-			<lastBuildDate>Tue, 26 Aug 2025 23:54:11 +0800</lastBuildDate>
-		
-			<atom:link href="http://localhost:3000/tags/backend/index.xml" rel="self" type="application/rss+xml" />
-			<item>
-				<title>OTP — 一次性密碼的原理與實作</title>
-				<link>http://localhost:3000/posts/otp-code-introduction/</link>
-				<pubDate>Tue, 26 Aug 2025 23:54:11 +0800</pubDate>
-				<guid>http://localhost:3000/posts/otp-code-introduction/</guid>
-				<description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;&#xA;&lt;p&gt;有時候我們登入服務時，螢幕會跳出一句：「你的驗證碼是 123456」。這串數字只能用一次，過了幾十秒就失效了。這種機制叫做 &lt;strong&gt;OTP（One-Time Password，一次性密碼）&lt;/strong&gt;。&lt;/p&gt;&#xA;&lt;p&gt;它看似簡單，卻是今天大多數二階段驗證（2FA）或多因子驗證（MFA）的基石。這篇文章，就來聊聊 OTP 的運作方式，最後會給一個 Go 的範例程式，讓你自己動手試試。&lt;/p&gt;</description>
-			</item>
-			<item>
-				<title>用 Go 打造 Passkey（WebAuthn）最小可行產品：從原理到 MVP 實作</title>
-				<link>http://localhost:3000/posts/passkey-introduction/</link>
-				<pubDate>Mon, 25 Aug 2025 23:45:30 +0800</pubDate>
-				<guid>http://localhost:3000/posts/passkey-introduction/</guid>
-				<description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;&#xA;&lt;p&gt;「把密碼換成裝置裡的私鑰」——這就是 Passkey 的核心概念。&#xA;我們用最小可行的方式，寫一個可以真的註冊與登入的 WebAuthn 小服務。&lt;/p&gt;</description>
-			</item>
-			<item>
-				<title>使用 Go 串接 Google reCAPTCHA Enterprise</title>
-				<link>http://localhost:3000/posts/use-google-recaptcha/</link>
-				<pubDate>Wed, 20 Aug 2025 23:22:42 +0800</pubDate>
-				<guid>http://localhost:3000/posts/use-google-recaptcha/</guid>
-				<description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;&#xA;&lt;p&gt;在網站應用中，表單或登入功能常常成為機器人攻擊的目標。&#xA;Google reCAPTCHA Enterprise 提供了更安全且彈性的防護方式，能透過 &lt;strong&gt;風險評分 (Score)&lt;/strong&gt; 來判斷使用者行為是否可信。&lt;/p&gt;</description>
-			</item>
-			<item>
-				<title>使用 Gin 框架實作登入功能</title>
-				<link>http://localhost:3000/posts/go-gin-web-backend/</link>
-				<pubDate>Tue, 14 Sep 2021 17:03:13 +0800</pubDate>
-				<guid>http://localhost:3000/posts/go-gin-web-backend/</guid>
-				<description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;&#xA;&lt;p&gt;最近又要開始接觸到網頁的東西了!&#xA;久沒有碰要再花一點時間回想。想說就趁著這次順手記錄起來吧。&lt;/p&gt;</description>
-			</item>
-	</channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Backend on Yuan のノート</title><link>https://e61983.github.io/tags/backend/</link><description>Recent content in Backend on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Tue, 26 Aug 2025 23:54:11 +0800</lastBuildDate><atom:link href="https://e61983.github.io/tags/backend/index.xml" rel="self" type="application/rss+xml"/><item><title>OTP — 一次性密碼的原理與實作</title><link>https://e61983.github.io/posts/otp-code-introduction/</link><pubDate>Tue, 26 Aug 2025 23:54:11 +0800</pubDate><guid>https://e61983.github.io/posts/otp-code-introduction/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;有時候我們登入服務時，螢幕會跳出一句：「你的驗證碼是 123456」。這串數字只能用一次，過了幾十秒就失效了。這種機制叫做 &lt;strong&gt;OTP（One-Time Password，一次性密碼）&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;它看似簡單，卻是今天大多數二階段驗證（2FA）或多因子驗證（MFA）的基石。這篇文章，就來聊聊 OTP 的運作方式，最後會給一個 Go 的範例程式，讓你自己動手試試。&lt;/p&gt;</description></item><item><title>用 Go 打造 Passkey（WebAuthn）最小可行產品：從原理到 MVP 實作</title><link>https://e61983.github.io/posts/passkey-introduction/</link><pubDate>Mon, 25 Aug 2025 23:45:30 +0800</pubDate><guid>https://e61983.github.io/posts/passkey-introduction/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;「把密碼換成裝置裡的私鑰」——這就是 Passkey 的核心概念。
+我們用最小可行的方式，寫一個可以真的註冊與登入的 WebAuthn 小服務。&lt;/p&gt;</description></item><item><title>使用 Go 串接 Google reCAPTCHA Enterprise</title><link>https://e61983.github.io/posts/use-google-recaptcha/</link><pubDate>Wed, 20 Aug 2025 23:22:42 +0800</pubDate><guid>https://e61983.github.io/posts/use-google-recaptcha/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;在網站應用中，表單或登入功能常常成為機器人攻擊的目標。
+Google reCAPTCHA Enterprise 提供了更安全且彈性的防護方式，能透過 &lt;strong&gt;風險評分 (Score)&lt;/strong&gt; 來判斷使用者行為是否可信。&lt;/p&gt;</description></item><item><title>使用 Gin 框架實作登入功能</title><link>https://e61983.github.io/posts/go-gin-web-backend/</link><pubDate>Tue, 14 Sep 2021 17:03:13 +0800</pubDate><guid>https://e61983.github.io/posts/go-gin-web-backend/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;最近又要開始接觸到網頁的東西了!
+久沒有碰要再花一點時間回想。想說就趁著這次順手記錄起來吧。&lt;/p&gt;</description></item></channel></rss>

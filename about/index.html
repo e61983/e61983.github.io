@@ -1,196 +1,28 @@
-<!DOCTYPE html>
-<html lang="zh-tw">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>關於 · Yuan のノート</title>
-  <meta name="description" content="心之所至，隨意亂書">
-  <meta name="author" content="Yuan">
-  <meta property="og:site_name" content="Yuan のノート">
-  <meta property="og:title" content="關於">
-  <meta property="og:description" content="心之所至，隨意亂書">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="http://localhost:3000/about/">
-  <meta name="twitter:card" content="summary">
-  <meta name="theme-color" content="#0B0B0C">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  
-  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
-</head>
-<body>
-  <div class="app-shell">
-    <header class="nav">
-  <div class="container nav-inner">
-    <a href="/" class="nav-brand" aria-label="Yuan のノート">
-      <span class="mark">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span class="word">Yuan のノート</span>
-    </a>
-    <nav class="nav-links">
-      
-      <a href="/" class="nav-link">首頁</a>
-      
-      <a href="/posts/" class="nav-link">文章</a>
-      
-      <a href="/categories/" class="nav-link">分類</a>
-      
-      <a href="/tags/" class="nav-link">標籤</a>
-      
-      <a href="/archive/" class="nav-link">歸檔</a>
-      
-      <a href="/about/" class="nav-link">關於</a>
-      
-    </nav>
-    <div class="nav-right">
-      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a>
-      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
-        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span>
-        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
-</span>
-      </button>
-      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
-        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span>
-        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-</span>
-      </button>
-    </div>
-  </div>
-  <div class="nav-scrim" id="nav-scrim" hidden></div>
-  <nav class="nav-menu" id="nav-menu" hidden>
-    
-    <a href="/" class="nav-link">首頁</a>
-    
-    <a href="/posts/" class="nav-link">文章</a>
-    
-    <a href="/categories/" class="nav-link">分類</a>
-    
-    <a href="/tags/" class="nav-link">標籤</a>
-    
-    <a href="/archive/" class="nav-link">歸檔</a>
-    
-    <a href="/about/" class="nav-link">關於</a>
-    
-  </nav>
-</header>
-
-    <div style="flex:1 0 auto">
-      
-
-<div class="container container-narrow fade-in">
-  <div style="text-align:center;padding:var(--space-10) 0 var(--space-8)">
-    <div style="display:flex;justify-content:center"><img class="avatar" width="96" height="96" loading="lazy"
-  style="width:96px;height:96px"
-  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=192&d=identicon"
-  alt="Yuan">
-</div>
-    <h1 style="font:var(--weight-bold) var(--text-display-md)/1.04 var(--font-sans);letter-spacing:var(--tracking-display);margin-top:var(--space-4)">Yuan</h1>
-    <p style="font-size:var(--text-heading-sm);color:var(--fg-muted);margin-top:var(--space-3)">心之所至，隨意亂書</p>
-    <div class="chips" style="justify-content:center;margin-top:var(--space-5)">
-      <span class="badge badge-neutral">後端開發</span><span class="badge badge-neutral">嵌入式</span><span class="badge badge-neutral">Linux</span>
-    </div>
-    <div style="display:flex;justify-content:center;gap:var(--space-3);margin-top:var(--space-6)">
-      <a class="btn btn-primary btn-md" href="https://github.com/e61983" target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
- GitHub</a>
-      <a class="btn btn-ghost btn-md" href="https://www.linkedin.com/in/hua-yuan-li-b78865a1" target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v6M8 7v.01M12 16v-3.5a1.5 1.5 0 0 1 3 0V16M12 16v-6"/></svg>
- LinkedIn</a>
-    </div>
-  </div>
-
-  <div class="stat-grid" style="padding-bottom:var(--space-8)">
-    <div class="side-card" style="text-align:center">
-      <div class="mono" style="font:var(--weight-semibold) var(--text-heading-lg) var(--font-mono);color:var(--fg)">41</div>
-      <div class="meta" style="justify-content:center;margin-top:4px">文章</div>
-    </div>
-    <div class="side-card" style="text-align:center">
-      <div class="mono" style="font:var(--weight-semibold) var(--text-heading-lg) var(--font-mono);color:var(--fg)">10</div>
-      <div class="meta" style="justify-content:center;margin-top:4px">分類</div>
-    </div>
-    <div class="side-card" style="text-align:center">
-      <div class="mono" style="font:var(--weight-semibold) var(--text-heading-lg) var(--font-mono);color:var(--fg)">2019</div>
-      <div class="meta" style="justify-content:center;margin-top:4px">自</div>
-    </div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="prose" style="padding:var(--space-8) 0"><h2 id="嗨我是-yuan">嗨,我是 Yuan</h2>
-<p>寫後端，也碰碰嵌入式系統。</p>
-<p>偶爾把遇到的問題、看過的文件、做過的實驗隨手記在這裡。</p>
-<p>留下一些思考過的痕跡。</p>
-<p>一直偏愛從零開始構建東西的感覺。</p>
-<p>不斷試錯，不斷重構，在推翻和重建之間慢慢靠近更好的答案。</p>
-<p>大概因為始終相信一件事：</p>
-<p>再複雜的東西，都有它自己的邏輯。</p>
-<p>只是剛好，理解它這件事讓人著迷。</p>
-</div>
-
-  
-  <div class="eyebrow" style="margin-bottom:var(--space-5)">關注領域</div>
-  <div class="focus-grid" style="padding-bottom:var(--space-9)">
-    
-    <div class="side-card">
-      <span style="color:var(--action)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>
-</span>
-      <div style="font:var(--weight-semibold) var(--text-body-lg) var(--font-sans);color:var(--fg);margin:var(--space-3) 0 6px">後端與 API</div>
-      <div style="font-size:var(--text-body);color:var(--fg-muted);line-height:var(--leading-normal)">Go 為主力,涵蓋 gRPC、訊息佇列與資料庫設計。</div>
-    </div>
-    
-    <div class="side-card">
-      <span style="color:var(--action)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6.5a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-</span>
-      <div style="font:var(--weight-semibold) var(--text-body-lg) var(--font-sans);color:var(--fg);margin:var(--space-3) 0 6px">嵌入式系統</div>
-      <div style="font-size:var(--text-body);color:var(--fg-muted);line-height:var(--leading-normal)">Linux on ARM、Buildroot、Device Tree 與底層除錯。</div>
-    </div>
-    
-    <div class="side-card">
-      <span style="color:var(--action)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7M6 9.5V20h12V9.5"/></svg>
-</span>
-      <div style="font:var(--weight-semibold) var(--text-body-lg) var(--font-sans);color:var(--fg);margin:var(--space-3) 0 6px">系統與部署</div>
-      <div style="font-size:var(--text-body);color:var(--fg-muted);line-height:var(--leading-normal)">Docker、CI/CD,以及把服務穩穩送上線的細節。</div>
-    </div>
-    
-  </div>
-  
-
-  <div class="side-card" style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-5);flex-wrap:wrap;margin-bottom:var(--space-10)">
-    <div>
-      <div style="font:var(--weight-semibold) var(--text-heading-sm) var(--font-sans);color:var(--fg)">想聊聊?</div>
-      <div class="meta" style="margin-top:6px">有任何想法或合作,歡迎來信或在 GitHub 上找我。</div>
-    </div>
-    <a class="btn btn-primary btn-md" href="https://github.com/e61983" target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>
- 寄信給我</a>
-  </div>
-</div>
-
-    </div>
-    <footer class="site-footer">
-  <div class="container footer-inner">
-    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
-    <div class="footer-links">
-      <a href="/posts/">文章</a>
-      <a href="/about/">關於</a>
-      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
-      <a href="/index.xml">RSS</a>
-    </div>
-  </div>
-</footer>
-
-  </div>
-  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>關於 · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="關於"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/about/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
+</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
+<a href=/posts/ class=nav-link>文章</a>
+<a href=/categories/ class=nav-link>分類</a>
+<a href=/tags/ class=nav-link>標籤</a>
+<a href=/archive/ class=nav-link>歸檔</a>
+<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
+<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
+</span></button>
+<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
+<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
+<a href=/posts/ class=nav-link>文章</a>
+<a href=/categories/ class=nav-link>分類</a>
+<a href=/tags/ class=nav-link>標籤</a>
+<a href=/archive/ class=nav-link>歸檔</a>
+<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class="container container-narrow fade-in"><div style="text-align:center;padding:var(--space-10)0 var(--space-8)"><div style=display:flex;justify-content:center><img class=avatar width=96 height=96 loading=lazy style=width:96px;height:96px src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=192&d=identicon" alt=Yuan></div><h1 style="font:var(--weight-bold)var(--text-display-md)/1.04 var(--font-sans);letter-spacing:var(--tracking-display);margin-top:var(--space-4)">Yuan</h1><p style=font-size:var(--text-heading-sm);color:var(--fg-muted);margin-top:var(--space-3)>心之所至，隨意亂書</p><div class=chips style=justify-content:center;margin-top:var(--space-5)><span class="badge badge-neutral">後端開發</span><span class="badge badge-neutral">嵌入式</span><span class="badge badge-neutral">Linux</span></div><div style=display:flex;justify-content:center;gap:var(--space-3);margin-top:var(--space-6)><a class="btn btn-primary btn-md" href=https://github.com/e61983 target=_blank rel=noreferrer><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+GitHub</a>
+<a class="btn btn-ghost btn-md" href=https://www.linkedin.com/in/hua-yuan-li-b78865a1 target=_blank rel=noreferrer><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v6M8 7v.01M12 16v-3.5a1.5 1.5.0 013 0V16m-3 0v-6"/></svg>
+LinkedIn</a></div></div><div class=stat-grid style=padding-bottom:var(--space-8)><div class=side-card style=text-align:center><div class=mono style=font:var(--weight-semibold)var(--text-heading-lg)var(--font-mono);color:var(--fg)>41</div><div class=meta style=justify-content:center;margin-top:4px>文章</div></div><div class=side-card style=text-align:center><div class=mono style=font:var(--weight-semibold)var(--text-heading-lg)var(--font-mono);color:var(--fg)>10</div><div class=meta style=justify-content:center;margin-top:4px>分類</div></div><div class=side-card style=text-align:center><div class=mono style=font:var(--weight-semibold)var(--text-heading-lg)var(--font-mono);color:var(--fg)>2019</div><div class=meta style=justify-content:center;margin-top:4px>自</div></div></div><hr class=divider><div class=prose style=padding:var(--space-8)0><h2 id=嗨我是-yuan>嗨,我是 Yuan</h2><p>寫後端，也碰碰嵌入式系統。</p><p>偶爾把遇到的問題、看過的文件、做過的實驗隨手記在這裡。</p><p>留下一些思考過的痕跡。</p><p>一直偏愛從零開始構建東西的感覺。</p><p>不斷試錯，不斷重構，在推翻和重建之間慢慢靠近更好的答案。</p><p>大概因為始終相信一件事：</p><p>再複雜的東西，都有它自己的邏輯。</p><p>只是剛好，理解它這件事讓人著迷。</p></div><div class=eyebrow style=margin-bottom:var(--space-5)>關注領域</div><div class=focus-grid style=padding-bottom:var(--space-9)><div class=side-card><span style=color:var(--action)><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg></span><div style="font:var(--weight-semibold)var(--text-body-lg)var(--font-sans);color:var(--fg);margin:var(--space-3)0 6px">後端與 API</div><div style=font-size:var(--text-body);color:var(--fg-muted);line-height:var(--leading-normal)>Go 為主力,涵蓋 gRPC、訊息佇列與資料庫設計。</div></div><div class=side-card><span style=color:var(--action)><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6.5a2 2 0 012-2h4L11 7h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></span><div style="font:var(--weight-semibold)var(--text-body-lg)var(--font-sans);color:var(--fg);margin:var(--space-3)0 6px">嵌入式系統</div><div style=font-size:var(--text-body);color:var(--fg-muted);line-height:var(--leading-normal)>Linux on ARM、Buildroot、Device Tree 與底層除錯。</div></div><div class=side-card><span style=color:var(--action)><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7M6 9.5V20h12V9.5"/></svg></span><div style="font:var(--weight-semibold)var(--text-body-lg)var(--font-sans);color:var(--fg);margin:var(--space-3)0 6px">系統與部署</div><div style=font-size:var(--text-body);color:var(--fg-muted);line-height:var(--leading-normal)>Docker、CI/CD,以及把服務穩穩送上線的細節。</div></div></div><div class=side-card style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-5);flex-wrap:wrap;margin-bottom:var(--space-10)><div><div style=font:var(--weight-semibold)var(--text-heading-sm)var(--font-sans);color:var(--fg)>想聊聊?</div><div class=meta style=margin-top:6px>有任何想法或合作,歡迎來信或在 GitHub 上找我。</div></div><a class="btn btn-primary btn-md" href=https://github.com/e61983 target=_blank rel=noreferrer><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>
+寄信給我</a></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
+<a href=/about/>關於</a>
+<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
+<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
 </button>
-  
-  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
-  
-</body>
-</html>
+<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>
