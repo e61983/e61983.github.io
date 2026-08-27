@@ -1,559 +1,143 @@
-<!DOCTYPE html>
-<html lang="zh-tw">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2 · Yuan のノート</title>
-  <meta name="description" content="心之所至，隨意亂書">
-  <meta name="author" content="Yuan">
-  <meta property="og:site_name" content="Yuan のノート">
-  <meta property="og:title" content="在 STM32MP1 上使用 Yocto 建置 Linux 系統 2">
-  <meta property="og:description" content="心之所至，隨意亂書">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="http://localhost:3000/posts/stm32mp-with-yocto-2/">
-  <meta name="twitter:card" content="summary">
-  <meta name="theme-color" content="#0B0B0C">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-  
-  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
-</head>
-<body>
-  <div class="app-shell">
-    <header class="nav">
-  <div class="container nav-inner">
-    <a href="/" class="nav-brand" aria-label="Yuan のノート">
-      <span class="mark">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span class="word">Yuan のノート</span>
-    </a>
-    <nav class="nav-links">
-      
-      <a href="/" class="nav-link">首頁</a>
-      
-      <a href="/posts/" class="nav-link">文章</a>
-      
-      <a href="/categories/" class="nav-link">分類</a>
-      
-      <a href="/tags/" class="nav-link">標籤</a>
-      
-      <a href="/archive/" class="nav-link">歸檔</a>
-      
-      <a href="/about/" class="nav-link">關於</a>
-      
-    </nav>
-    <div class="nav-right">
-      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a>
-      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
-        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span>
-        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
-</span>
-      </button>
-      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
-        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span>
-        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-</span>
-      </button>
-    </div>
-  </div>
-  <div class="nav-scrim" id="nav-scrim" hidden></div>
-  <nav class="nav-menu" id="nav-menu" hidden>
-    
-    <a href="/" class="nav-link">首頁</a>
-    
-    <a href="/posts/" class="nav-link">文章</a>
-    
-    <a href="/categories/" class="nav-link">分類</a>
-    
-    <a href="/tags/" class="nav-link">標籤</a>
-    
-    <a href="/archive/" class="nav-link">歸檔</a>
-    
-    <a href="/about/" class="nav-link">關於</a>
-    
-  </nav>
-</header>
-
-    <div style="flex:1 0 auto">
-      
-<div class="fade-in">
-<div class="container article">
-  <div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
-      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
- 所有文章</a>
-    </div>
-    <div class="article-head">
-      
-      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/embedded-system/">embedded system</a></div>
-      
-      <h1>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</h1>
-      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
-        <img class="avatar" width="28" height="28" loading="lazy"
-  style="width:28px;height:28px"
-  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
-  alt="Yuan">
-
-        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
-        <span class="meta" style="margin-left:4px"><span class="mono">2021.08.12</span><span class="dot"></span><span>3 分鐘閱讀</span></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="post-layout">
-    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
-      <h2 id="前言">前言</h2>
-<p>繼先前建立好基楚的系統後，我們已經可以順利開機，並從 NFS 載入 rootf filesystem。
-本文會接續之前建立的環境，開始加入自製的程式以及自訂的 Layer。</p>
-<h2 id="主要內容">主要內容</h2>
-<h3 id="recipe">Recipe</h3>
-<p>Recipe 是以 <code>&lt;APPLICATION_NAME&gt;_&lt;VERSION&gt;.bb</code> 的方式命名。裡面會包含這個 Package 該如何「穫取源始碼、Patch、編譯、安裝」的方法、它的授權方式以及它的相依套件/Package。</p>
-<p>為了簡化 Recipe  以及避免過多的重複，我們可以將共同的部份撰寫在 <code>&lt;APPLICATION&gt;.inc</code> 並在 Recipe 中引用。</p>
-<h4 id="常見的配置項">常見的配置項</h4>
-<ul>
-<li>
-<p>DESCRIPTION
-說明、介紹此 Package</p>
-</li>
-<li>
-<p>HOMEPAGE
-如果此 Package 的專案有介紹網站的話，可以寫在此</p>
-</li>
-<li>
-<p>PRIORITY
-預設是: optional</p>
-</li>
-<li>
-<p>SECTION
-這個 Package 的分類。例: console/utils</p>
-</li>
-<li>
-<p>LICENSE
-這個 Package 的授權方式</p>
-</li>
-<li>
-<p>SRC_URL
+<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2 · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="在 STM32MP1 上使用 Yocto 建置 Linux 系統 2"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/stm32mp-with-yocto-2/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
+</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
+<a href=/posts/ class=nav-link>文章</a>
+<a href=/categories/ class=nav-link>分類</a>
+<a href=/tags/ class=nav-link>標籤</a>
+<a href=/archive/ class=nav-link>歸檔</a>
+<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
+<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
+</span></button>
+<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
+<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
+<a href=/posts/ class=nav-link>文章</a>
+<a href=/categories/ class=nav-link>分類</a>
+<a href=/tags/ class=nav-link>標籤</a>
+<a href=/archive/ class=nav-link>歸檔</a>
+<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class=fade-in><div class="container article"><div style="max-width:760px;margin:0 auto"><div style=display:flex;justify-content:center;margin-bottom:var(--space-4)><a class=link-arrow style=color:var(--fg-muted);font-size:var(--text-caption) href=/posts/><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+所有文章</a></div><div class=article-head><div style=display:flex;justify-content:center><a class="badge badge-accent" href=/categories/embedded-system/>embedded system</a></div><h1>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</h1><div style=display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)><img class=avatar width=28 height=28 loading=lazy style=width:28px;height:28px src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon" alt=Yuan>
+<span style=font:var(--weight-medium)var(--text-body)var(--font-text);color:var(--fg)>Yuan</span>
+<span class=meta style=margin-left:4px><span class=mono>2021.08.12</span><span class=dot></span><span>3 分鐘閱讀</span></span></div></div></div><div class=post-layout><article class=prose style="max-width:720px;margin:0 auto;width:100%"><h2 id=前言>前言</h2><p>繼先前建立好基楚的系統後，我們已經可以順利開機，並從 NFS 載入 rootf filesystem。
+本文會接續之前建立的環境，開始加入自製的程式以及自訂的 Layer。</p><h2 id=主要內容>主要內容</h2><h3 id=recipe>Recipe</h3><p>Recipe 是以 <code>&lt;APPLICATION_NAME>_&lt;VERSION>.bb</code> 的方式命名。裡面會包含這個 Package 該如何「穫取源始碼、Patch、編譯、安裝」的方法、它的授權方式以及它的相依套件/Package。</p><p>為了簡化 Recipe 以及避免過多的重複，我們可以將共同的部份撰寫在 <code>&lt;APPLICATION>.inc</code> 並在 Recipe 中引用。</p><h4 id=常見的配置項>常見的配置項</h4><ul><li><p>DESCRIPTION
+說明、介紹此 Package</p></li><li><p>HOMEPAGE
+如果此 Package 的專案有介紹網站的話，可以寫在此</p></li><li><p>PRIORITY
+預設是: optional</p></li><li><p>SECTION
+這個 Package 的分類。例: console/utils</p></li><li><p>LICENSE
+這個 Package 的授權方式</p></li><li><p>SRC_URL
 這個 Package 源始碼位置
-它的格式為: <code>scheme://&lt;ur&gt;l;param1;param2</code>
-scheme 可以是 https, git, svn, hg, ftp, file, &hellip;</p>
-</li>
-<li>
-<p>SRC_URL[md5sum], SRC_URL[sha256sum]
+它的格式為: <code>scheme://&lt;ur>l;param1;param2</code>
+scheme 可以是 https, git, svn, hg, ftp, file, &mldr;</p></li><li><p>SRC_URL[md5sum], SRC_URL[sha256sum]
 源始碼的檢查碼設置。
-例:</p>
-<ul>
-<li>SRC_URI = &ldquo;<a href="http://example.com/src.tar.bz2;name=tarball%22">http://example.com/src.tar.bz2;name=tarball&quot;</a>
-SRC_URI[tarball.md5sum] = &ldquo;97b2c3fb082241ab5c56&hellip;&rdquo;
-<ul>
-<li>git  scheme:
-git:<code>&lt;url&gt;</code>;protocol=<code>&lt;protocol&gt;</code>;branch=<code>&lt;branch&gt;</code></li>
-<li>http,https,ftp:
-https://<code>&lt;url&gt;</code>
-也可以使用一些變數來設置位置，例: ${SOURCEFORGE_MIRROR}/<code>&lt;project-name&gt;</code>/${PN}-${PV}.tar.gz
-詳細資訊可以參考 <a href="https://raw.githubusercontent.com/openembedded/openembedded-core/master/meta/conf/bitbake.conf">meta/conf/bitbake.conf</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p>S
+例:</p><ul><li>SRC_URI = &ldquo;<a href="http://example.com/src.tar.bz2;name=tarball%22">http://example.com/src.tar.bz2;name=tarball"</a>
+SRC_URI[tarball.md5sum] = &ldquo;97b2c3fb082241ab5c56&mldr;&rdquo;<ul><li>git scheme:
+git:<code>&lt;url></code>;protocol=<code>&lt;protocol></code>;branch=<code>&lt;branch></code></li><li>http,https,ftp:
+https://<code>&lt;url></code>
+也可以使用一些變數來設置位置，例: ${SOURCEFORGE_MIRROR}/<code>&lt;project-name></code>/${PN}-${PV}.tar.gz
+詳細資訊可以參考 <a href=https://raw.githubusercontent.com/openembedded/openembedded-core/master/meta/conf/bitbake.conf>meta/conf/bitbake.conf</a></li></ul></li></ul></li><li><p>S
 獲取後、解壓縮後的源始碼路目錄。通常會配置為 <code>${WORKDIR}</code>
-<strong>如果是使用 git 來獲取程式碼，則一定要設置成</strong> <code>${WORKDIR}/git</code></p>
-</li>
-<li>
-<p>FILESPATH
-本機檔案的搜尋路徑。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">FILESPATH = &#34;${@base_set_filespath([&#34;${FILE_DIRNAME}/${BP}&#34;,
-</span></span><span class="line"><span class="ln">2</span><span class="cl">			&#34;${FILE_DIRNAME}/${BPN}&#34;,&#34;${FILE_DIRNAME}/files&#34;], d)}&#34;</span></span></code></pre></div>
-</div>
-</li>
-<li>
-<p>FILESOVERRIDES
-本機檔案的搜尋路徑。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">FILESOVERRIDES = &#34;${TRANSLATED_TARGET_ARCH}:${MACHINEOVERRIDES}:${DISTROOVERRIDES}&#34;</span></span></code></pre></div>
-</div>
-</li>
-<li>
-<p>LIC_FILES_CHKSUM</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">LIC_FILES_CHKSUM = &#34;file://gpl.txt;md5=393a5ca...&#34;
-</span></span><span class="line"><span class="ln">2</span><span class="cl">LIC_FILES_CHKSUM =  &#34;file://main.c;beginline=3;endline=21;md5=58e...&#34;
-</span></span><span class="line"><span class="ln">3</span><span class="cl">LIC_FILES_CHKSUM =  &#34;file://${COMMON_LICENSE_DIR}/MIT;md5=083...&#34;</span></span></code></pre></div>
-</div>
-</li>
-<li>
-<p>DEPENDS
-在編譯時期的相依套件/Package。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">DEPENDS = &#34;recipe-b&#34;
-</span></span><span class="line"><span class="ln">2</span><span class="cl">DEPENDS = &#34;recipe-b (&gt;= 1.2)&#34;</span></span></code></pre></div>
-</div>
-</li>
-<li>
-<p>RDEPENDS
-在執行時期的相依套件/Package。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">RDEPENDS_${PN} = &#34;recipe-b&#34;
-</span></span><span class="line"><span class="ln">2</span><span class="cl">RDEPENDS_${PN} = &#34;recipe-b (&gt; 1.2)&#34;</span></span></code></pre></div>
-</div>
-</li>
-</ul>
-<h4 id="常見的變數">常見的變數</h4>
-<ul>
-<li>PN
-表示 Package Name</li>
-<li>BPN
-移除 PN 的前綴與後綴。例: nativesdk- 或是 -native。</li>
-<li>PV
-表示 Package Version</li>
-<li>PR
-表示 Package Revision。預設是: r0</li>
-<li>BP
-表示 ${BPN}-${PV}</li>
-<li>WORKDIR
-表示 Recipe 工作時期的目錄</li>
-<li>D
-表示安裝時的目標目錄
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">do_install() {
-</span></span><span class="line"><span class="ln">2</span><span class="cl">	install -d ${D}${bindir}
-</span></span><span class="line"><span class="ln">3</span><span class="cl">	install -m 0755 hello ${D}${bindir}
-</span></span><span class="line"><span class="ln">4</span><span class="cl">}</span></span></code></pre></div>
-</div>
-</li>
-</ul>
-<h4 id="task">Task</h4>
-<p>在 Recipe 中有許的預設的 task，我們可以自訂、修改它們來滿足我們的需求。</p>
-<ul>
-<li>do_fetch</li>
-<li>do_unpack</li>
-<li>do_patch</li>
-<li>do_configure</li>
-<li>do_compile</li>
-<li>do_install</li>
-<li>do_package</li>
-<li>do_rootfs</li>
-</ul>
-<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">我們可以使用下列指令來顯示該 Recipe 有哪些 Task
-bitbake <code>&lt;recipe&gt;</code> -c listtasks</div>
-</div>
-
-<h5 id="加入自訂的-task">加入自訂的 Task</h5>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">do_mkimage() {
-</span></span><span class="line"><span class="ln">2</span><span class="cl">	uboot-mkimage ...
-</span></span><span class="line"><span class="ln">3</span><span class="cl">}
-</span></span><span class="line"><span class="ln">4</span><span class="cl">addtask do_mkimage after do_compile before do_install</span></span></code></pre></div>
-</div>
-<h4 id="example-recipe">Example Recipe</h4>
-<p>下列是一個 Recipe 的範例</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln"> 1</span><span class="cl">DESCRIPTION = &#34;Hello world program&#34;
-</span></span><span class="line"><span class="ln"> 2</span><span class="cl">HOMEPAGE = &#34;http://example.net/hello/&#34;
-</span></span><span class="line"><span class="ln"> 3</span><span class="cl">PRIORITY = &#34;optional&#34;
-</span></span><span class="line"><span class="ln"> 4</span><span class="cl">SECTION = &#34;examples&#34;
-</span></span><span class="line"><span class="ln"> 5</span><span class="cl">LICENSE = &#34;CLOSED&#34;
-</span></span><span class="line"><span class="ln"> 6</span><span class="cl">LIC_FILES_CHKSUM = &#34;&#34;
-</span></span><span class="line"><span class="ln"> 7</span><span class="cl">FILESOVERRIDES_prepend := &#34;${THISDIR}/${PN}_${PV}:&#34;
-</span></span><span class="line"><span class="ln"> 8</span><span class="cl">SRC_URI = &#34; \
-</span></span><span class="line"><span class="ln"> 9</span><span class="cl">           file://main.c \
-</span></span><span class="line"><span class="ln">10</span><span class="cl">           file://Makefile \
-</span></span><span class="line"><span class="ln">11</span><span class="cl">           &#34;
-</span></span><span class="line"><span class="ln">12</span><span class="cl">           
-</span></span><span class="line"><span class="ln">13</span><span class="cl">S = &#34;${WORKDIR}&#34;
-</span></span><span class="line"><span class="ln">14</span><span class="cl">
-</span></span><span class="line"><span class="ln">15</span><span class="cl">do_configure () {
-</span></span><span class="line"><span class="ln">16</span><span class="cl">}
-</span></span><span class="line"><span class="ln">17</span><span class="cl">do_compile () {
-</span></span><span class="line"><span class="ln">18</span><span class="cl">	oe_runmake
-</span></span><span class="line"><span class="ln">19</span><span class="cl">}
-</span></span><span class="line"><span class="ln">20</span><span class="cl">do_install () {
-</span></span><span class="line"><span class="ln">21</span><span class="cl">    oe_runmake install &#39;DESTDIR=${D}&#39;
-</span></span><span class="line"><span class="ln">22</span><span class="cl">}</span></span></code></pre></div>
-</div>
-<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">如何除錯</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)"><p>我們可以透過下列指令來看到編譯時期 pacakge 的配置。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">bitbake -e <span class="sb">`</span>&lt;package&gt;<span class="sb">`</span> </span></span></code></pre></div>
-</div>
-<p>我們也可以使用下列指令來喚出編譯環境進行操作。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">	bitbake -c devshell <span class="sb">`</span>&lt;package&gt;<span class="sb">`</span></span></span></code></pre></div>
-</div>
-</div>
-</div>
-
-<h4 id="擴展-recipe">擴展 Recipe</h4>
-<p>通常不建議直接修改上游的配置，但常常我們又會遇到需要調整程式的需求。這時候我們可以使用 Recipe Extension (.bbappend)。
-它的命名方式為 <code>&lt;appliction&gt;_&lt;version&gt;</code>.bbappend</p>
-<p>recipe-b_%.bbappend:</p>
-<blockquote>
-<p>這要的 % 為萬用字元，在此代表任意版本。</p>
-</blockquote>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl">FILESEXTRAPATHS_prepend := &#34;${THISDIR}/files:&#34;
-</span></span><span class="line"><span class="ln">2</span><span class="cl">SRC_URI += &#34;file://custom-modification-0.patch \
-</span></span><span class="line"><span class="ln">3</span><span class="cl">            file://custom-modification-1.patch \
-</span></span><span class="line"><span class="ln">4</span><span class="cl">&#34;</span></span></code></pre></div>
-</div>
-<h4 id="自訂-virtual-packages">自訂 Virtual Packages</h4>
-<p>我們可以透過 <code>PROVIDES = &quot;virtual/&lt;package&gt;&quot;</code> 來表示。</p>
-<h4 id="class">Class</h4>
-<p>我們可以提出共同的配置，撰寫成 <code>.bbclass</code> 。在不同的 Recipe 要使用時，就可以以 <code>inherit &lt;class&gt;</code> 來使用它。
-常見到地方有 Build System。例: cmake, make, autotools, &hellip;。更多我們可以在 <code>meta/classes</code> 中找到</p>
-<h5 id="base-class">Base Class</h5>
-<p>已包含了 fetch, unpack, compile, &hellip; 等 Task。可以使用 <code>oe_runmake</code> 並透過 <code>EXTRA_OEMAKE</code> 來指定參數。</p>
-<h5 id="kernel-class">Kernel Class</h5>
-<p>用來建置 Linux Kernel 的 Class。它已配置了 PROVIDE，並且可以使用下列幾個變數:</p>
-<ul>
-<li>KERNEL_IMAGETYPE</li>
-<li>KERNEL_EXTRA_ARGS</li>
-<li>INITRAMFS_IMAGE</li>
-</ul>
-<h5 id="useradd-class">Useradd Class</h5>
-<p>用來新增系統的使用者。在使用的時候必須指定 <strong>USERADD_PACKAGES</strong>，詳情可參考 <a href="https://git.yoctoproject.org/cgit.cgi/poky/tree/meta-skeleton/recipes-skeleton/useradd/useradd-example.bb">useradd-example.bb</a>。</p>
-<p>我們可以透過 <code>USERADD_PARAM</code> 與 <code>GROUPADD_PARAM</code> 來傳遞參數給 useradd 及 groupadd</p>
-<p>例:</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">txt</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln"> 1</span><span class="cl">DESCRIPTION = &#34;useradd class usage example&#34;
-</span></span><span class="line"><span class="ln"> 2</span><span class="cl">PRIORITY = &#34;optional&#34;
-</span></span><span class="line"><span class="ln"> 3</span><span class="cl">SECTION = &#34;examples&#34;
-</span></span><span class="line"><span class="ln"> 4</span><span class="cl">LICENSE = &#34;MIT&#34;
-</span></span><span class="line"><span class="ln"> 5</span><span class="cl">SRC_URI = &#34;file://file0&#34;
-</span></span><span class="line"><span class="ln"> 6</span><span class="cl">LIC_FILES_CHKSUM = &#34;file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bc...&#34;
-</span></span><span class="line"><span class="ln"> 7</span><span class="cl">inherit useradd 
-</span></span><span class="line"><span class="ln"> 8</span><span class="cl">USERADD_PACKAGES = &#34;${PN}&#34;
-</span></span><span class="line"><span class="ln"> 9</span><span class="cl">USERADD_PARAM = &#34;-u 1000 -d /home/user0 -s /bin/bash user0&#34;
-</span></span><span class="line"><span class="ln">10</span><span class="cl">do_install() {
-</span></span><span class="line"><span class="ln">11</span><span class="cl">install -m 644 file0 ${D}/home/user0/ chown user0:user0 ${D}/home/user0/file0
-</span></span><span class="line"><span class="ln">12</span><span class="cl">}</span></span></code></pre></div>
-</div>
-<h3 id="layer">Layer</h3>
-<p>Layer 是以 <code>meta-&lt;LAYER_NAME&gt;</code> 的方式命名。裡面會包含這個一個或數個 Recipe。
+<strong>如果是使用 git 來獲取程式碼，則一定要設置成</strong> <code>${WORKDIR}/git</code></p></li><li><p>FILESPATH
+本機檔案的搜尋路徑。</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>FILESPATH = &#34;${@base_set_filespath([&#34;${FILE_DIRNAME}/${BP}&#34;,
+</span></span><span class=line><span class=ln>2</span><span class=cl>			&#34;${FILE_DIRNAME}/${BPN}&#34;,&#34;${FILE_DIRNAME}/files&#34;], d)}&#34;</span></span></code></pre></div></div></li><li><p>FILESOVERRIDES
+本機檔案的搜尋路徑。</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>FILESOVERRIDES = &#34;${TRANSLATED_TARGET_ARCH}:${MACHINEOVERRIDES}:${DISTROOVERRIDES}&#34;</span></span></code></pre></div></div></li><li><p>LIC_FILES_CHKSUM</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>LIC_FILES_CHKSUM = &#34;file://gpl.txt;md5=393a5ca...&#34;
+</span></span><span class=line><span class=ln>2</span><span class=cl>LIC_FILES_CHKSUM =  &#34;file://main.c;beginline=3;endline=21;md5=58e...&#34;
+</span></span><span class=line><span class=ln>3</span><span class=cl>LIC_FILES_CHKSUM =  &#34;file://${COMMON_LICENSE_DIR}/MIT;md5=083...&#34;</span></span></code></pre></div></div></li><li><p>DEPENDS
+在編譯時期的相依套件/Package。</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>DEPENDS = &#34;recipe-b&#34;
+</span></span><span class=line><span class=ln>2</span><span class=cl>DEPENDS = &#34;recipe-b (&gt;= 1.2)&#34;</span></span></code></pre></div></div></li><li><p>RDEPENDS
+在執行時期的相依套件/Package。</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>RDEPENDS_${PN} = &#34;recipe-b&#34;
+</span></span><span class=line><span class=ln>2</span><span class=cl>RDEPENDS_${PN} = &#34;recipe-b (&gt; 1.2)&#34;</span></span></code></pre></div></div></li></ul><h4 id=常見的變數>常見的變數</h4><ul><li>PN
+表示 Package Name</li><li>BPN
+移除 PN 的前綴與後綴。例: nativesdk- 或是 -native。</li><li>PV
+表示 Package Version</li><li>PR
+表示 Package Revision。預設是: r0</li><li>BP
+表示 ${BPN}-${PV}</li><li>WORKDIR
+表示 Recipe 工作時期的目錄</li><li>D
+表示安裝時的目標目錄<div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>do_install() {
+</span></span><span class=line><span class=ln>2</span><span class=cl>	install -d ${D}${bindir}
+</span></span><span class=line><span class=ln>3</span><span class=cl>	install -m 0755 hello ${D}${bindir}
+</span></span><span class=line><span class=ln>4</span><span class=cl>}</span></span></code></pre></div></div></li></ul><h4 id=task>Task</h4><p>在 Recipe 中有許的預設的 task，我們可以自訂、修改它們來滿足我們的需求。</p><ul><li>do_fetch</li><li>do_unpack</li><li>do_patch</li><li>do_configure</li><li>do_compile</li><li>do_install</li><li>do_package</li><li>do_rootfs</li></ul><div class=notice style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4)var(--space-5);margin:0 0 var(--space-5)"><div style=color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)>我們可以使用下列指令來顯示該 Recipe 有哪些 Task
+bitbake <code>&lt;recipe></code> -c listtasks</div></div><h5 id=加入自訂的-task>加入自訂的 Task</h5><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>do_mkimage() {
+</span></span><span class=line><span class=ln>2</span><span class=cl>	uboot-mkimage ...
+</span></span><span class=line><span class=ln>3</span><span class=cl>}
+</span></span><span class=line><span class=ln>4</span><span class=cl>addtask do_mkimage after do_compile before do_install</span></span></code></pre></div></div><h4 id=example-recipe>Example Recipe</h4><p>下列是一個 Recipe 的範例</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>DESCRIPTION = &#34;Hello world program&#34;
+</span></span><span class=line><span class=ln> 2</span><span class=cl>HOMEPAGE = &#34;http://example.net/hello/&#34;
+</span></span><span class=line><span class=ln> 3</span><span class=cl>PRIORITY = &#34;optional&#34;
+</span></span><span class=line><span class=ln> 4</span><span class=cl>SECTION = &#34;examples&#34;
+</span></span><span class=line><span class=ln> 5</span><span class=cl>LICENSE = &#34;CLOSED&#34;
+</span></span><span class=line><span class=ln> 6</span><span class=cl>LIC_FILES_CHKSUM = &#34;&#34;
+</span></span><span class=line><span class=ln> 7</span><span class=cl>FILESOVERRIDES_prepend := &#34;${THISDIR}/${PN}_${PV}:&#34;
+</span></span><span class=line><span class=ln> 8</span><span class=cl>SRC_URI = &#34; \
+</span></span><span class=line><span class=ln> 9</span><span class=cl>           file://main.c \
+</span></span><span class=line><span class=ln>10</span><span class=cl>           file://Makefile \
+</span></span><span class=line><span class=ln>11</span><span class=cl>           &#34;
+</span></span><span class=line><span class=ln>12</span><span class=cl>           
+</span></span><span class=line><span class=ln>13</span><span class=cl>S = &#34;${WORKDIR}&#34;
+</span></span><span class=line><span class=ln>14</span><span class=cl>
+</span></span><span class=line><span class=ln>15</span><span class=cl>do_configure () {
+</span></span><span class=line><span class=ln>16</span><span class=cl>}
+</span></span><span class=line><span class=ln>17</span><span class=cl>do_compile () {
+</span></span><span class=line><span class=ln>18</span><span class=cl>	oe_runmake
+</span></span><span class=line><span class=ln>19</span><span class=cl>}
+</span></span><span class=line><span class=ln>20</span><span class=cl>do_install () {
+</span></span><span class=line><span class=ln>21</span><span class=cl>    oe_runmake install &#39;DESTDIR=${D}&#39;
+</span></span><span class=line><span class=ln>22</span><span class=cl>}</span></span></code></pre></div></div><div class=notice style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4)var(--space-5);margin:0 0 var(--space-5)"><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px>如何除錯</div><div style=color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)><p>我們可以透過下列指令來看到編譯時期 pacakge 的配置。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>bitbake -e <span class=sb>`</span>&lt;package&gt;<span class=sb>`</span> </span></span></code></pre></div></div><p>我們也可以使用下列指令來喚出編譯環境進行操作。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>	bitbake -c devshell <span class=sb>`</span>&lt;package&gt;<span class=sb>`</span></span></span></code></pre></div></div></div></div><h4 id=擴展-recipe>擴展 Recipe</h4><p>通常不建議直接修改上游的配置，但常常我們又會遇到需要調整程式的需求。這時候我們可以使用 Recipe Extension (.bbappend)。
+它的命名方式為 <code>&lt;appliction>_&lt;version></code>.bbappend</p><p>recipe-b_%.bbappend:</p><blockquote><p>這要的 % 為萬用字元，在此代表任意版本。</p></blockquote><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl>FILESEXTRAPATHS_prepend := &#34;${THISDIR}/files:&#34;
+</span></span><span class=line><span class=ln>2</span><span class=cl>SRC_URI += &#34;file://custom-modification-0.patch \
+</span></span><span class=line><span class=ln>3</span><span class=cl>            file://custom-modification-1.patch \
+</span></span><span class=line><span class=ln>4</span><span class=cl>&#34;</span></span></code></pre></div></div><h4 id=自訂-virtual-packages>自訂 Virtual Packages</h4><p>我們可以透過 <code>PROVIDES = "virtual/&lt;package>"</code> 來表示。</p><h4 id=class>Class</h4><p>我們可以提出共同的配置，撰寫成 <code>.bbclass</code> 。在不同的 Recipe 要使用時，就可以以 <code>inherit &lt;class></code> 來使用它。
+常見到地方有 Build System。例: cmake, make, autotools, &mldr;。更多我們可以在 <code>meta/classes</code> 中找到</p><h5 id=base-class>Base Class</h5><p>已包含了 fetch, unpack, compile, &mldr; 等 Task。可以使用 <code>oe_runmake</code> 並透過 <code>EXTRA_OEMAKE</code> 來指定參數。</p><h5 id=kernel-class>Kernel Class</h5><p>用來建置 Linux Kernel 的 Class。它已配置了 PROVIDE，並且可以使用下列幾個變數:</p><ul><li>KERNEL_IMAGETYPE</li><li>KERNEL_EXTRA_ARGS</li><li>INITRAMFS_IMAGE</li></ul><h5 id=useradd-class>Useradd Class</h5><p>用來新增系統的使用者。在使用的時候必須指定 <strong>USERADD_PACKAGES</strong>，詳情可參考 <a href=https://git.yoctoproject.org/cgit.cgi/poky/tree/meta-skeleton/recipes-skeleton/useradd/useradd-example.bb>useradd-example.bb</a>。</p><p>我們可以透過 <code>USERADD_PARAM</code> 與 <code>GROUPADD_PARAM</code> 來傳遞參數給 useradd 及 groupadd</p><p>例:</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>DESCRIPTION = &#34;useradd class usage example&#34;
+</span></span><span class=line><span class=ln> 2</span><span class=cl>PRIORITY = &#34;optional&#34;
+</span></span><span class=line><span class=ln> 3</span><span class=cl>SECTION = &#34;examples&#34;
+</span></span><span class=line><span class=ln> 4</span><span class=cl>LICENSE = &#34;MIT&#34;
+</span></span><span class=line><span class=ln> 5</span><span class=cl>SRC_URI = &#34;file://file0&#34;
+</span></span><span class=line><span class=ln> 6</span><span class=cl>LIC_FILES_CHKSUM = &#34;file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bc...&#34;
+</span></span><span class=line><span class=ln> 7</span><span class=cl>inherit useradd 
+</span></span><span class=line><span class=ln> 8</span><span class=cl>USERADD_PACKAGES = &#34;${PN}&#34;
+</span></span><span class=line><span class=ln> 9</span><span class=cl>USERADD_PARAM = &#34;-u 1000 -d /home/user0 -s /bin/bash user0&#34;
+</span></span><span class=line><span class=ln>10</span><span class=cl>do_install() {
+</span></span><span class=line><span class=ln>11</span><span class=cl>install -m 644 file0 ${D}/home/user0/ chown user0:user0 ${D}/home/user0/file0
+</span></span><span class=line><span class=ln>12</span><span class=cl>}</span></span></code></pre></div></div><h3 id=layer>Layer</h3><p>Layer 是以 <code>meta-&lt;LAYER_NAME></code> 的方式命名。裡面會包含這個一個或數個 Recipe。
 Bitbake 會獲取 <code>${BUILDDIR}/conf/bblayers.conf</code> 中每個 Layer 的配置，進而開始建置系統。
-所以，如果我們想要加入 Layer 時，必須將其加入至 <code>BBLAYERS</code> 變數中。</p>
-<h4 id="meta-bootlinlabs">meta-bootlinlabs</h4>
-<p>建立 meta-bootlinlabs 並加入 <code>BBLAYERS</code> 中。</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl"><span class="nb">cd</span> <span class="si">${</span><span class="nv">BUILDDIR</span><span class="si">}</span>
-</span></span><span class="line"><span class="ln">2</span><span class="cl">bitbake-layers create-layer -p <span class="m">7</span> ../meta-bootlinlabs
-</span></span><span class="line"><span class="ln">3</span><span class="cl">bitbake-layers add-layer ../meta-bootlinlabs/</span></span></code></pre></div>
-</div>
-<h4 id="加入-recipe-ninvaders">加入 recipe-ninvaders</h4>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl"><span class="nb">pushd</span> ../meta-bootlinlabs
-</span></span><span class="line"><span class="ln">2</span><span class="cl">mkdir -p recipes-ninvaders/ninvaders
-</span></span><span class="line"><span class="ln">3</span><span class="cl">recipetool create -o recipes-ninvaders/ninvaders/ninvaders_git.bb https://github.com/TheZ3ro/ninvaders
-</span></span><span class="line"><span class="ln">4</span><span class="cl"><span class="nb">popd</span>
-</span></span><span class="line"><span class="ln">5</span><span class="cl">bitbake ninvaders</span></span></code></pre></div>
-</div>
-<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">make: *** No rule to make target &#39;globals.o&#39;, needed by &#39;nInvaders&#39;.  Stop.</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)"><p>筆者在編譯時遇到了下列錯誤，如果有同學也遇到相同的問題，可以進行下列提到的修改。</p>
-<p><strong>ERROR</strong>: ninvaders-1.0+gitAUTOINC+c6ab4117ba-r0 do_compile: oe_runmake failed
+所以，如果我們想要加入 Layer 時，必須將其加入至 <code>BBLAYERS</code> 變數中。</p><h4 id=meta-bootlinlabs>meta-bootlinlabs</h4><p>建立 meta-bootlinlabs 並加入 <code>BBLAYERS</code> 中。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nb>cd</span> <span class=si>${</span><span class=nv>BUILDDIR</span><span class=si>}</span>
+</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake-layers create-layer -p <span class=m>7</span> ../meta-bootlinlabs
+</span></span><span class=line><span class=ln>3</span><span class=cl>bitbake-layers add-layer ../meta-bootlinlabs/</span></span></code></pre></div></div><h4 id=加入-recipe-ninvaders>加入 recipe-ninvaders</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nb>pushd</span> ../meta-bootlinlabs
+</span></span><span class=line><span class=ln>2</span><span class=cl>mkdir -p recipes-ninvaders/ninvaders
+</span></span><span class=line><span class=ln>3</span><span class=cl>recipetool create -o recipes-ninvaders/ninvaders/ninvaders_git.bb https://github.com/TheZ3ro/ninvaders
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=nb>popd</span>
+</span></span><span class=line><span class=ln>5</span><span class=cl>bitbake ninvaders</span></span></code></pre></div></div><div class=notice style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4)var(--space-5);margin:0 0 var(--space-5)"><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px>make: *** No rule to make target 'globals.o', needed by 'nInvaders'. Stop.</div><div style=color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)><p>筆者在編譯時遇到了下列錯誤，如果有同學也遇到相同的問題，可以進行下列提到的修改。</p><p><strong>ERROR</strong>: ninvaders-1.0+gitAUTOINC+c6ab4117ba-r0 do_compile: oe_runmake failed
 <strong>ERROR</strong>: ninvaders-1.0+gitAUTOINC+c6ab4117ba-r0 do_compile: Execution of &lsquo;/home/yuan/workspace/yocto-stm32-labs/build/tmp/work/cortexa7t2hf-neon-vfpv4-poky-linux-gnueabi/ninvaders/1.0+gitAUTOINC+c6ab4117ba-r0/temp/run.do_compile.2732811&rsquo; failed with exit code 1:
-make: *** No rule to make target &lsquo;globals.o&rsquo;, needed by &rsquo;nInvaders&rsquo;.  Stop.
-<strong>WARNING</strong>: exit code 1 from a shell command.</p>
-<p>ninvaders_git.bb:</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">diff</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-</button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-diff" data-lang="diff"><span class="line"><span class="ln">1</span><span class="cl"><span class="gd">- inherit autotools
-</span></span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="gi">+ inherit autotools-brokensep
-</span></span></span></code></pre></div>
-</div>
-<blockquote>
-<p>The problem is most likely that you&rsquo;re not using automake but the
+make: *** No rule to make target &lsquo;globals.o&rsquo;, needed by &rsquo;nInvaders&rsquo;. Stop.
+<strong>WARNING</strong>: exit code 1 from a shell command.</p><p>ninvaders_git.bb:</p><div class=code-block><div class=code-bar><span class=code-lang>diff</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-diff data-lang=diff><span class=line><span class=ln>1</span><span class=cl><span class=gd>- inherit autotools
+</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=gi>+ inherit autotools-brokensep
+</span></span></span></code></pre></div></div><blockquote><p>The problem is most likely that you&rsquo;re not using automake but the
 generated recipe (would have been useful to include that) is using the
 autotools class, which assumes correct use of both autoconf and
-automake.  Specifically, your hand-written Makefile doesn&rsquo;t handle
-out-of-tree builds.</p>
-<p>Source: <a href="https://www.yoctoproject.org/pipermail/yocto/2018-September/042600.html">[yocto] Adding nInvaders game package recipe</a></p>
-</blockquote>
-</div>
-</div>
-
-<h4 id="將-ninvaders-加入-root-filesystem-中">將 ninvaders 加入 root filesystem 中</h4>
-<p>重新編譯後，記得要更新 NFS 分享目錄</p>
-<div class="code-block">
-  <div class="code-bar">
-    <span class="code-lang">bash</span>
-    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+automake. Specifically, your hand-written Makefile doesn&rsquo;t handle
+out-of-tree builds.</p><p>Source: <a href=https://www.yoctoproject.org/pipermail/yocto/2018-September/042600.html>[yocto] Adding nInvaders game package recipe</a></p></blockquote></div></div><h4 id=將-ninvaders-加入-root-filesystem-中>將 ninvaders 加入 root filesystem 中</h4><p>重新編譯後，記得要更新 NFS 分享目錄</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
+<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;IMAGE_INSTALL_append = &#34; ninvaders&#34;&#39;</span>
+</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake core-image-miminal</span></span></code></pre></div></div><p>接著重新啟動 STM32MP1 之後，執行 nInvaders</p><figure><img src=/posts/stm32mp-with-yocto-2/images/result-nInvaders.png alt="nInvaders 執行結果"><figcaption><p>nInvaders 執行結果</p></figcaption></figure><h2 id=小結>小結</h2><p>因為筆者手邊沒有 Nunchuk ，所以也就沒有進行 Lab 5 了。
+有興趣的同學，再自己玩玩看囉!</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://layers.openembedded.org/layerindex/branch/master/layers/>OpenEmbedded Layer Index</a></li><li><a href=https://github.com/TheZ3ro/ninvaders>TheZ3ro/ninvaders</a></li><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-slides.pdf>Bootlin/Yocto with STM32</a></li><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.pdf>Bootlin/Yocto with STM32 Lab</a></li></ul><div class=chips><a class=chip href=/tags/stm32mp1/><span class=hash>#</span>stm32mp1</a>
+<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
+<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div></article><aside><div class=toc><div class=side-title style=margin-bottom:var(--space-3)>本頁目錄</div><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#recipe>Recipe</a></li><li><a href=#layer>Layer</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></div></aside></div><div class=adjacent style="max-width:760px;margin:var(--space-8)auto 0"><a class=side-card href=/posts/stm32mp-with-yocto/ style=text-decoration:none><div class=meta style=margin-bottom:6px><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+上一篇</div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>在 STM32MP1 上使用 Yocto 建置 Linux 系統</div></a><a class=side-card href=/posts/stm32mp-with-yocto-3/ style=text-align:right;text-decoration:none><div class=meta style=margin-bottom:6px;justify-content:flex-end>下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</div></a></div><div style=height:var(--space-10)></div></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
+<a href=/about/>關於</a>
+<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
+<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
 </button>
-  </div>
-  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;IMAGE_INSTALL_append = &#34; ninvaders&#34;&#39;</span>
-</span></span><span class="line"><span class="ln">2</span><span class="cl">bitbake core-image-miminal</span></span></code></pre></div>
-</div>
-<p>接著重新啟動 STM32MP1 之後，執行 nInvaders</p>
-<figure><img src="/posts/stm32mp-with-yocto-2/images/result-nInvaders.png"
-			alt="nInvaders 執行結果"><figcaption>
-			<p>nInvaders 執行結果</p>
-		</figcaption>
-</figure>
-
-<h2 id="小結">小結</h2>
-<p>因為筆者手邊沒有 Nunchuk ，所以也就沒有進行 Lab 5 了。
-有興趣的同學，再自己玩玩看囉!</p>
-<h2 id="參考連結">參考連結</h2>
-<ul>
-<li><a href="https://layers.openembedded.org/layerindex/branch/master/layers/">OpenEmbedded Layer Index</a></li>
-<li><a href="https://github.com/TheZ3ro/ninvaders">TheZ3ro/ninvaders</a></li>
-<li><a href="https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-slides.pdf">Bootlin/Yocto with STM32</a></li>
-<li><a href="https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.pdf">Bootlin/Yocto with STM32 Lab</a></li>
-</ul>
-      <div class="chips">
-  
-  <a class="chip" href="/tags/stm32mp1/"><span class="hash">#</span>stm32mp1</a>
-  
-  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
-  
-  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
-  
-</div>
-    </article>
-    <aside>
-      
-      <div class="toc">
-        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
-        <nav id="TableOfContents">
-  <ul>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#主要內容">主要內容</a>
-      <ul>
-        <li><a href="#recipe">Recipe</a></li>
-        <li><a href="#layer">Layer</a></li>
-      </ul>
-    </li>
-    <li><a href="#小結">小結</a></li>
-    <li><a href="#參考連結">參考連結</a></li>
-  </ul>
-</nav>
-      </div>
-      
-    </aside>
-  </div>
-
-  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
-  
-  <a class="side-card" href="/posts/stm32mp-with-yocto/" style="text-decoration:none">
-    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
- 上一篇</div>
-    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">在 STM32MP1 上使用 Yocto 建置 Linux 系統</div>
-  </a>
-  
-  
-  <a class="side-card" href="/posts/stm32mp-with-yocto-3/" style="text-align:right;text-decoration:none">
-    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-</div>
-    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</div>
-  </a>
-  
-</div>
-
-  <div style="height:var(--space-10)"></div>
-</div>
-</div>
-
-    </div>
-    <footer class="site-footer">
-  <div class="container footer-inner">
-    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
-    <div class="footer-links">
-      <a href="/posts/">文章</a>
-      <a href="/about/">關於</a>
-      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
-      <a href="/index.xml">RSS</a>
-    </div>
-  </div>
-</footer>
-
-  </div>
-  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-</button>
-  
-  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
-  
-</body>
-</html>
+<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>
