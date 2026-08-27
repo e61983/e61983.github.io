@@ -1,124 +1,330 @@
-<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 Go 語言中使用 Websocket · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="在 Go 語言中使用 Websocket"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/golang-and-websocket/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
-</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
-<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
-</span></button>
-<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
-<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class=fade-in><div class="container article"><div style="max-width:760px;margin:0 auto"><div style=display:flex;justify-content:center;margin-bottom:var(--space-4)><a class=link-arrow style=color:var(--fg-muted);font-size:var(--text-caption) href=/posts/><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-所有文章</a></div><div class=article-head><div style=display:flex;justify-content:center><a class="badge badge-accent" href=/categories/website/>website</a></div><h1>在 Go 語言中使用 Websocket</h1><div style=display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)><img class=avatar width=28 height=28 loading=lazy style=width:28px;height:28px src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon" alt=Yuan>
-<span style=font:var(--weight-medium)var(--text-body)var(--font-text);color:var(--fg)>Yuan</span>
-<span class=meta style=margin-left:4px><span class=mono>2022.08.14</span><span class=dot></span><span>2 分鐘閱讀</span></span></div></div></div><div class=post-layout><article class=prose style="max-width:720px;margin:0 auto;width:100%"><h2 id=前言>前言</h2><p>先前在網頁中想取得即時資料。在那個時候有聽到 websocket 這個東西，但一直沒有時間試試。最近剛好又想起了這件事，於是乎這一篇就誕生啦。</p><p>本篇會透過一個簡單的範例 <code>echo</code> 來練習使用 WebSocket。</p><h2 id=主要內容>主要內容</h2><p>Websocket 是基於 HTTP/HTTPS 協定，後續再使用 Upgrade Header 改為 WebSocket 協定。</p><h3 id=來個簡單的範例吧>來個簡單的範例吧</h3><p>這個範例會實做 2 個部份，一個是使用 Go 語言實作的網頁後端服務，它會提供 WebSocket 伺服端；另一個部份是使用 HTML + Javascript 實作客戶端的部份。</p><h4 id=網頁後端>網頁後端</h4><p>這個範例我們使用的是 <a href=https://github.com/gorilla/websocket>gorilla/websocket</a> 實作的版本，我們可以透過下例的指令來使用它。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go get github.com/gorilla/websocket</span></span></code></pre></div></div><p><code>echo</code> 函式中會使用 Upgrader 將目前使用的協定從 http 協定改為 WebSocket ，並開始接收來自客戶端的訊息。當收到訊息後，會直接把收到的訊息直接回傳給客戶端。</p><p>main.go</p><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=kn>import</span><span class=w> </span><span class=p>(</span><span class=w>
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w>	</span><span class=s>&#34;log&#34;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w>	</span><span class=s>&#34;net/http&#34;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>	</span><span class=s>&#34;github.com/gorilla/websocket&#34;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=kd>var</span><span class=w> </span><span class=nx>upgrader</span><span class=w> </span><span class=p>=</span><span class=w> </span><span class=nx>websocket</span><span class=p>.</span><span class=nx>Upgrader</span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w>    </span><span class=nx>CheckOrigin</span><span class=p>:</span><span class=w> </span><span class=kd>func</span><span class=p>(</span><span class=nx>r</span><span class=w> </span><span class=o>*</span><span class=nx>http</span><span class=p>.</span><span class=nx>Request</span><span class=p>)</span><span class=w> </span><span class=kt>bool</span><span class=w> </span><span class=p>{</span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>},</span><span class=w>
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=c1>// 提供 echo 服務</span><span class=w>
-</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>echo</span><span class=p>(</span><span class=nx>w</span><span class=w> </span><span class=nx>http</span><span class=p>.</span><span class=nx>ResponseWriter</span><span class=p>,</span><span class=w> </span><span class=nx>r</span><span class=w> </span><span class=o>*</span><span class=nx>http</span><span class=p>.</span><span class=nx>Request</span><span class=p>){</span><span class=w>
-</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=w>        </span><span class=nx>c</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>upgrader</span><span class=p>.</span><span class=nf>Upgrade</span><span class=p>(</span><span class=nx>w</span><span class=p>,</span><span class=w> </span><span class=nx>r</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=w>            </span><span class=nx>log</span><span class=p>.</span><span class=nf>Print</span><span class=p>(</span><span class=s>&#34;upgrade:&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=w>            </span><span class=k>return</span><span class=w>
-</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=w>        </span><span class=k>defer</span><span class=w> </span><span class=nx>c</span><span class=p>.</span><span class=nf>Close</span><span class=p>()</span><span class=w>
-</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=w>        </span><span class=k>for</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=w>        	</span><span class=c1>// 接收到的訊息</span><span class=w>
-</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=w>            </span><span class=nx>messageType</span><span class=p>,</span><span class=w> </span><span class=nx>message</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>c</span><span class=p>.</span><span class=nf>ReadMessage</span><span class=p>()</span><span class=w>
-</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>26</span><span class=cl><span class=w>                </span><span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;read:&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=w>                </span><span class=k>break</span><span class=w>
-</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>29</span><span class=cl><span class=w>            </span><span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;read&#34;</span><span class=p>,</span><span class=w> </span><span class=nb>string</span><span class=p>(</span><span class=nx>message</span><span class=p>))</span><span class=w>
-</span></span></span><span class=line><span class=ln>30</span><span class=cl><span class=w>            	</span><span class=c1>// 送出原本收到的訊息</span><span class=w>
-</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=w>            </span><span class=nx>err</span><span class=w> </span><span class=p>=</span><span class=w> </span><span class=nx>c</span><span class=p>.</span><span class=nf>WriteMessage</span><span class=p>(</span><span class=nx>messageType</span><span class=p>,</span><span class=w> </span><span class=nx>message</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=w>                </span><span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;write:&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=w>                </span><span class=k>break</span><span class=w>
-</span></span></span><span class=line><span class=ln>35</span><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>36</span><span class=cl><span class=w>            </span><span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;send&#34;</span><span class=p>,</span><span class=w> </span><span class=nb>string</span><span class=p>(</span><span class=nx>message</span><span class=p>))</span><span class=w>
-</span></span></span><span class=line><span class=ln>37</span><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>38</span><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>39</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>40</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>(){</span><span class=w>
-</span></span></span><span class=line><span class=ln>41</span><span class=cl><span class=w>    </span><span class=nx>http</span><span class=p>.</span><span class=nf>HandleFunc</span><span class=p>(</span><span class=s>&#34;/ws&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>echo</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=w>    </span><span class=nx>http</span><span class=p>.</span><span class=nf>ListenAndServe</span><span class=p>(</span><span class=s>&#34;:8080&#34;</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=p>}</span></span></span></code></pre></div></div><h4 id=網頁前端>網頁前端</h4><p>index.html</p><div class=code-block><div class=code-bar><span class=code-lang>html</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-html data-lang=html><span class=line><span class=ln> 1</span><span class=cl><span class=cp>&lt;!DOCTYPE html&gt;</span>
-</span></span><span class=line><span class=ln> 2</span><span class=cl><span class=p>&lt;</span><span class=nt>html</span> <span class=na>lang</span><span class=o>=</span><span class=s>&#34;en&#34;</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln> 3</span><span class=cl><span class=p>&lt;</span><span class=nt>head</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln> 4</span><span class=cl>    <span class=p>&lt;</span><span class=nt>meta</span> <span class=na>charset</span><span class=o>=</span><span class=s>&#34;UTF-8&#34;</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln> 5</span><span class=cl>    <span class=p>&lt;</span><span class=nt>meta</span> <span class=na>http-equiv</span><span class=o>=</span><span class=s>&#34;X-UA-Compatible&#34;</span> <span class=na>content</span><span class=o>=</span><span class=s>&#34;IE=edge&#34;</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln> 6</span><span class=cl>    <span class=p>&lt;</span><span class=nt>meta</span> <span class=na>name</span><span class=o>=</span><span class=s>&#34;viewport&#34;</span> <span class=na>content</span><span class=o>=</span><span class=s>&#34;width=device-width, initial-scale=1.0&#34;</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln> 7</span><span class=cl>    <span class=p>&lt;</span><span class=nt>script</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln> 8</span><span class=cl>        <span class=c1>// 載入完成
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl>        <span class=nb>window</span><span class=p>.</span><span class=nx>addEventListener</span><span class=p>(</span><span class=s2>&#34;load&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>event</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>10</span><span class=cl>            <span class=nx>msg</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;msg&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=ln>11</span><span class=cl>            <span class=nx>btn</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;btn&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=ln>12</span><span class=cl>            <span class=nx>input</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;input&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=ln>13</span><span class=cl>            
-</span></span><span class=line><span class=ln>14</span><span class=cl>            <span class=c1>// 加上按鈕按下時的處理函式
-</span></span></span><span class=line><span class=ln>15</span><span class=cl>            <span class=nx>btn</span><span class=p>.</span><span class=nx>addEventListener</span><span class=p>(</span><span class=s2>&#34;click&#34;</span><span class=p>,</span> <span class=nx>event</span> <span class=p>=&gt;</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>16</span><span class=cl>                <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;fire~&#34;</span><span class=p>,</span> <span class=nx>input</span><span class=p>.</span><span class=nx>value</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>17</span><span class=cl>                <span class=nx>ws</span><span class=p>.</span><span class=nx>send</span><span class=p>(</span><span class=nx>input</span><span class=p>.</span><span class=nx>value</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>18</span><span class=cl>            <span class=p>})</span>
-</span></span><span class=line><span class=ln>19</span><span class=cl>            
-</span></span><span class=line><span class=ln>20</span><span class=cl>            <span class=c1>// 建立 websocket 連線
-</span></span></span><span class=line><span class=ln>21</span><span class=cl>            <span class=kd>let</span> <span class=nx>ws</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>WebSocket</span><span class=p>(</span><span class=s2>&#34;ws://localhost:8080/ws&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=ln>22</span><span class=cl>            <span class=nx>ws</span><span class=p>.</span><span class=nx>onopen</span> <span class=o>=</span> <span class=p>()</span> <span class=p>=&gt;</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>23</span><span class=cl>                <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;ws is open&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=ln>24</span><span class=cl>            <span class=p>}</span>
-</span></span><span class=line><span class=ln>25</span><span class=cl>            
-</span></span><span class=line><span class=ln>26</span><span class=cl>            <span class=nx>ws</span><span class=p>.</span><span class=nx>onclose</span> <span class=o>=</span> <span class=p>()</span> <span class=p>=&gt;</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>27</span><span class=cl>                <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;ws is close&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=ln>28</span><span class=cl>            <span class=p>}</span>
-</span></span><span class=line><span class=ln>29</span><span class=cl>            
-</span></span><span class=line><span class=ln>30</span><span class=cl>            <span class=c1>// 加上收到訊息時的處理函式 - 將收到的訊息顯示在 msg 中。
-</span></span></span><span class=line><span class=ln>31</span><span class=cl>            <span class=nx>ws</span><span class=p>.</span><span class=nx>onmessage</span> <span class=o>=</span> <span class=nx>event</span> <span class=p>=&gt;</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>32</span><span class=cl>                <span class=nx>msg</span><span class=p>.</span><span class=nx>innerHTML</span> <span class=o>=</span> <span class=nx>event</span><span class=p>.</span><span class=nx>data</span>
-</span></span><span class=line><span class=ln>33</span><span class=cl>                <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;roger~~&#34;</span><span class=p>,</span> <span class=nx>event</span><span class=p>.</span><span class=nx>data</span><span class=p>)</span>
-</span></span><span class=line><span class=ln>34</span><span class=cl>            <span class=p>}</span>
-</span></span><span class=line><span class=ln>35</span><span class=cl>            
-</span></span><span class=line><span class=ln>36</span><span class=cl>            <span class=nb>window</span><span class=p>.</span><span class=nx>addEventListener</span><span class=p>(</span><span class=s2>&#34;beforeunload&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>event</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>37</span><span class=cl>                <span class=nx>ws</span><span class=p>.</span><span class=nx>close</span><span class=p>()</span>
-</span></span><span class=line><span class=ln>38</span><span class=cl>            <span class=p>})</span>
-</span></span><span class=line><span class=ln>39</span><span class=cl>            
-</span></span><span class=line><span class=ln>40</span><span class=cl>        <span class=p>});</span>
-</span></span><span class=line><span class=ln>41</span><span class=cl>	<span class=p>&lt;/</span><span class=nt>script</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>42</span><span class=cl>    <span class=p>&lt;</span><span class=nt>title</span><span class=p>&gt;</span>WebSocket 測試 - ECHO<span class=p>&lt;/</span><span class=nt>title</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>43</span><span class=cl><span class=p>&lt;/</span><span class=nt>head</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>44</span><span class=cl><span class=p>&lt;</span><span class=nt>body</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>45</span><span class=cl>    <span class=p>&lt;</span><span class=nt>div</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>46</span><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span><span class=p>&gt;</span>收到的訊息<span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>47</span><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;msg&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>48</span><span class=cl>    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>49</span><span class=cl>    <span class=p>&lt;</span><span class=nt>input</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;text&#34;</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;input&#34;</span> <span class=p>/&gt;&lt;</span><span class=nt>button</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;btn&#34;</span><span class=p>&gt;</span>send<span class=p>&lt;/</span><span class=nt>button</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>50</span><span class=cl>    <span class=p>&lt;/</span><span class=nt>body</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=ln>51</span><span class=cl><span class=p>&lt;/</span><span class=nt>html</span><span class=p>&gt;</span></span></span></code></pre></div></div><h3 id=結果>結果</h3><p>當我們輸入 <code>hi</code> 並按下 send 時後端會收到我們所傳送的訊息，並立即回傳給前端。</p><figure><img src=/posts/golang-and-websocket/images/demo.png alt=範例執行結果><figcaption><p>範例執行結果</p></figcaption></figure><h2 id=小結>小結</h2><p>本文撰寫了一個非常簡單的範例，主要的目的在於瞭解 WebSocket 的使用方式。實際在使用時，還會有其他的業務邏輯與異常處理的部份。有興趣的同學就再自行玩玩囉~</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://github.com/gorilla/websocket>gorilla/websocket</a></li><li><a href=https://developer.mozilla.org/ja/docs/Web/API/WebSocket>WebSocket</a></li></ul><div class=chips><a class=chip href=/tags/go/><span class=hash>#</span>go</a>
-<a class=chip href=/tags/websocket/><span class=hash>#</span>websocket</a></div></article><aside><div class=toc><div class=side-title style=margin-bottom:var(--space-3)>本頁目錄</div><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#來個簡單的範例吧>來個簡單的範例吧</a></li><li><a href=#結果>結果</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></div></aside></div><div class=adjacent style="max-width:760px;margin:var(--space-8)auto 0"><a class=side-card href=/posts/go-and-protobuf/ style=text-decoration:none><div class=meta style=margin-bottom:6px><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-上一篇</div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>在 Go 中與 Protobuf 共舞 ？！</div></a><a class=side-card href=/posts/use-gomobile-to-build-ios-library/ style=text-align:right;text-decoration:none><div class=meta style=margin-bottom:6px;justify-content:flex-end>下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>使用 Gomobile 建立 iOS 函式庫</div></a></div><div style=height:var(--space-10)></div></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
-<a href=/about/>關於</a>
-<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
-<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>在 Go 語言中使用 Websocket · Yuan のノート</title>
+  <meta name="description" content="心之所至，隨意亂書">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="在 Go 語言中使用 Websocket">
+  <meta property="og:description" content="心之所至，隨意亂書">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://localhost:3000/posts/golang-and-websocket/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="fade-in">
+<div class="container article">
+  <div style="max-width:760px;margin:0 auto">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
+      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 所有文章</a>
+    </div>
+    <div class="article-head">
+      
+      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/website/">website</a></div>
+      
+      <h1>在 Go 語言中使用 Websocket</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
+        <img class="avatar" width="28" height="28" loading="lazy"
+  style="width:28px;height:28px"
+  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
+  alt="Yuan">
+
+        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
+        <span class="meta" style="margin-left:4px"><span class="mono">2022.08.14</span><span class="dot"></span><span>2 分鐘閱讀</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-layout">
+    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
+      <h2 id="前言">前言</h2>
+<p>先前在網頁中想取得即時資料。在那個時候有聽到 websocket 這個東西，但一直沒有時間試試。最近剛好又想起了這件事，於是乎這一篇就誕生啦。</p>
+<p>本篇會透過一個簡單的範例 <code>echo</code> 來練習使用 WebSocket。</p>
+<h2 id="主要內容">主要內容</h2>
+<p>Websocket 是基於 HTTP/HTTPS 協定，後續再使用 Upgrade Header 改為 WebSocket 協定。</p>
+<h3 id="來個簡單的範例吧">來個簡單的範例吧</h3>
+<p>這個範例會實做 2 個部份，一個是使用 Go 語言實作的網頁後端服務，它會提供 WebSocket 伺服端；另一個部份是使用 HTML + Javascript 實作客戶端的部份。</p>
+<h4 id="網頁後端">網頁後端</h4>
+<p>這個範例我們使用的是 <a href="https://github.com/gorilla/websocket">gorilla/websocket</a>  實作的版本，我們可以透過下例的指令來使用它。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
 </button>
-<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">go get github.com/gorilla/websocket</span></span></code></pre></div>
+</div>
+<p><code>echo</code> 函式中會使用 Upgrader 將目前使用的協定從 http 協定改為 WebSocket ，並開始接收來自客戶端的訊息。當收到訊息後，會直接把收到的訊息直接回傳給客戶端。</p>
+<p>main.go</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="w">	</span><span class="s">&#34;log&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="w">	</span><span class="s">&#34;net/http&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w">	</span><span class="s">&#34;github.com/gorilla/websocket&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="kd">var</span><span class="w"> </span><span class="nx">upgrader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">websocket</span><span class="p">.</span><span class="nx">Upgrader</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="w">    </span><span class="nx">CheckOrigin</span><span class="p">:</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="c1">// 提供 echo 服務</span><span class="w">
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="nx">w</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="w">        </span><span class="nx">c</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">upgrader</span><span class="p">.</span><span class="nf">Upgrade</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span><span class="w"> </span><span class="nx">r</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">17</span><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="w">            </span><span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;upgrade:&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w">
+</span></span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">21</span><span class="cl"><span class="w">        </span><span class="k">defer</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="ln">22</span><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">23</span><span class="cl"><span class="w">        	</span><span class="c1">// 接收到的訊息</span><span class="w">
+</span></span></span><span class="line"><span class="ln">24</span><span class="cl"><span class="w">            </span><span class="nx">messageType</span><span class="p">,</span><span class="w"> </span><span class="nx">message</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nf">ReadMessage</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="ln">25</span><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">26</span><span class="cl"><span class="w">                </span><span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;read:&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">27</span><span class="cl"><span class="w">                </span><span class="k">break</span><span class="w">
+</span></span></span><span class="line"><span class="ln">28</span><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">29</span><span class="cl"><span class="w">            </span><span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;read&#34;</span><span class="p">,</span><span class="w"> </span><span class="nb">string</span><span class="p">(</span><span class="nx">message</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="ln">30</span><span class="cl"><span class="w">            	</span><span class="c1">// 送出原本收到的訊息</span><span class="w">
+</span></span></span><span class="line"><span class="ln">31</span><span class="cl"><span class="w">            </span><span class="nx">err</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nf">WriteMessage</span><span class="p">(</span><span class="nx">messageType</span><span class="p">,</span><span class="w"> </span><span class="nx">message</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">32</span><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">33</span><span class="cl"><span class="w">                </span><span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;write:&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">34</span><span class="cl"><span class="w">                </span><span class="k">break</span><span class="w">
+</span></span></span><span class="line"><span class="ln">35</span><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">36</span><span class="cl"><span class="w">            </span><span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;send&#34;</span><span class="p">,</span><span class="w"> </span><span class="nb">string</span><span class="p">(</span><span class="nx">message</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="ln">37</span><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">38</span><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">39</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">40</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">(){</span><span class="w">
+</span></span></span><span class="line"><span class="ln">41</span><span class="cl"><span class="w">    </span><span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/ws&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">echo</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">42</span><span class="cl"><span class="w">    </span><span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8080&#34;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">43</span><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+</div>
+<h4 id="網頁前端">網頁前端</h4>
+<p>index.html</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">html</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">http-equiv</span><span class="o">=</span><span class="s">&#34;X-UA-Compatible&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;IE=edge&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1.0&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">        <span class="c1">// 載入完成
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl">        <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;load&#34;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">            <span class="nx">msg</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;msg&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl">            <span class="nx">btn</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;btn&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">12</span><span class="cl">            <span class="nx">input</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;input&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">13</span><span class="cl">            
+</span></span><span class="line"><span class="ln">14</span><span class="cl">            <span class="c1">// 加上按鈕按下時的處理函式
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl">            <span class="nx">btn</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;click&#34;</span><span class="p">,</span> <span class="nx">event</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">16</span><span class="cl">                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;fire~&#34;</span><span class="p">,</span> <span class="nx">input</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln">17</span><span class="cl">                <span class="nx">ws</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">input</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln">18</span><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="ln">19</span><span class="cl">            
+</span></span><span class="line"><span class="ln">20</span><span class="cl">            <span class="c1">// 建立 websocket 連線
+</span></span></span><span class="line"><span class="ln">21</span><span class="cl">            <span class="kd">let</span> <span class="nx">ws</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="s2">&#34;ws://localhost:8080/ws&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">22</span><span class="cl">            <span class="nx">ws</span><span class="p">.</span><span class="nx">onopen</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">23</span><span class="cl">                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;ws is open&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">24</span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln">25</span><span class="cl">            
+</span></span><span class="line"><span class="ln">26</span><span class="cl">            <span class="nx">ws</span><span class="p">.</span><span class="nx">onclose</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">27</span><span class="cl">                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;ws is close&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">28</span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln">29</span><span class="cl">            
+</span></span><span class="line"><span class="ln">30</span><span class="cl">            <span class="c1">// 加上收到訊息時的處理函式 - 將收到的訊息顯示在 msg 中。
+</span></span></span><span class="line"><span class="ln">31</span><span class="cl">            <span class="nx">ws</span><span class="p">.</span><span class="nx">onmessage</span> <span class="o">=</span> <span class="nx">event</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">32</span><span class="cl">                <span class="nx">msg</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">data</span>
+</span></span><span class="line"><span class="ln">33</span><span class="cl">                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;roger~~&#34;</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln">34</span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln">35</span><span class="cl">            
+</span></span><span class="line"><span class="ln">36</span><span class="cl">            <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;beforeunload&#34;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">37</span><span class="cl">                <span class="nx">ws</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="ln">38</span><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="ln">39</span><span class="cl">            
+</span></span><span class="line"><span class="ln">40</span><span class="cl">        <span class="p">});</span>
+</span></span><span class="line"><span class="ln">41</span><span class="cl">	<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">42</span><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>WebSocket 測試 - ECHO<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">43</span><span class="cl"><span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">44</span><span class="cl"><span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">45</span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">46</span><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>收到的訊息<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">47</span><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;msg&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">48</span><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">49</span><span class="cl">    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;input&#34;</span> <span class="p">/&gt;&lt;</span><span class="nt">button</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;btn&#34;</span><span class="p">&gt;</span>send<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">50</span><span class="cl">    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">51</span><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
+</div>
+<h3 id="結果">結果</h3>
+<p>當我們輸入 <code>hi</code> 並按下 send 時後端會收到我們所傳送的訊息，並立即回傳給前端。</p>
+<figure><img src="/posts/golang-and-websocket/images/demo.png"
+			alt="範例執行結果"><figcaption>
+			<p>範例執行結果</p>
+		</figcaption>
+</figure>
+
+<h2 id="小結">小結</h2>
+<p>本文撰寫了一個非常簡單的範例，主要的目的在於瞭解 WebSocket 的使用方式。實際在使用時，還會有其他的業務邏輯與異常處理的部份。有興趣的同學就再自行玩玩囉~</p>
+<h2 id="參考連結">參考連結</h2>
+<ul>
+<li><a href="https://github.com/gorilla/websocket">gorilla/websocket</a></li>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/API/WebSocket">WebSocket</a></li>
+</ul>
+      <div class="chips">
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/websocket/"><span class="hash">#</span>websocket</a>
+  
+</div>
+    </article>
+    <aside>
+      
+      <div class="toc">
+        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#主要內容">主要內容</a>
+      <ul>
+        <li><a href="#來個簡單的範例吧">來個簡單的範例吧</a></li>
+        <li><a href="#結果">結果</a></li>
+      </ul>
+    </li>
+    <li><a href="#小結">小結</a></li>
+    <li><a href="#參考連結">參考連結</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </aside>
+  </div>
+
+  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
+  
+  <a class="side-card" href="/posts/go-and-protobuf/" style="text-decoration:none">
+    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 上一篇</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">在 Go 中與 Protobuf 共舞 ？！</div>
+  </a>
+  
+  
+  <a class="side-card" href="/posts/how-to-use-redis-with-go/" style="text-align:right;text-decoration:none">
+    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">如何在 Go 中使用 Redis</div>
+  </a>
+  
+</div>
+
+  <div style="height:var(--space-10)"></div>
+</div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+</button>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

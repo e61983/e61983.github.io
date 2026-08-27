@@ -1,135 +1,428 @@
-<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3 · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="在 STM32MP1 上使用 Yocto 建置 Linux 系統 3"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/stm32mp-with-yocto-3/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
-</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
-<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
-</span></button>
-<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
-<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class=fade-in><div class="container article"><div style="max-width:760px;margin:0 auto"><div style=display:flex;justify-content:center;margin-bottom:var(--space-4)><a class=link-arrow style=color:var(--fg-muted);font-size:var(--text-caption) href=/posts/><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-所有文章</a></div><div class=article-head><div style=display:flex;justify-content:center><a class="badge badge-accent" href=/categories/embedded-system/>embedded system</a></div><h1>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</h1><div style=display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)><img class=avatar width=28 height=28 loading=lazy style=width:28px;height:28px src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon" alt=Yuan>
-<span style=font:var(--weight-medium)var(--text-body)var(--font-text);color:var(--fg)>Yuan</span>
-<span class=meta style=margin-left:4px><span class=mono>2021.08.12</span><span class=dot></span><span>2 分鐘閱讀</span></span></div></div></div><div class=post-layout><article class=prose style="max-width:720px;margin:0 auto;width:100%"><h2 id=前言>前言</h2><p>繼先前建立好基楚的系統後，我們已經加入了 meta-bootlinlabs Layer。
-本文會接續之前建立的環境，開始加入自訂的 Machine。</p><h2 id=主要內容>主要內容</h2><h3 id=bsp-layer>BSP Layer</h3><p>BSP Layer 是 Layer 的一種，它通常會包含目標機器的硬體配置、Bootloader、Kernel、Display Support。常以 <code>meta-&lt;bsp-name></code> 命名，裡面會有 machnes 資料夾。</p><p>如果我們想知道該 BSP Layer 它支援了哪些機器，我們可以在該 Layer 中，觀察它的 conf/machine/*.conf。
-目標機器的配置檔會以 <code>MACHINE.conf</code> 命名。</p><p>但更好的方式是，該 BSP Layer 有完善的 README，讓我們可以直接參考。</p><h3 id=machine-常見的配置項>Machine 常見的配置項</h3><ul><li>TARGET_ARCH
-該機器的硬體架構，例: arm, aarch64</li><li>PREFERRED_PROVIDER_virtual/kernel
-預設使用的 Kernel</li><li>MACHINE_FEATURES
-提供的硬體特性清單，例: usbgadget, usbhost, screen, wifi, bluetooth</li><li>SERIAL_CONSOLES
-要使用的序列埠與通訊速度，它會被傳給Kernel 做為 console 的參數。例: 115200;ttyS0</li><li>KERNEL_IMAGETYPE
-要編譯的映像檔種類，例: zImage, uImage</li></ul><h3 id=bootloader-常見的配置項>Bootloader 常見的配置項</h3><ul><li>SPL_BINARY
-如果有 SPL (Secondary Program Loader)，指定此 SPL 的名稱。預設是空字串。</li><li>UBOOT_SUFFIX
-UBOOT的後綴，例: img。預設是 bin。</li><li>UBOOT_MACHINE
-目前機器所使用的配置檔。</li><li>UBOOT_ENTRYPOINT
-Bootloader 的進入點。例: 0xC0800000</li><li>UBOOT_LOADADDRESS
-Bootloader 載入位置。</li><li>UBOOT_MAKE_TARGET
-Makefile 的目標，預設是 all</li></ul><h3 id=kernel-常見的配置項>Kernel 常見的配置項</h3><p>Kernel 的配置也會撰寫在 <code>&lt;machine>.conf</code> 中</p><ul><li>PREFERRED_PROVIDER_virtual/kernel
-指定要使用的 Kerenl Package</li><li>PREFERRED_VERSION_linux-yocto = &ldquo;5.10%&rdquo;
-指定要使用的版本</li><li>SRC_URL
-必須提供 Kernel 配置檔，並命名為 defconfig。<div class=code-block><div class=code-bar><span class=code-lang>text</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=ln>1</span><span class=cl>SRC_URL += &#34;file://defconfig		\
-</span></span><span class=line><span class=ln>2</span><span class=cl>			file://nand-support.cfg	\
-</span></span><span class=line><span class=ln>3</span><span class=cl>			file://ethernet-support.cfg \
-</span></span><span class=line><span class=ln>4</span><span class=cl>			&#34; 	</span></span></code></pre></div></div></li></ul><h3 id=kernel-metadata-常見的配置項>Kernel Metadata 常見的配置項</h3><ul><li>LINUX_KERNEL_TYPE<ul><li>standard (預設)</li><li>tiny</li><li>preempt-rt</li></ul></li><li>KERNEL_FEATURES
-提供的 Kernel 特性清單</li></ul><p>資料夾結構</p><ul><li>bsp/</li><li>cfg/</li><li>features/
-例: features/smp.scc
-KERNEL_FEATURES += &ldquo;features/smp.scc&rdquo;<div class=code-block><div class=code-bar><span class=code-lang>txt</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln>1</span><span class=cl> define KFEATURE_DESCRIPTION &#34;Enable SMP&#34;
-</span></span><span class=line><span class=ln>2</span><span class=cl> kconf hardware smp.cfg
-</span></span><span class=line><span class=ln>3</span><span class=cl> patch smp-support.patch</span></span></code></pre></div></div></li><li>ktypes/</li><li>patches/</li></ul><h4 id=調整-kernel-配置>調整 Kernel 配置</h4><p>調整 Kernel 配置時，我們可以以提供 defconfig 的方式進行。或是提供 Configure Fragments 進行調整。</p><ul><li>提供 defconfig<div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl><span class=c1># 配置 Kernel</span>
-</span></span><span class=line><span class=ln> 2</span><span class=cl>bitbake -c kernel_configme linux-yocto
-</span></span><span class=line><span class=ln> 3</span><span class=cl>
-</span></span><span class=line><span class=ln> 4</span><span class=cl><span class=c1># 手動調整 Kernel 選項</span>
-</span></span><span class=line><span class=ln> 5</span><span class=cl>bitbake -c menuconfig linux-yocto
-</span></span><span class=line><span class=ln> 6</span><span class=cl>
-</span></span><span class=line><span class=ln> 7</span><span class=cl><span class=c1># 產生 .config</span>
-</span></span><span class=line><span class=ln> 8</span><span class=cl>bitbake -c savedefconfig  linux-yocto
-</span></span><span class=line><span class=ln> 9</span><span class=cl>
-</span></span><span class=line><span class=ln>10</span><span class=cl><span class=c1># 我們再自行將 .confg 存為 defconfig</span></span></span></code></pre></div></div></li><li>提供 Configure Fragments<div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl><span class=c1># 配置 Kernel</span>
-</span></span><span class=line><span class=ln> 2</span><span class=cl>bitbake -c kernel_configme linux-yocto
-</span></span><span class=line><span class=ln> 3</span><span class=cl>
-</span></span><span class=line><span class=ln> 4</span><span class=cl><span class=c1># 手動調整 Kernel 選項</span>
-</span></span><span class=line><span class=ln> 5</span><span class=cl>bitbake -c menuconfig linux-yocto
-</span></span><span class=line><span class=ln> 6</span><span class=cl>
-</span></span><span class=line><span class=ln> 7</span><span class=cl><span class=c1># 產生 Configure Fragments</span>
-</span></span><span class=line><span class=ln> 8</span><span class=cl>bitbake -c diffconfig linux-yocto
-</span></span><span class=line><span class=ln> 9</span><span class=cl>
-</span></span><span class=line><span class=ln>10</span><span class=cl><span class=c1># 確認 Configure Fragments 是否有正確被套用</span>
-</span></span><span class=line><span class=ln>11</span><span class=cl>bitbake -c kernel_configcheck -f linux-yocto</span></span></code></pre></div></div></li></ul><h3 id=建立-bootlinlabs-machine>建立 bootlinlabs Machine</h3><p>我們可以參考 meta-st-stm32mp/conf/machine 的配置進行 bootlinlabs Machine 的建立。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl><span class=nb>pushd</span> ../meta-bootlinlabs
-</span></span><span class=line><span class=ln> 2</span><span class=cl>
-</span></span><span class=line><span class=ln> 3</span><span class=cl><span class=c1># 建立 machine 資料夾</span>
-</span></span><span class=line><span class=ln> 4</span><span class=cl>mkdir conf/machine
-</span></span><span class=line><span class=ln> 5</span><span class=cl>
-</span></span><span class=line><span class=ln> 6</span><span class=cl><span class=c1># 建立 bootlinlabs 配置檔</span>
-</span></span><span class=line><span class=ln> 7</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;require conf/machine/include/st-machine-common-stm32mp.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span class=line><span class=ln> 8</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;require conf/machine/include/st-machine-providers-stm32mp.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span class=line><span class=ln> 9</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span class=line><span class=ln>10</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;DEFAULTTUNE = &#34;cortexa7thf-neon-vfpv4&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span class=line><span class=ln>11</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;require conf/machine/include/tune-cortexa7.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span class=line><span class=ln>12</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span class=line><span class=ln>13</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;BOOTSCHEME_LABELS += &#34;trusted&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span class=line><span class=ln>14</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;STM32MP_DT_FILES_DK += &#34;stm32mp157f-dk2&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span class=line><span class=ln>15</span><span class=cl><span class=nb>echo</span> <span class=s1>&#39;FLASHLAYOUT_CONFIG_LABELS += &#34;sdcard&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
-</span></span><span class=line><span class=ln>16</span><span class=cl>popd</span></span></code></pre></div></div><p>修改 conf/local.conf 內的 MACHINE，並重新編譯。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>sed -i <span class=s1>&#39;s/^MACHINE.*/MACHINE ?= &#34;bootlinlabs&#34;/g&#39;</span> conf/local.conf
-</span></span><span class=line><span class=ln>2</span><span class=cl>bitbake core-image-minimal</span></span></code></pre></div></div><p>我們可以在 <code>${BUILDDIR}/tmp/deploy/images/**bootlinlabs**/</code> 看到我們所建立的新 Machine。</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>$ ls tmp/deploy/images/bootlinlabs/
-</span></span><span class=line><span class=ln> 2</span><span class=cl>arm-trusted-firmware
-</span></span><span class=line><span class=ln> 3</span><span class=cl>bootloader
-</span></span><span class=line><span class=ln> 4</span><span class=cl>core-image-minimal-bootlinlabs-20210812144202_nand_4_256_multivolume.rootfs.ubi
-</span></span><span class=line><span class=ln> 5</span><span class=cl>core-image-minimal-bootlinlabs-20210812144202_nand_4_256_multivolume.ubinize.cfg.ubi
-</span></span><span class=line><span class=ln> 6</span><span class=cl>core-image-minimal-bootlinlabs-20210812144202_nand_4_256.rootfs.ubi
-</span></span><span class=line><span class=ln> 7</span><span class=cl>core-image-minimal-bootlinlabs-20210812144202_nand_4_256.rootfs.ubifs
-</span></span><span class=line><span class=ln> 8</span><span class=cl>core-image-minimal-bootlinlabs-20210812144202_nand_4_256.ubinize.cfg.ubi
-</span></span><span class=line><span class=ln> 9</span><span class=cl>core-image-minimal-bootlinlabs-20210812144202.rootfs.ext4
-</span></span><span class=line><span class=ln>10</span><span class=cl>core-image-minimal-bootlinlabs-20210812144202.rootfs.manifest
-</span></span><span class=line><span class=ln>11</span><span class=cl>core-image-minimal-bootlinlabs-20210812144202.rootfs.tar.xz
-</span></span><span class=line><span class=ln>12</span><span class=cl>core-image-minimal-bootlinlabs-20210812144202.testdata.json
-</span></span><span class=line><span class=ln>13</span><span class=cl>core-image-minimal-bootlinlabs.ext4
-</span></span><span class=line><span class=ln>14</span><span class=cl>core-image-minimal-bootlinlabs.manifest
-</span></span><span class=line><span class=ln>15</span><span class=cl>core-image-minimal-bootlinlabs_nand_4_256_multivolume.ubi
-</span></span><span class=line><span class=ln>16</span><span class=cl>core-image-minimal-bootlinlabs_nand_4_256_multivolume.ubinize.cfg.ubi
-</span></span><span class=line><span class=ln>17</span><span class=cl>core-image-minimal-bootlinlabs_nand_4_256.ubi
-</span></span><span class=line><span class=ln>18</span><span class=cl>core-image-minimal-bootlinlabs_nand_4_256.ubifs
-</span></span><span class=line><span class=ln>19</span><span class=cl>core-image-minimal-bootlinlabs_nand_4_256.ubinize.cfg.ubi
-</span></span><span class=line><span class=ln>20</span><span class=cl>core-image-minimal-bootlinlabs.tar.xz
-</span></span><span class=line><span class=ln>21</span><span class=cl>core-image-minimal-bootlinlabs.testdata.json
-</span></span><span class=line><span class=ln>22</span><span class=cl>flashlayout_core-image-minimal
-</span></span><span class=line><span class=ln>23</span><span class=cl>kernel
-</span></span><span class=line><span class=ln>24</span><span class=cl>scripts</span></span></code></pre></div></div><h3 id=distro-layer>Distro Layer</h3><p>通常 Distro Layer 會包含 Libc，initialization script, splash screen, &mldr; 等, 相關的配置會記錄在 <code>conf/distro/&lt;distro>.conf</code> 中。</p><p>在 <code>&lt;distro>.conf</code> 中必須包含 <code>DISTRO</code> 變數。例:</p><div class=code-block><div class=code-bar><span class=code-lang>txt</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=ln> 1</span><span class=cl>require conf/distro/poky.conf
-</span></span><span class=line><span class=ln> 2</span><span class=cl>
-</span></span><span class=line><span class=ln> 3</span><span class=cl>DISTRO = &#34;distro&#34;
-</span></span><span class=line><span class=ln> 4</span><span class=cl>DISTRO_NAME = &#34;distro description&#34;
-</span></span><span class=line><span class=ln> 5</span><span class=cl>DISTRO_VERSTION = &#34;1.0&#34;
-</span></span><span class=line><span class=ln> 6</span><span class=cl>
-</span></span><span class=line><span class=ln> 7</span><span class=cl>MAINTAINER = &#34;...&#34;
-</span></span><span class=line><span class=ln> 8</span><span class=cl>
-</span></span><span class=line><span class=ln> 9</span><span class=cl># 提供的特性清單
-</span></span><span class=line><span class=ln>10</span><span class=cl>DISTRO_FEATURES = &#34;...&#34;
-</span></span><span class=line><span class=ln>11</span><span class=cl>
-</span></span><span class=line><span class=ln>12</span><span class=cl># 提供的特性清單，它同時會作用在 MACHINE_FEATURES 
-</span></span><span class=line><span class=ln>13</span><span class=cl>COMBINED_FEATURES = &#34;...&#34;
-</span></span><span class=line><span class=ln>14</span><span class=cl>
-</span></span><span class=line><span class=ln>15</span><span class=cl># Toolchain
-</span></span><span class=line><span class=ln>16</span><span class=cl>TCMODE = &#34;...&#34;</span></span></code></pre></div></div><h2 id=小結>小結</h2><p>本次實做的部份比較少，重心主要放在瞭解 machine，distro 的配置。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-slides.pdf>Bootlin/Yocto with STM32</a></li><li><a href=https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.pdf>Bootlin/Yocto with STM32 Lab</a></li></ul><div class=chips><a class=chip href=/tags/stm32mp1/><span class=hash>#</span>stm32mp1</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div></article><aside><div class=toc><div class=side-title style=margin-bottom:var(--space-3)>本頁目錄</div><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#bsp-layer>BSP Layer</a></li><li><a href=#machine-常見的配置項>Machine 常見的配置項</a></li><li><a href=#bootloader-常見的配置項>Bootloader 常見的配置項</a></li><li><a href=#kernel-常見的配置項>Kernel 常見的配置項</a></li><li><a href=#kernel-metadata-常見的配置項>Kernel Metadata 常見的配置項</a></li><li><a href=#建立-bootlinlabs-machine>建立 bootlinlabs Machine</a></li><li><a href=#distro-layer>Distro Layer</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></div></aside></div><div class=adjacent style="max-width:760px;margin:var(--space-8)auto 0"><a class=side-card href=/posts/stm32mp-with-yocto-2/ style=text-decoration:none><div class=meta style=margin-bottom:6px><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-上一篇</div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</div></a><a class=side-card href=/posts/stm32mp-with-yocto-4/ style=text-align:right;text-decoration:none><div class=meta style=margin-bottom:6px;justify-content:flex-end>下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>在 STM32MP1 上使用 Yocto 建置 Linux 系統 4</div></a></div><div style=height:var(--space-10)></div></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
-<a href=/about/>關於</a>
-<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
-<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3 · Yuan のノート</title>
+  <meta name="description" content="心之所至，隨意亂書">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="在 STM32MP1 上使用 Yocto 建置 Linux 系統 3">
+  <meta property="og:description" content="心之所至，隨意亂書">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://localhost:3000/posts/stm32mp-with-yocto-3/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="fade-in">
+<div class="container article">
+  <div style="max-width:760px;margin:0 auto">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
+      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 所有文章</a>
+    </div>
+    <div class="article-head">
+      
+      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/embedded-system/">embedded system</a></div>
+      
+      <h1>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
+        <img class="avatar" width="28" height="28" loading="lazy"
+  style="width:28px;height:28px"
+  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
+  alt="Yuan">
+
+        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
+        <span class="meta" style="margin-left:4px"><span class="mono">2021.08.12</span><span class="dot"></span><span>2 分鐘閱讀</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-layout">
+    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
+      <h2 id="前言">前言</h2>
+<p>繼先前建立好基楚的系統後，我們已經加入了 meta-bootlinlabs Layer。
+本文會接續之前建立的環境，開始加入自訂的 Machine。</p>
+<h2 id="主要內容">主要內容</h2>
+<h3 id="bsp-layer">BSP Layer</h3>
+<p>BSP Layer 是 Layer 的一種，它通常會包含目標機器的硬體配置、Bootloader、Kernel、Display Support。常以 <code>meta-&lt;bsp-name&gt;</code> 命名，裡面會有 machnes 資料夾。</p>
+<p>如果我們想知道該 BSP Layer 它支援了哪些機器，我們可以在該 Layer 中，觀察它的 conf/machine/*.conf。
+目標機器的配置檔會以 <code>MACHINE.conf</code> 命名。</p>
+<p>但更好的方式是，該 BSP Layer 有完善的 README，讓我們可以直接參考。</p>
+<h3 id="machine-常見的配置項">Machine 常見的配置項</h3>
+<ul>
+<li>TARGET_ARCH
+該機器的硬體架構，例: arm, aarch64</li>
+<li>PREFERRED_PROVIDER_virtual/kernel
+預設使用的 Kernel</li>
+<li>MACHINE_FEATURES
+提供的硬體特性清單，例: usbgadget, usbhost, screen, wifi, bluetooth</li>
+<li>SERIAL_CONSOLES
+要使用的序列埠與通訊速度，它會被傳給Kernel 做為 console 的參數。例: 115200;ttyS0</li>
+<li>KERNEL_IMAGETYPE
+要編譯的映像檔種類，例: zImage, uImage</li>
+</ul>
+<h3 id="bootloader-常見的配置項">Bootloader 常見的配置項</h3>
+<ul>
+<li>SPL_BINARY
+如果有 SPL (Secondary Program Loader)，指定此 SPL 的名稱。預設是空字串。</li>
+<li>UBOOT_SUFFIX
+UBOOT的後綴，例: img。預設是 bin。</li>
+<li>UBOOT_MACHINE
+目前機器所使用的配置檔。</li>
+<li>UBOOT_ENTRYPOINT
+Bootloader 的進入點。例: 0xC0800000</li>
+<li>UBOOT_LOADADDRESS
+Bootloader 載入位置。</li>
+<li>UBOOT_MAKE_TARGET
+Makefile 的目標，預設是 all</li>
+</ul>
+<h3 id="kernel-常見的配置項">Kernel 常見的配置項</h3>
+<p>Kernel 的配置也會撰寫在 <code>&lt;machine&gt;.conf</code> 中</p>
+<ul>
+<li>PREFERRED_PROVIDER_virtual/kernel
+指定要使用的 Kerenl Package</li>
+<li>PREFERRED_VERSION_linux-yocto = &ldquo;5.10%&rdquo;
+指定要使用的版本</li>
+<li>SRC_URL
+必須提供 Kernel 配置檔，並命名為 defconfig。
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">text</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
 </button>
-<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="ln">1</span><span class="cl">SRC_URL += &#34;file://defconfig		\
+</span></span><span class="line"><span class="ln">2</span><span class="cl">			file://nand-support.cfg	\
+</span></span><span class="line"><span class="ln">3</span><span class="cl">			file://ethernet-support.cfg \
+</span></span><span class="line"><span class="ln">4</span><span class="cl">			&#34; 	</span></span></code></pre></div>
+</div>
+</li>
+</ul>
+<h3 id="kernel-metadata-常見的配置項">Kernel Metadata 常見的配置項</h3>
+<ul>
+<li>LINUX_KERNEL_TYPE
+<ul>
+<li>standard (預設)</li>
+<li>tiny</li>
+<li>preempt-rt</li>
+</ul>
+</li>
+<li>KERNEL_FEATURES
+提供的 Kernel 特性清單</li>
+</ul>
+<p>資料夾結構</p>
+<ul>
+<li>bsp/</li>
+<li>cfg/</li>
+<li>features/
+例: features/smp.scc
+KERNEL_FEATURES += &ldquo;features/smp.scc&rdquo;
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">txt</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln">1</span><span class="cl"> define KFEATURE_DESCRIPTION &#34;Enable SMP&#34;
+</span></span><span class="line"><span class="ln">2</span><span class="cl"> kconf hardware smp.cfg
+</span></span><span class="line"><span class="ln">3</span><span class="cl"> patch smp-support.patch</span></span></code></pre></div>
+</div>
+</li>
+<li>ktypes/</li>
+<li>patches/</li>
+</ul>
+<h4 id="調整-kernel-配置">調整 Kernel 配置</h4>
+<p>調整 Kernel 配置時，我們可以以提供 defconfig 的方式進行。或是提供 Configure Fragments 進行調整。</p>
+<ul>
+<li>提供 defconfig
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="c1"># 配置 Kernel</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">bitbake -c kernel_configme linux-yocto
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="c1"># 手動調整 Kernel 選項</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">bitbake -c menuconfig linux-yocto
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="c1"># 產生 .config</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">bitbake -c savedefconfig  linux-yocto
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">
+</span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="c1"># 我們再自行將 .confg 存為 defconfig</span></span></span></code></pre></div>
+</div>
+</li>
+<li>提供 Configure Fragments
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="c1"># 配置 Kernel</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">bitbake -c kernel_configme linux-yocto
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="c1"># 手動調整 Kernel 選項</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">bitbake -c menuconfig linux-yocto
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="c1"># 產生 Configure Fragments</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">bitbake -c diffconfig linux-yocto
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">
+</span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="c1"># 確認 Configure Fragments 是否有正確被套用</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl">bitbake -c kernel_configcheck -f linux-yocto</span></span></code></pre></div>
+</div>
+</li>
+</ul>
+<h3 id="建立-bootlinlabs-machine">建立 bootlinlabs Machine</h3>
+<p>我們可以參考 meta-st-stm32mp/conf/machine 的配置進行 bootlinlabs Machine 的建立。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="nb">pushd</span> ../meta-bootlinlabs
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="c1"># 建立 machine 資料夾</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">mkdir conf/machine
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="c1"># 建立 bootlinlabs 配置檔</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;require conf/machine/include/st-machine-common-stm32mp.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;require conf/machine/include/st-machine-providers-stm32mp.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;DEFAULTTUNE = &#34;cortexa7thf-neon-vfpv4&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;require conf/machine/include/tune-cortexa7.inc&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;BOOTSCHEME_LABELS += &#34;trusted&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;STM32MP_DT_FILES_DK += &#34;stm32mp157f-dk2&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;FLASHLAYOUT_CONFIG_LABELS += &#34;sdcard&#34;&#39;</span> &gt;&gt; conf/machine/bootlinlabs.conf
+</span></span><span class="line"><span class="ln">16</span><span class="cl">popd</span></span></code></pre></div>
+</div>
+<p>修改 conf/local.conf 內的 MACHINE，並重新編譯。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sed -i <span class="s1">&#39;s/^MACHINE.*/MACHINE ?= &#34;bootlinlabs&#34;/g&#39;</span> conf/local.conf
+</span></span><span class="line"><span class="ln">2</span><span class="cl">bitbake core-image-minimal</span></span></code></pre></div>
+</div>
+<p>我們可以在 <code>${BUILDDIR}/tmp/deploy/images/**bootlinlabs**/</code> 看到我們所建立的新 Machine。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">txt</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln"> 1</span><span class="cl">$ ls tmp/deploy/images/bootlinlabs/
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">arm-trusted-firmware
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">bootloader
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">core-image-minimal-bootlinlabs-20210812144202_nand_4_256_multivolume.rootfs.ubi
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">core-image-minimal-bootlinlabs-20210812144202_nand_4_256_multivolume.ubinize.cfg.ubi
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">core-image-minimal-bootlinlabs-20210812144202_nand_4_256.rootfs.ubi
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">core-image-minimal-bootlinlabs-20210812144202_nand_4_256.rootfs.ubifs
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">core-image-minimal-bootlinlabs-20210812144202_nand_4_256.ubinize.cfg.ubi
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">core-image-minimal-bootlinlabs-20210812144202.rootfs.ext4
+</span></span><span class="line"><span class="ln">10</span><span class="cl">core-image-minimal-bootlinlabs-20210812144202.rootfs.manifest
+</span></span><span class="line"><span class="ln">11</span><span class="cl">core-image-minimal-bootlinlabs-20210812144202.rootfs.tar.xz
+</span></span><span class="line"><span class="ln">12</span><span class="cl">core-image-minimal-bootlinlabs-20210812144202.testdata.json
+</span></span><span class="line"><span class="ln">13</span><span class="cl">core-image-minimal-bootlinlabs.ext4
+</span></span><span class="line"><span class="ln">14</span><span class="cl">core-image-minimal-bootlinlabs.manifest
+</span></span><span class="line"><span class="ln">15</span><span class="cl">core-image-minimal-bootlinlabs_nand_4_256_multivolume.ubi
+</span></span><span class="line"><span class="ln">16</span><span class="cl">core-image-minimal-bootlinlabs_nand_4_256_multivolume.ubinize.cfg.ubi
+</span></span><span class="line"><span class="ln">17</span><span class="cl">core-image-minimal-bootlinlabs_nand_4_256.ubi
+</span></span><span class="line"><span class="ln">18</span><span class="cl">core-image-minimal-bootlinlabs_nand_4_256.ubifs
+</span></span><span class="line"><span class="ln">19</span><span class="cl">core-image-minimal-bootlinlabs_nand_4_256.ubinize.cfg.ubi
+</span></span><span class="line"><span class="ln">20</span><span class="cl">core-image-minimal-bootlinlabs.tar.xz
+</span></span><span class="line"><span class="ln">21</span><span class="cl">core-image-minimal-bootlinlabs.testdata.json
+</span></span><span class="line"><span class="ln">22</span><span class="cl">flashlayout_core-image-minimal
+</span></span><span class="line"><span class="ln">23</span><span class="cl">kernel
+</span></span><span class="line"><span class="ln">24</span><span class="cl">scripts</span></span></code></pre></div>
+</div>
+<h3 id="distro-layer">Distro Layer</h3>
+<p>通常 Distro Layer 會包含 Libc，initialization script, splash screen, &hellip; 等, 相關的配置會記錄在 <code>conf/distro/&lt;distro&gt;.conf</code> 中。</p>
+<p>在 <code>&lt;distro&gt;.conf</code> 中必須包含 <code>DISTRO</code> 變數。例:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">txt</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="ln"> 1</span><span class="cl">require conf/distro/poky.conf
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">DISTRO = &#34;distro&#34;
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">DISTRO_NAME = &#34;distro description&#34;
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">DISTRO_VERSTION = &#34;1.0&#34;
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">MAINTAINER = &#34;...&#34;
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl"># 提供的特性清單
+</span></span><span class="line"><span class="ln">10</span><span class="cl">DISTRO_FEATURES = &#34;...&#34;
+</span></span><span class="line"><span class="ln">11</span><span class="cl">
+</span></span><span class="line"><span class="ln">12</span><span class="cl"># 提供的特性清單，它同時會作用在 MACHINE_FEATURES 
+</span></span><span class="line"><span class="ln">13</span><span class="cl">COMBINED_FEATURES = &#34;...&#34;
+</span></span><span class="line"><span class="ln">14</span><span class="cl">
+</span></span><span class="line"><span class="ln">15</span><span class="cl"># Toolchain
+</span></span><span class="line"><span class="ln">16</span><span class="cl">TCMODE = &#34;...&#34;</span></span></code></pre></div>
+</div>
+<h2 id="小結">小結</h2>
+<p>本次實做的部份比較少，重心主要放在瞭解 machine，distro 的配置。</p>
+<h2 id="參考連結">參考連結</h2>
+<ul>
+<li><a href="https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-slides.pdf">Bootlin/Yocto with STM32</a></li>
+<li><a href="https://bootlin.com/doc/training/yocto-stm32/yocto-stm32-labs.pdf">Bootlin/Yocto with STM32 Lab</a></li>
+</ul>
+      <div class="chips">
+  
+  <a class="chip" href="/tags/stm32mp1/"><span class="hash">#</span>stm32mp1</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+</div>
+    </article>
+    <aside>
+      
+      <div class="toc">
+        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#主要內容">主要內容</a>
+      <ul>
+        <li><a href="#bsp-layer">BSP Layer</a></li>
+        <li><a href="#machine-常見的配置項">Machine 常見的配置項</a></li>
+        <li><a href="#bootloader-常見的配置項">Bootloader 常見的配置項</a></li>
+        <li><a href="#kernel-常見的配置項">Kernel 常見的配置項</a></li>
+        <li><a href="#kernel-metadata-常見的配置項">Kernel Metadata 常見的配置項</a></li>
+        <li><a href="#建立-bootlinlabs-machine">建立 bootlinlabs Machine</a></li>
+        <li><a href="#distro-layer">Distro Layer</a></li>
+      </ul>
+    </li>
+    <li><a href="#小結">小結</a></li>
+    <li><a href="#參考連結">參考連結</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </aside>
+  </div>
+
+  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
+  
+  <a class="side-card" href="/posts/stm32mp-with-yocto-2/" style="text-decoration:none">
+    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 上一篇</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</div>
+  </a>
+  
+  
+  <a class="side-card" href="/posts/stm32mp-with-yocto-4/" style="text-align:right;text-decoration:none">
+    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">在 STM32MP1 上使用 Yocto 建置 Linux 系統 4</div>
+  </a>
+  
+</div>
+
+  <div style="height:var(--space-10)"></div>
+</div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+</button>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

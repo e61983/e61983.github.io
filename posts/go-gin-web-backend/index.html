@@ -1,231 +1,543 @@
-<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>使用 Gin 框架實作登入功能 · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="使用 Gin 框架實作登入功能"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/go-gin-web-backend/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
-</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
-<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
-</span></button>
-<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
-<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class=fade-in><div class="container article"><div style="max-width:760px;margin:0 auto"><div style=display:flex;justify-content:center;margin-bottom:var(--space-4)><a class=link-arrow style=color:var(--fg-muted);font-size:var(--text-caption) href=/posts/><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-所有文章</a></div><div class=article-head><div style=display:flex;justify-content:center><a class="badge badge-accent" href=/categories/website/>website</a></div><h1>使用 Gin 框架實作登入功能</h1><div style=display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)><img class=avatar width=28 height=28 loading=lazy style=width:28px;height:28px src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon" alt=Yuan>
-<span style=font:var(--weight-medium)var(--text-body)var(--font-text);color:var(--fg)>Yuan</span>
-<span class=meta style=margin-left:4px><span class=mono>2021.09.14</span><span class=dot></span><span>4 分鐘閱讀</span></span></div></div></div><div class=post-layout><article class=prose style="max-width:720px;margin:0 auto;width:100%"><h2 id=前言>前言</h2><p>最近又要開始接觸到網頁的東西了!
-久沒有碰要再花一點時間回想。想說就趁著這次順手記錄起來吧。</p><h2 id=主要內容>主要內容</h2><h3 id=寫在前面>寫在前面</h3><p>本篇我們會透過 gin 框架建立 API 伺服器。一開始會先建立一個測試用的 API，接著在試著提供網頁服務後；我們會開始建立登入功能所需的 API <code>login</code> 以及 <code>auth</code>。</p><ul><li>login 會檢查登入所使用的帳戶密碼，在驗證正確後會給予 Token 於 Cookie 中。</li><li>auth 會檢查 Cookie 是否有合法的 Token 。</li></ul><p>由於本篇主要是專注在網頁後端「如何使用 gin 框架」，所以有關 HTML、 JavaScript 、CSS 並不會著墨太多。</p><h3 id=建立專案>建立專案</h3><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go mod init github.com/e61983/test-gin-login
-</span></span><span class=line><span class=ln>2</span><span class=cl>go get -u github.com/gin-gonic/gin</span></span></code></pre></div></div><h3 id=起手式>起手式</h3><h4 id=建立測試用的-api---ping>建立測試用的 API - ping</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; main.go
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=s>package main
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=s>
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=s>import (
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=s>	&#34;net/http&#34;
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>	&#34;github.com/gin-gonic/gin&#34;
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>)
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>func main() {
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>	r := gin.Default()
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>	r.GET(&#34;/ping&#34;, func(c *gin.Context) {
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>		c.JSON(http.StatusOK, gin.H{
-</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>			&#34;message&#34;: &#34;pong&#34;,
-</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>		})
-</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>	})
-</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>	r.Run()
-</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s>}
-</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=s>EOF</span></span></span></code></pre></div></div><p>現在讓我們先跑起來看看!</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go run main.go</span></span></code></pre></div></div><p>並在另一個終端機上試著存取我們建立的 API <code>ping</code></p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>curl -X GET http://localhost:8080/ping
-</span></span><span class=line><span class=ln>2</span><span class=cl>
-</span></span><span class=line><span class=ln>3</span><span class=cl><span class=c1># Output:</span>
-</span></span><span class=line><span class=ln>4</span><span class=cl><span class=o>{</span><span class=s2>&#34;message&#34;</span>:<span class=s2>&#34;pong&#34;</span><span class=o>}</span>%</span></span></code></pre></div></div><h4 id=提供網頁服務>提供網頁服務</h4><p>簡單的建立測試用的頁面。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>mkdir -p webroot
-</span></span><span class=line><span class=ln> 2</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; webroot/index.html
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=s>&lt;!DOCTYPE html&gt;
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=s>&lt;html lang=&#34;en&#34;&gt;
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=s>&lt;head&gt;
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>    &lt;meta charset=&#34;UTF-8&#34;&gt;
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>    &lt;title&gt;Home Page&lt;/title&gt;
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>&lt;/head&gt;
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>&lt;body&gt;
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>    &lt;h1&gt;Home Page&lt;/h1&gt;
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>&lt;/body&gt;
-</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>&lt;/html&gt;
-</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>EOF</span></span></span></code></pre></div></div><p>接下來透過提供 <code>LoadHTMLGlob()</code> 載入文件夾中的靜態頁面。</p><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln>1</span><span class=cl><span class=nx>r</span><span class=p>.</span><span class=nf>LoadHTMLGlob</span><span class=p>(</span><span class=s>&#34;webroot/*&#34;</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=nx>r</span><span class=p>.</span><span class=nf>GET</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>,</span><span class=w> </span><span class=kd>func</span><span class=p>(</span><span class=nx>c</span><span class=w> </span><span class=o>*</span><span class=nx>gin</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>3</span><span class=cl><span class=w>	</span><span class=nx>c</span><span class=p>.</span><span class=nf>HTML</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span><span class=p>,</span><span class=w> </span><span class=s>&#34;index.html&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>gin</span><span class=p>.</span><span class=nx>H</span><span class=p>{})</span><span class=w>
-</span></span></span><span class=line><span class=ln>4</span><span class=cl><span class=p>})</span></span></span></code></pre></div></div><p>重新運行後，使用瀏覽器觀看執行結果</p><figure><img src=/posts/go-gin-web-backend/images/result-first.png alt=我們的第一個畫面><figcaption><p>我們的第一個畫面</p></figcaption></figure><h3 id=登入--login--api>登入 ( Login ) API</h3><p>在使用 gin 的綁定 (binding) 功能時，我們要在想要綁定的欄位後面，依照想要綁定的方法加上 <strong>Struct Tags</strong>。
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>使用 Gin 框架實作登入功能 · Yuan のノート</title>
+  <meta name="description" content="心之所至，隨意亂書">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="使用 Gin 框架實作登入功能">
+  <meta property="og:description" content="心之所至，隨意亂書">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://localhost:3000/posts/go-gin-web-backend/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="fade-in">
+<div class="container article">
+  <div style="max-width:760px;margin:0 auto">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
+      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 所有文章</a>
+    </div>
+    <div class="article-head">
+      
+      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/website/">website</a></div>
+      
+      <h1>使用 Gin 框架實作登入功能</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
+        <img class="avatar" width="28" height="28" loading="lazy"
+  style="width:28px;height:28px"
+  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
+  alt="Yuan">
+
+        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
+        <span class="meta" style="margin-left:4px"><span class="mono">2021.09.14</span><span class="dot"></span><span>4 分鐘閱讀</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-layout">
+    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
+      <h2 id="前言">前言</h2>
+<p>最近又要開始接觸到網頁的東西了!
+久沒有碰要再花一點時間回想。想說就趁著這次順手記錄起來吧。</p>
+<h2 id="主要內容">主要內容</h2>
+<h3 id="寫在前面">寫在前面</h3>
+<p>本篇我們會透過 gin 框架建立 API 伺服器。一開始會先建立一個測試用的 API，接著在試著提供網頁服務後；我們會開始建立登入功能所需的 API <code>login</code> 以及 <code>auth</code>。</p>
+<ul>
+<li>login 會檢查登入所使用的帳戶密碼，在驗證正確後會給予 Token 於 Cookie 中。</li>
+<li>auth 會檢查 Cookie 是否有合法的 Token 。</li>
+</ul>
+<p>由於本篇主要是專注在網頁後端「如何使用 gin 框架」，所以有關 HTML、 JavaScript 、CSS 並不會著墨太多。</p>
+<h3 id="建立專案">建立專案</h3>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">go mod init github.com/e61983/test-gin-login
+</span></span><span class="line"><span class="ln">2</span><span class="cl">go get -u github.com/gin-gonic/gin</span></span></code></pre></div>
+</div>
+<h3 id="起手式">起手式</h3>
+<h4 id="建立測試用的-api---ping">建立測試用的 API - ping</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl">cat <span class="s">&lt;&lt; EOF &gt; main.go
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="s">package main
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="s">import (
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="s">	&#34;net/http&#34;
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="s">	&#34;github.com/gin-gonic/gin&#34;
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="s">)
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="s">func main() {
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="s">	r := gin.Default()
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="s">	r.GET(&#34;/ping&#34;, func(c *gin.Context) {
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="s">		c.JSON(http.StatusOK, gin.H{
+</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="s">			&#34;message&#34;: &#34;pong&#34;,
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="s">		})
+</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="s">	})
+</span></span></span><span class="line"><span class="ln">17</span><span class="cl"><span class="s">	r.Run()
+</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="s">}
+</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="s">EOF</span></span></span></code></pre></div>
+</div>
+<p>現在讓我們先跑起來看看!</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">go run main.go</span></span></code></pre></div>
+</div>
+<p>並在另一個終端機上試著存取我們建立的 API <code>ping</code></p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">curl -X GET http://localhost:8080/ping
+</span></span><span class="line"><span class="ln">2</span><span class="cl">
+</span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="c1"># Output:</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl"><span class="o">{</span><span class="s2">&#34;message&#34;</span>:<span class="s2">&#34;pong&#34;</span><span class="o">}</span>%</span></span></code></pre></div>
+</div>
+<h4 id="提供網頁服務">提供網頁服務</h4>
+<p>簡單的建立測試用的頁面。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl">mkdir -p webroot
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">cat <span class="s">&lt;&lt; EOF &gt; webroot/index.html
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="s">&lt;!DOCTYPE html&gt;
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="s">&lt;html lang=&#34;en&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="s">&lt;head&gt;
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="s">    &lt;meta charset=&#34;UTF-8&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="s">    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="s">    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="s">    &lt;title&gt;Home Page&lt;/title&gt;
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="s">&lt;/head&gt;
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="s">&lt;body&gt;
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="s">    &lt;h1&gt;Home Page&lt;/h1&gt;
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="s">&lt;/body&gt;
+</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="s">&lt;/html&gt;
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="s">EOF</span></span></span></code></pre></div>
+</div>
+<p>接下來透過提供 <code>LoadHTMLGlob()</code> 載入文件夾中的靜態頁面。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln">1</span><span class="cl"><span class="nx">r</span><span class="p">.</span><span class="nf">LoadHTMLGlob</span><span class="p">(</span><span class="s">&#34;webroot/*&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="nx">r</span><span class="p">.</span><span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">gin</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="w">	</span><span class="nx">c</span><span class="p">.</span><span class="nf">HTML</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;index.html&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{})</span><span class="w">
+</span></span></span><span class="line"><span class="ln">4</span><span class="cl"><span class="p">})</span></span></span></code></pre></div>
+</div>
+<p>重新運行後，使用瀏覽器觀看執行結果</p>
+<figure><img src="/posts/go-gin-web-backend/images/result-first.png"
+			alt="我們的第一個畫面"><figcaption>
+			<p>我們的第一個畫面</p>
+		</figcaption>
+</figure>
+
+<h3 id="登入--login--api">登入 ( Login ) API</h3>
+<p>在使用 gin 的綁定 (binding) 功能時，我們要在想要綁定的欄位後面，依照想要綁定的方法加上  <strong>Struct Tags</strong>。
 之我們就可以使用 <code>gin.Bind()</code> 或是 <code>gin.ShouldBind()</code> 來取得網頁前端所傳輸的資料。
 本篇是用直接比對帳號密碼的方式實作，同學在實務上不要這樣學喔!
 在檢驗完之後，將 Token 記錄於 Cookie 。
-不過，目前常見驗證是採 JWT 的驗證方式，所以同學也自己來試著改寫看看。</p><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kd>type</span><span class=w> </span><span class=nx>User</span><span class=w> </span><span class=kd>struct</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>	</span><span class=nx>Account</span><span class=w>  </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;account&#34; form:&#34;account&#34;`</span><span class=w>
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w>	</span><span class=nx>Password</span><span class=w> </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;password&#34; form:&#34;password&#34;`</span><span class=w>
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=nx>r</span><span class=p>.</span><span class=nf>POST</span><span class=p>(</span><span class=s>&#34;/login&#34;</span><span class=p>,</span><span class=w> </span><span class=kd>func</span><span class=p>(</span><span class=nx>c</span><span class=w> </span><span class=o>*</span><span class=nx>gin</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>	</span><span class=cm>/* 綁定資料 */</span><span class=w>
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>	</span><span class=nx>u</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=o>&amp;</span><span class=nx>User</span><span class=p>{}</span><span class=w>
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>c</span><span class=p>.</span><span class=nf>ShouldBind</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>u</span><span class=p>)</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>		</span><span class=nx>c</span><span class=p>.</span><span class=nf>JSON</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span><span class=p>,</span><span class=w> </span><span class=nx>gin</span><span class=p>.</span><span class=nx>H</span><span class=p>{</span><span class=s>&#34;err&#34;</span><span class=p>:</span><span class=w> </span><span class=mi>1</span><span class=p>})</span><span class=w>
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w>
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=w>	</span><span class=cm>/* 檢查帳號密碼 */</span><span class=w>
-</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>u</span><span class=p>.</span><span class=nx>Account</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=nx>TEST_ACCOUNT</span><span class=w> </span><span class=o>||</span><span class=w> </span><span class=nx>u</span><span class=p>.</span><span class=nx>Password</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=nx>TEST_PASSWORD</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=w>		</span><span class=nx>c</span><span class=p>.</span><span class=nf>JSON</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span><span class=p>,</span><span class=w> </span><span class=nx>gin</span><span class=p>.</span><span class=nx>H</span><span class=p>{</span><span class=s>&#34;err&#34;</span><span class=p>:</span><span class=w> </span><span class=mi>2</span><span class=p>})</span><span class=w>
-</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w>
-</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=w>	</span><span class=cm>/* 將 Token 記錄於 Cookie 中 */</span><span class=w>
-</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=w>	</span><span class=nx>c</span><span class=p>.</span><span class=nf>SetCookie</span><span class=p>(</span><span class=nx>TOKEN_KEY</span><span class=p>,</span><span class=w> </span><span class=nx>TEST_TOKEN</span><span class=p>,</span><span class=w> </span><span class=mi>3600</span><span class=p>,</span><span class=w> </span><span class=s>&#34;/&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>HOST</span><span class=p>,</span><span class=w> </span><span class=kc>false</span><span class=p>,</span><span class=w> </span><span class=kc>false</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=w>	</span><span class=nx>c</span><span class=p>.</span><span class=nf>JSON</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span><span class=p>,</span><span class=w> </span><span class=nx>gin</span><span class=p>.</span><span class=nx>H</span><span class=p>{})</span><span class=w>
-</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=p>})</span></span></span></code></pre></div></div><h3 id=驗證--auth--api>驗證 ( Auth ) API</h3><p>我們可以從瀏覽器發送的請求中取出我們先前記錄於 Cookie 的 Token 。
-並且比對它是否合法。</p><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=nx>r</span><span class=p>.</span><span class=nf>POST</span><span class=p>(</span><span class=s>&#34;/auth&#34;</span><span class=p>,</span><span class=w> </span><span class=kd>func</span><span class=p>(</span><span class=nx>c</span><span class=w> </span><span class=o>*</span><span class=nx>gin</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>	</span><span class=cm>/* 從 Cookie 取出 Token */</span><span class=w>
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>token</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>c</span><span class=p>.</span><span class=nf>Cookie</span><span class=p>(</span><span class=nx>TOKEN_KEY</span><span class=p>);</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w>		</span><span class=k>if</span><span class=w> </span><span class=nx>TEST_TOKEN</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=nx>token</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w>			</span><span class=nx>c</span><span class=p>.</span><span class=nf>JSON</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span><span class=p>,</span><span class=w> </span><span class=nx>gin</span><span class=p>.</span><span class=nx>H</span><span class=p>{</span><span class=s>&#34;err&#34;</span><span class=p>:</span><span class=w> </span><span class=mi>2</span><span class=p>})</span><span class=w>
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w>			</span><span class=k>return</span><span class=w>
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>		</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>	</span><span class=nx>c</span><span class=p>.</span><span class=nf>JSON</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span><span class=p>,</span><span class=w> </span><span class=nx>gin</span><span class=p>.</span><span class=nx>H</span><span class=p>{</span><span class=s>&#34;err&#34;</span><span class=p>:</span><span class=w> </span><span class=kc>nil</span><span class=p>})</span><span class=w>
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=p>})</span></span></span></code></pre></div></div><h3 id=建立登入表單與登入後顯示畫面>建立登入表單與登入後顯示畫面</h3><p>建立登入頁面。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; webroot/login.html
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=s>&lt;!DOCTYPE html&gt;
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=s>&lt;html lang=&#34;en&#34;&gt;
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=s>&lt;head&gt;
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=s>    &lt;meta charset=&#34;UTF-8&#34;&gt;
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>    &lt;link rel=&#34;stylesheet&#34; href=&#34;assets/core.css&#34;&gt;
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>    &lt;title&gt;Login Page&lt;/title&gt;
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>&lt;/head&gt;
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>&lt;body&gt;
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>    &lt;h1&gt;Login Page&lt;/h1&gt;
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>    &lt;div class=&#34;container&#34;&gt;
-</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>        &lt;form&gt;
-</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>            &lt;div class=&#34;input-wrapper&#34;&gt;
-</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>                &lt;div class=&#34;title&#34;&gt;Login&lt;/div&gt;
-</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>                &lt;div class=&#34;label&#34; for=&#34;account&#34;&gt;Account:&lt;/div&gt;
-</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s>                &lt;input type=&#34;text&#34; id=&#34;account&#34; name=&#34;account&#34; value=&#34;tester&#34; /&gt;
-</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=s>                &lt;div class=&#34;label&#34; for=&#34;password&#34;&gt;Password:&lt;/div&gt;
-</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=s>                &lt;input type=&#34;password&#34; id=&#34;password&#34; name=&#34;password&#34; value=&#34;test123&#34; /&gt;
-</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=s>                &lt;button id=&#34;btn&#34; type=&#34;button&#34;&gt; Submit &lt;/button&gt;
-</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=s>            &lt;/div&gt;
-</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=s>        &lt;/form&gt;
-</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=s>    &lt;/div&gt;
-</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=s>    &lt;script type=&#34;module&#34; &gt;
-</span></span></span><span class=line><span class=ln>26</span><span class=cl><span class=s>        import {getData, postData, getCookie, deleteCookie} from &#39;/javascript/core.js&#39;;
-</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=s>        function login() {
-</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=s>            let account = document.getElementById(&#34;account&#34;).value;
-</span></span></span><span class=line><span class=ln>29</span><span class=cl><span class=s>            let password = document.getElementById(&#34;password&#34;).value;
-</span></span></span><span class=line><span class=ln>30</span><span class=cl><span class=s>            postData(&#34;http://localhost:8080/login&#34;,
-</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=s>                {&#34;account&#34;: account, &#34;password&#34;: password})
-</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=s>                .then(data=&gt;{
-</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=s>                    console.log(data.err)
-</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=s>                    if (data.err !== null){
-</span></span></span><span class=line><span class=ln>35</span><span class=cl><span class=s>                        window.location.replace(&#34;/&#34;)
-</span></span></span><span class=line><span class=ln>36</span><span class=cl><span class=s>                    }else{
-</span></span></span><span class=line><span class=ln>37</span><span class=cl><span class=s>                        window.location.replace(&#34;/admin/&#34;)
-</span></span></span><span class=line><span class=ln>38</span><span class=cl><span class=s>                    }
-</span></span></span><span class=line><span class=ln>39</span><span class=cl><span class=s>                });
-</span></span></span><span class=line><span class=ln>40</span><span class=cl><span class=s>        }
-</span></span></span><span class=line><span class=ln>41</span><span class=cl><span class=s>        function check(token) {
-</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=s>            postData(&#34;http://localhost:8080/auth&#34;, {&#34;token&#34;: token})
-</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=s>                .then(data=&gt;{
-</span></span></span><span class=line><span class=ln>44</span><span class=cl><span class=s>                    if (data.err === null){
-</span></span></span><span class=line><span class=ln>45</span><span class=cl><span class=s>                        window.location.replace(&#34;/admin/&#34;)
-</span></span></span><span class=line><span class=ln>46</span><span class=cl><span class=s>                    }
-</span></span></span><span class=line><span class=ln>47</span><span class=cl><span class=s>                });
-</span></span></span><span class=line><span class=ln>48</span><span class=cl><span class=s>        }
-</span></span></span><span class=line><span class=ln>49</span><span class=cl><span class=s>        check(getCookie(&#34;token&#34;))
-</span></span></span><span class=line><span class=ln>50</span><span class=cl><span class=s>        window.onload = function(){
-</span></span></span><span class=line><span class=ln>51</span><span class=cl><span class=s>            document.getElementById(&#34;btn&#34;).addEventListener(&#34;click&#34;, login);
-</span></span></span><span class=line><span class=ln>52</span><span class=cl><span class=s>        }
-</span></span></span><span class=line><span class=ln>53</span><span class=cl><span class=s>    &lt;/script&gt;
-</span></span></span><span class=line><span class=ln>54</span><span class=cl><span class=s>&lt;/body&gt;
-</span></span></span><span class=line><span class=ln>55</span><span class=cl><span class=s>&lt;/html&gt;
-</span></span></span><span class=line><span class=ln>56</span><span class=cl><span class=s>EOF</span></span></span></code></pre></div></div><p>改寫歡迎畫面</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl>cat <span class=s>&lt;&lt; EOF &gt; webroot/index.html
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=s>&lt;!DOCTYPE html&gt;
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=s>&lt;html lang=&#34;en&#34;&gt;
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=s>&lt;head&gt;
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=s>    &lt;meta charset=&#34;UTF-8&#34;&gt;
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=s>    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=s>    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=s>    &lt;link rel=&#34;stylesheet&#34; href=&#34;/assets/core.css&#34;&gt;
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=s>    &lt;title&gt;Home Page&lt;/title&gt;
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=s>&lt;/head&gt;
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=s>&lt;body&gt;
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=s>    &lt;h1&gt;Home Page&lt;/h1&gt;
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=s>    &lt;div class=&#34;container&#34;&gt;
-</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=s>        &lt;div class=&#34;input-wrapper&#34;&gt;
-</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=s>            &lt;div class=&#34;title&#34;&gt;Hello word&lt;/div&gt;
-</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=s>            &lt;button id=&#34;btn&#34; type=&#34;button&#34;&gt; Logout &lt;/button&gt;
-</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=s>        &lt;/div&gt;
-</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=s>    &lt;/div&gt;
-</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=s>    &lt;script type=&#34;module&#34; &gt;
-</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=s>        import {getData, postData, getCookie, deleteCookie} from &#39;/javascript/core.js&#39;;
-</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=s>
-</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=s>        function logout() {
-</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=s>            deleteCookie(&#34;token&#34;, &#34;/&#34;, &#34;localhost&#34;)
-</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=s>            window.location.replace(&#34;/&#34;)
-</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=s>        }
-</span></span></span><span class=line><span class=ln>26</span><span class=cl><span class=s>        window.onload = function(){
-</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=s>            document.getElementById(&#34;btn&#34;).addEventListener(&#39;click&#39;, logout);
-</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=s>        }
-</span></span></span><span class=line><span class=ln>29</span><span class=cl><span class=s>    &lt;/script&gt;
-</span></span></span><span class=line><span class=ln>30</span><span class=cl><span class=s>&lt;/body&gt;
-</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=s>&lt;/html&gt;
-</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=s>EOF</span></span></span></code></pre></div></div><h3 id=畫存取清界線>畫存取清界線</h3><p>我們前面建立了將要顯示的頁面，現在我們要來設定存取的路徑。</p><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=cm>/* 登入頁面 */</span><span class=w>
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=nx>r</span><span class=p>.</span><span class=nf>GET</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>,</span><span class=w> </span><span class=kd>func</span><span class=p>(</span><span class=nx>c</span><span class=w> </span><span class=o>*</span><span class=nx>gin</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w>	</span><span class=nx>c</span><span class=p>.</span><span class=nf>HTML</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span><span class=p>,</span><span class=w> </span><span class=s>&#34;login.html&#34;</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=p>})</span><span class=w>
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=cm>/* 需要登入才能存取的頁面 */</span><span class=w>
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=nx>admin</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>r</span><span class=p>.</span><span class=nf>Group</span><span class=p>(</span><span class=s>&#34;/admin&#34;</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=nx>admin</span><span class=p>.</span><span class=nf>GET</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>,</span><span class=w> </span><span class=kd>func</span><span class=p>(</span><span class=nx>c</span><span class=w> </span><span class=o>*</span><span class=nx>gin</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>currentUser</span><span class=p>,</span><span class=w> </span><span class=nx>ok</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>c</span><span class=p>.</span><span class=nf>Get</span><span class=p>(</span><span class=s>&#34;User&#34;</span><span class=p>);</span><span class=w> </span><span class=nx>ok</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>		</span><span class=nx>log</span><span class=p>.</span><span class=nf>Printf</span><span class=p>(</span><span class=s>&#34;User [ %s ] Accessed&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>currentUser</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=w>	</span><span class=nx>c</span><span class=p>.</span><span class=nf>HTML</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span><span class=p>,</span><span class=w> </span><span class=s>&#34;index.html&#34;</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=p>})</span></span></span></code></pre></div></div><h4 id=建立中間層>建立中間層</h4><p>雖然我們已經建立了 <code>/login</code> 與 <code>/admin/</code> 這 2 個路徑，但如果我們直接在劉覽器中輸入 <code>http://localhost:8080/admin/</code>。會發現還是可以存取的。
-為了避免這樣的事情發生，我們可以建立中間層來檢查是否已登入。
-如果發現尚未登入的存取請求，我們就將其轉至登入畫面。</p><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>AuthMiddleware</span><span class=p>()</span><span class=w> </span><span class=nx>gin</span><span class=p>.</span><span class=nx>HandlerFunc</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>	</span><span class=k>return</span><span class=w> </span><span class=kd>func</span><span class=p>(</span><span class=nx>c</span><span class=w> </span><span class=o>*</span><span class=nx>gin</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=w>		</span><span class=nx>cookieToken</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>c</span><span class=p>.</span><span class=nf>Cookie</span><span class=p>(</span><span class=nx>TOKEN_KEY</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w>		</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=nx>cookieToken</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=nx>TEST_TOKEN</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=w>			</span><span class=nx>c</span><span class=p>.</span><span class=nf>Redirect</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusTemporaryRedirect</span><span class=p>,</span><span class=w> </span><span class=nx>BASEURL</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=w>			</span><span class=nx>c</span><span class=p>.</span><span class=nf>AbortWithStatus</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusTemporaryRedirect</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>			</span><span class=k>return</span><span class=w>
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>		</span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>			</span><span class=nx>c</span><span class=p>.</span><span class=nf>Set</span><span class=p>(</span><span class=s>&#34;User&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>TEST_ACCOUNT</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>			</span><span class=nx>c</span><span class=p>.</span><span class=nf>Next</span><span class=p>()</span><span class=w>
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=w>		</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=p>}</span></span></span></code></pre></div></div><h4 id=使用中間層>使用中間層</h4><p>在我們建立好的 <code>admin</code> 路由群組中，使用我們建立好的中間層。如此一來，要存取此路由群組的請求就會檢查是否已登入了。</p><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln>1</span><span class=cl><span class=nx>admin</span><span class=p>.</span><span class=nf>Use</span><span class=p>(</span><span class=nf>AuthMiddleware</span><span class=p>())</span></span></span></code></pre></div></div><p><figure><img src=/posts/go-gin-web-backend/images/result-login.png alt=登入表單><figcaption><p>登入表單</p></figcaption></figure><figure><img src=/posts/go-gin-web-backend/images/result-greeting.png alt=登入後歡迎畫面><figcaption><p>登入後歡迎畫面</p></figcaption></figure></p><h2 id=小結>小結</h2><p>本篇省略了很多實作上的細節，對被省略的部份有興趣的同學可以參考<a href=./test-gin-login.tar.bz2>這裡</a>。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://github.com/gin-gonic/gin>gin-gonic/gin</a></li></ul><div class=chips><a class=chip href=/tags/go/><span class=hash>#</span>go</a>
-<a class=chip href=/tags/gin/><span class=hash>#</span>gin</a>
-<a class=chip href=/tags/website/><span class=hash>#</span>website</a>
-<a class=chip href=/tags/backend/><span class=hash>#</span>backend</a>
-<a class=chip href=/tags/cookie/><span class=hash>#</span>cookie</a></div></article><aside><div class=toc><div class=side-title style=margin-bottom:var(--space-3)>本頁目錄</div><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#寫在前面>寫在前面</a></li><li><a href=#建立專案>建立專案</a></li><li><a href=#起手式>起手式</a></li><li><a href=#登入--login--api>登入 ( Login ) API</a></li><li><a href=#驗證--auth--api>驗證 ( Auth ) API</a></li><li><a href=#建立登入表單與登入後顯示畫面>建立登入表單與登入後顯示畫面</a></li><li><a href=#畫存取清界線>畫存取清界線</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></div></aside></div><div class=adjacent style="max-width:760px;margin:var(--space-8)auto 0"><a class=side-card href=/posts/yocto-with-imx8qxp-4/ style=text-decoration:none><div class=meta style=margin-bottom:6px><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-上一篇</div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</div></a><a class=side-card href=/posts/how-to-setup-unifi-ap/ style=text-align:right;text-decoration:none><div class=meta style=margin-bottom:6px;justify-content:flex-end>下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>如何設定 Unifi AP</div></a></div><div style=height:var(--space-10)></div></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
-<a href=/about/>關於</a>
-<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
-<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+不過，目前常見驗證是採 JWT 的驗證方式，所以同學也自己來試著改寫看看。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
 </button>
-<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kd">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w">	</span><span class="nx">Account</span><span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="s">`json:&#34;account&#34; form:&#34;account&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="w">	</span><span class="nx">Password</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="s">`json:&#34;password&#34; form:&#34;password&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="nx">r</span><span class="p">.</span><span class="nf">POST</span><span class="p">(</span><span class="s">&#34;/login&#34;</span><span class="p">,</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">gin</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w">	</span><span class="cm">/* 綁定資料 */</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="w">	</span><span class="nx">u</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">User</span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nf">ShouldBind</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">u</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="w">		</span><span class="nx">c</span><span class="p">.</span><span class="nf">JSON</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span><span class="w"> </span><span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{</span><span class="s">&#34;err&#34;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="w">		</span><span class="k">return</span><span class="w">
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="w">	</span><span class="cm">/* 檢查帳號密碼 */</span><span class="w">
+</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">u</span><span class="p">.</span><span class="nx">Account</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">TEST_ACCOUNT</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">u</span><span class="p">.</span><span class="nx">Password</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">TEST_PASSWORD</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="w">		</span><span class="nx">c</span><span class="p">.</span><span class="nf">JSON</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span><span class="w"> </span><span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{</span><span class="s">&#34;err&#34;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="w">		</span><span class="k">return</span><span class="w">
+</span></span></span><span class="line"><span class="ln">17</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="w">	</span><span class="cm">/* 將 Token 記錄於 Cookie 中 */</span><span class="w">
+</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="w">	</span><span class="nx">c</span><span class="p">.</span><span class="nf">SetCookie</span><span class="p">(</span><span class="nx">TOKEN_KEY</span><span class="p">,</span><span class="w"> </span><span class="nx">TEST_TOKEN</span><span class="p">,</span><span class="w"> </span><span class="mi">3600</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;/&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">HOST</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="w">	</span><span class="nx">c</span><span class="p">.</span><span class="nf">JSON</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span><span class="w"> </span><span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{})</span><span class="w">
+</span></span></span><span class="line"><span class="ln">21</span><span class="cl"><span class="p">})</span></span></span></code></pre></div>
+</div>
+<h3 id="驗證--auth--api">驗證 ( Auth ) API</h3>
+<p>我們可以從瀏覽器發送的請求中取出我們先前記錄於 Cookie 的 Token 。
+並且比對它是否合法。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="nx">r</span><span class="p">.</span><span class="nf">POST</span><span class="p">(</span><span class="s">&#34;/auth&#34;</span><span class="p">,</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">gin</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w">	</span><span class="cm">/* 從 Cookie 取出 Token */</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">token</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nf">Cookie</span><span class="p">(</span><span class="nx">TOKEN_KEY</span><span class="p">);</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="w">		</span><span class="k">if</span><span class="w"> </span><span class="nx">TEST_TOKEN</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">token</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="w">			</span><span class="nx">c</span><span class="p">.</span><span class="nf">JSON</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span><span class="w"> </span><span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{</span><span class="s">&#34;err&#34;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="w">			</span><span class="k">return</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w">		</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w">	</span><span class="nx">c</span><span class="p">.</span><span class="nf">JSON</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span><span class="w"> </span><span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{</span><span class="s">&#34;err&#34;</span><span class="p">:</span><span class="w"> </span><span class="kc">nil</span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="p">})</span></span></span></code></pre></div>
+</div>
+<h3 id="建立登入表單與登入後顯示畫面">建立登入表單與登入後顯示畫面</h3>
+<p>建立登入頁面。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl">cat <span class="s">&lt;&lt; EOF &gt; webroot/login.html
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="s">&lt;!DOCTYPE html&gt;
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="s">&lt;html lang=&#34;en&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="s">&lt;head&gt;
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="s">    &lt;meta charset=&#34;UTF-8&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="s">    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="s">    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="s">    &lt;link rel=&#34;stylesheet&#34; href=&#34;assets/core.css&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="s">    &lt;title&gt;Login Page&lt;/title&gt;
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="s">&lt;/head&gt;
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="s">&lt;body&gt;
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="s">    &lt;h1&gt;Login Page&lt;/h1&gt;
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="s">    &lt;div class=&#34;container&#34;&gt;
+</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="s">        &lt;form&gt;
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="s">            &lt;div class=&#34;input-wrapper&#34;&gt;
+</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="s">                &lt;div class=&#34;title&#34;&gt;Login&lt;/div&gt;
+</span></span></span><span class="line"><span class="ln">17</span><span class="cl"><span class="s">                &lt;div class=&#34;label&#34; for=&#34;account&#34;&gt;Account:&lt;/div&gt;
+</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="s">                &lt;input type=&#34;text&#34; id=&#34;account&#34; name=&#34;account&#34; value=&#34;tester&#34; /&gt;
+</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="s">                &lt;div class=&#34;label&#34; for=&#34;password&#34;&gt;Password:&lt;/div&gt;
+</span></span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="s">                &lt;input type=&#34;password&#34; id=&#34;password&#34; name=&#34;password&#34; value=&#34;test123&#34; /&gt;
+</span></span></span><span class="line"><span class="ln">21</span><span class="cl"><span class="s">                &lt;button id=&#34;btn&#34; type=&#34;button&#34;&gt; Submit &lt;/button&gt;
+</span></span></span><span class="line"><span class="ln">22</span><span class="cl"><span class="s">            &lt;/div&gt;
+</span></span></span><span class="line"><span class="ln">23</span><span class="cl"><span class="s">        &lt;/form&gt;
+</span></span></span><span class="line"><span class="ln">24</span><span class="cl"><span class="s">    &lt;/div&gt;
+</span></span></span><span class="line"><span class="ln">25</span><span class="cl"><span class="s">    &lt;script type=&#34;module&#34; &gt;
+</span></span></span><span class="line"><span class="ln">26</span><span class="cl"><span class="s">        import {getData, postData, getCookie, deleteCookie} from &#39;/javascript/core.js&#39;;
+</span></span></span><span class="line"><span class="ln">27</span><span class="cl"><span class="s">        function login() {
+</span></span></span><span class="line"><span class="ln">28</span><span class="cl"><span class="s">            let account = document.getElementById(&#34;account&#34;).value;
+</span></span></span><span class="line"><span class="ln">29</span><span class="cl"><span class="s">            let password = document.getElementById(&#34;password&#34;).value;
+</span></span></span><span class="line"><span class="ln">30</span><span class="cl"><span class="s">            postData(&#34;http://localhost:8080/login&#34;,
+</span></span></span><span class="line"><span class="ln">31</span><span class="cl"><span class="s">                {&#34;account&#34;: account, &#34;password&#34;: password})
+</span></span></span><span class="line"><span class="ln">32</span><span class="cl"><span class="s">                .then(data=&gt;{
+</span></span></span><span class="line"><span class="ln">33</span><span class="cl"><span class="s">                    console.log(data.err)
+</span></span></span><span class="line"><span class="ln">34</span><span class="cl"><span class="s">                    if (data.err !== null){
+</span></span></span><span class="line"><span class="ln">35</span><span class="cl"><span class="s">                        window.location.replace(&#34;/&#34;)
+</span></span></span><span class="line"><span class="ln">36</span><span class="cl"><span class="s">                    }else{
+</span></span></span><span class="line"><span class="ln">37</span><span class="cl"><span class="s">                        window.location.replace(&#34;/admin/&#34;)
+</span></span></span><span class="line"><span class="ln">38</span><span class="cl"><span class="s">                    }
+</span></span></span><span class="line"><span class="ln">39</span><span class="cl"><span class="s">                });
+</span></span></span><span class="line"><span class="ln">40</span><span class="cl"><span class="s">        }
+</span></span></span><span class="line"><span class="ln">41</span><span class="cl"><span class="s">        function check(token) {
+</span></span></span><span class="line"><span class="ln">42</span><span class="cl"><span class="s">            postData(&#34;http://localhost:8080/auth&#34;, {&#34;token&#34;: token})
+</span></span></span><span class="line"><span class="ln">43</span><span class="cl"><span class="s">                .then(data=&gt;{
+</span></span></span><span class="line"><span class="ln">44</span><span class="cl"><span class="s">                    if (data.err === null){
+</span></span></span><span class="line"><span class="ln">45</span><span class="cl"><span class="s">                        window.location.replace(&#34;/admin/&#34;)
+</span></span></span><span class="line"><span class="ln">46</span><span class="cl"><span class="s">                    }
+</span></span></span><span class="line"><span class="ln">47</span><span class="cl"><span class="s">                });
+</span></span></span><span class="line"><span class="ln">48</span><span class="cl"><span class="s">        }
+</span></span></span><span class="line"><span class="ln">49</span><span class="cl"><span class="s">        check(getCookie(&#34;token&#34;))
+</span></span></span><span class="line"><span class="ln">50</span><span class="cl"><span class="s">        window.onload = function(){
+</span></span></span><span class="line"><span class="ln">51</span><span class="cl"><span class="s">            document.getElementById(&#34;btn&#34;).addEventListener(&#34;click&#34;, login);
+</span></span></span><span class="line"><span class="ln">52</span><span class="cl"><span class="s">        }
+</span></span></span><span class="line"><span class="ln">53</span><span class="cl"><span class="s">    &lt;/script&gt;
+</span></span></span><span class="line"><span class="ln">54</span><span class="cl"><span class="s">&lt;/body&gt;
+</span></span></span><span class="line"><span class="ln">55</span><span class="cl"><span class="s">&lt;/html&gt;
+</span></span></span><span class="line"><span class="ln">56</span><span class="cl"><span class="s">EOF</span></span></span></code></pre></div>
+</div>
+<p>改寫歡迎畫面</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl">cat <span class="s">&lt;&lt; EOF &gt; webroot/index.html
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="s">&lt;!DOCTYPE html&gt;
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="s">&lt;html lang=&#34;en&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="s">&lt;head&gt;
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="s">    &lt;meta charset=&#34;UTF-8&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="s">    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="s">    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="s">    &lt;link rel=&#34;stylesheet&#34; href=&#34;/assets/core.css&#34;&gt;
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="s">    &lt;title&gt;Home Page&lt;/title&gt;
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="s">&lt;/head&gt;
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="s">&lt;body&gt;
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="s">    &lt;h1&gt;Home Page&lt;/h1&gt;
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="s">    &lt;div class=&#34;container&#34;&gt;
+</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="s">        &lt;div class=&#34;input-wrapper&#34;&gt;
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="s">            &lt;div class=&#34;title&#34;&gt;Hello word&lt;/div&gt;
+</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="s">            &lt;button id=&#34;btn&#34; type=&#34;button&#34;&gt; Logout &lt;/button&gt;
+</span></span></span><span class="line"><span class="ln">17</span><span class="cl"><span class="s">        &lt;/div&gt;
+</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="s">    &lt;/div&gt;
+</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="s">    &lt;script type=&#34;module&#34; &gt;
+</span></span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="s">        import {getData, postData, getCookie, deleteCookie} from &#39;/javascript/core.js&#39;;
+</span></span></span><span class="line"><span class="ln">21</span><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="ln">22</span><span class="cl"><span class="s">        function logout() {
+</span></span></span><span class="line"><span class="ln">23</span><span class="cl"><span class="s">            deleteCookie(&#34;token&#34;, &#34;/&#34;, &#34;localhost&#34;)
+</span></span></span><span class="line"><span class="ln">24</span><span class="cl"><span class="s">            window.location.replace(&#34;/&#34;)
+</span></span></span><span class="line"><span class="ln">25</span><span class="cl"><span class="s">        }
+</span></span></span><span class="line"><span class="ln">26</span><span class="cl"><span class="s">        window.onload = function(){
+</span></span></span><span class="line"><span class="ln">27</span><span class="cl"><span class="s">            document.getElementById(&#34;btn&#34;).addEventListener(&#39;click&#39;, logout);
+</span></span></span><span class="line"><span class="ln">28</span><span class="cl"><span class="s">        }
+</span></span></span><span class="line"><span class="ln">29</span><span class="cl"><span class="s">    &lt;/script&gt;
+</span></span></span><span class="line"><span class="ln">30</span><span class="cl"><span class="s">&lt;/body&gt;
+</span></span></span><span class="line"><span class="ln">31</span><span class="cl"><span class="s">&lt;/html&gt;
+</span></span></span><span class="line"><span class="ln">32</span><span class="cl"><span class="s">EOF</span></span></span></code></pre></div>
+</div>
+<h3 id="畫存取清界線">畫存取清界線</h3>
+<p>我們前面建立了將要顯示的頁面，現在我們要來設定存取的路徑。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="cm">/* 登入頁面 */</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="nx">r</span><span class="p">.</span><span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">gin</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="w">	</span><span class="nx">c</span><span class="p">.</span><span class="nf">HTML</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;login.html&#34;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="cm">/* 需要登入才能存取的頁面 */</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="nx">admin</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">r</span><span class="p">.</span><span class="nf">Group</span><span class="p">(</span><span class="s">&#34;/admin&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">gin</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">currentUser</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;User&#34;</span><span class="p">);</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="w">		</span><span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;User [ %s ] Accessed&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">currentUser</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="w">	</span><span class="nx">c</span><span class="p">.</span><span class="nf">HTML</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;index.html&#34;</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="p">})</span></span></span></code></pre></div>
+</div>
+<h4 id="建立中間層">建立中間層</h4>
+<p>雖然我們已經建立了 <code>/login</code> 與 <code>/admin/</code> 這 2 個路徑，但如果我們直接在劉覽器中輸入 <code>http://localhost:8080/admin/</code>。會發現還是可以存取的。
+為了避免這樣的事情發生，我們可以建立中間層來檢查是否已登入。
+如果發現尚未登入的存取請求，我們就將其轉至登入畫面。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">AuthMiddleware</span><span class="p">()</span><span class="w"> </span><span class="nx">gin</span><span class="p">.</span><span class="nx">HandlerFunc</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">gin</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="w">		</span><span class="nx">cookieToken</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nf">Cookie</span><span class="p">(</span><span class="nx">TOKEN_KEY</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="w">		</span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">cookieToken</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">TEST_TOKEN</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="w">			</span><span class="nx">c</span><span class="p">.</span><span class="nf">Redirect</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusTemporaryRedirect</span><span class="p">,</span><span class="w"> </span><span class="nx">BASEURL</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="w">			</span><span class="nx">c</span><span class="p">.</span><span class="nf">AbortWithStatus</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusTemporaryRedirect</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w">			</span><span class="k">return</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="w">		</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w">			</span><span class="nx">c</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;User&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">TEST_ACCOUNT</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="w">			</span><span class="nx">c</span><span class="p">.</span><span class="nf">Next</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="w">		</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+</div>
+<h4 id="使用中間層">使用中間層</h4>
+<p>在我們建立好的 <code>admin</code> 路由群組中，使用我們建立好的中間層。如此一來，要存取此路由群組的請求就會檢查是否已登入了。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln">1</span><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nf">Use</span><span class="p">(</span><span class="nf">AuthMiddleware</span><span class="p">())</span></span></span></code></pre></div>
+</div>
+<p><figure><img src="/posts/go-gin-web-backend/images/result-login.png"
+			alt="登入表單"><figcaption>
+			<p>登入表單</p>
+		</figcaption>
+</figure>
+
+<figure><img src="/posts/go-gin-web-backend/images/result-greeting.png"
+			alt="登入後歡迎畫面"><figcaption>
+			<p>登入後歡迎畫面</p>
+		</figcaption>
+</figure>
+</p>
+<h2 id="小結">小結</h2>
+<p>本篇省略了很多實作上的細節，對被省略的部份有興趣的同學可以參考<a href="./test-gin-login.tar.bz2">這裡</a>。</p>
+<h2 id="參考連結">參考連結</h2>
+<ul>
+<li><a href="https://github.com/gin-gonic/gin">gin-gonic/gin</a></li>
+</ul>
+      <div class="chips">
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/gin/"><span class="hash">#</span>gin</a>
+  
+  <a class="chip" href="/tags/website/"><span class="hash">#</span>website</a>
+  
+  <a class="chip" href="/tags/backend/"><span class="hash">#</span>backend</a>
+  
+  <a class="chip" href="/tags/cookie/"><span class="hash">#</span>cookie</a>
+  
+</div>
+    </article>
+    <aside>
+      
+      <div class="toc">
+        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#主要內容">主要內容</a>
+      <ul>
+        <li><a href="#寫在前面">寫在前面</a></li>
+        <li><a href="#建立專案">建立專案</a></li>
+        <li><a href="#起手式">起手式</a></li>
+        <li><a href="#登入--login--api">登入 ( Login ) API</a></li>
+        <li><a href="#驗證--auth--api">驗證 ( Auth ) API</a></li>
+        <li><a href="#建立登入表單與登入後顯示畫面">建立登入表單與登入後顯示畫面</a></li>
+        <li><a href="#畫存取清界線">畫存取清界線</a></li>
+      </ul>
+    </li>
+    <li><a href="#小結">小結</a></li>
+    <li><a href="#參考連結">參考連結</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </aside>
+  </div>
+
+  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
+  
+  <a class="side-card" href="/posts/yocto-with-imx8qxp-4/" style="text-decoration:none">
+    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 上一篇</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</div>
+  </a>
+  
+  
+  <a class="side-card" href="/posts/how-to-setup-unifi-ap/" style="text-align:right;text-decoration:none">
+    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">如何設定 Unifi AP</div>
+  </a>
+  
+</div>
+
+  <div style="height:var(--space-10)"></div>
+</div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+</button>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

@@ -1,38 +1,181 @@
-<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆 · Yuan のノート</title><meta name=description content="手上有一顆 61GB 的 Raspberry Pi disk image,想在 Mac 上翻翻裡面的檔案,卻發現 macOS 根本掛不動 ext4。這篇記錄筆者怎麼用一支 Docker 唯讀掛載的 bash script 解決,以及過程中踩到的兩個坑。"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆"><meta property="og:description" content="手上有一顆 61GB 的 Raspberry Pi disk image,想在 Mac 上翻翻裡面的檔案,卻發現 macOS 根本掛不動 ext4。這篇記錄筆者怎麼用一支 Docker 唯讀掛載的 bash script 解決,以及過程中踩到的兩個坑。"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/macos-readonly-browse-raspberry-pi-image/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
-</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
-<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
-</span></button>
-<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
-<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class=fade-in><div class="container article"><div style="max-width:760px;margin:0 auto"><div style=display:flex;justify-content:center;margin-bottom:var(--space-4)><a class=link-arrow style=color:var(--fg-muted);font-size:var(--text-caption) href=/posts/><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-所有文章</a></div><div class=article-head><div style=display:flex;justify-content:center><a class="badge badge-accent" href=/categories/embedded-system/>embedded system</a></div><h1>在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆</h1><div style=display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)><img class=avatar width=28 height=28 loading=lazy style=width:28px;height:28px src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon" alt=Yuan>
-<span style=font:var(--weight-medium)var(--text-body)var(--font-text);color:var(--fg)>Yuan</span>
-<span class=meta style=margin-left:4px><span class=mono>2026.07.01</span><span class=dot></span><span>4 分鐘閱讀</span></span></div></div></div><div class=post-layout><article class=prose style="max-width:720px;margin:0 auto;width:100%"><h2 id=前言>前言</h2><p>某天收到了 Raspberry Pi 的磁碟 image 過來,檔案有 61GB = =<br>筆者只是想看看裡面到底放了哪些設定檔、開機腳本、還有塞了什麼程式進去。</p><p>聽起來很單純吧?「掛起來看一下不就好了。」</p><p>結果一到 macOS 上就卡住了 —— Mac <strong>原生掛不動 ext4</strong>。而 Raspberry Pi 的 root filesystem 偏偏就是 ext4。</p><p>於是這一篇就誕生了!我們要做的,是寫一支 bash script,讓筆者可以像登入到 Pi 裡面一樣,用 shell 自由地逛整個檔案系統,而且<strong>全程唯讀</strong>,絕對不弄髒這顆收到的原始 image。</p><p>這篇會從「先搞清楚 image 是什麼」開始,講到三個方案的取捨、最後選定的 Docker 做法,以及過程中踩到的兩個很有代表性的坑。</p><h2 id=先搞清楚這個-image-到底是什麼>先搞清楚:這個 image 到底是什麼</h2><p>在動手之前,先用 <code>file</code> 看清楚它的長相:</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>file demo_image</span></span></code></pre></div></div><p>輸出大概長這樣:</p><div class=code-block><div class=code-bar><span class=code-lang>text</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=ln>1</span><span class=cl>DOS/MBR boot sector;
-</span></span><span class=line><span class=ln>2</span><span class=cl> partition 1 : ID=0xc  ... startsector 8192,    1048576 sectors
-</span></span><span class=line><span class=ln>3</span><span class=cl> partition 2 : ID=0x83 ... startsector 1056768, 119824384 sectors</span></span></code></pre></div></div><p>翻譯一下:</p><ul><li><strong>Partition 1(ID=0x0c)</strong>:FAT32 的 boot 分割區,約 512MB。這個 macOS 可以原生掛。</li><li><strong>Partition 2(ID=0x83)</strong>:Linux ext4 的 root filesystem,約 57GB。<strong>這個才是重點,而 macOS 掛不動。</strong></li></ul><p>所以真正的難題只有一個:怎麼在 Mac 上讀到那個 ext4 分割區。</p><h2 id=為什麼-macos-直接掛不動三個方案的取捨>為什麼 macOS 直接掛不動?三個方案的取捨</h2><p>macOS 的核心沒有內建 ext4 的讀取支援。筆者想到三條路:</p><ul><li><strong>方案 A — Docker 唯讀 loop mount + 互動 shell</strong>:開一個 Linux 容器,用真正的 Linux kernel 把分割區掛起來,再進去用 bash 逛。</li><li><strong>方案 B — macFUSE + fuse-ext2</strong>:裝套件後直接把 ext4 掛到 macOS 的目錄,連 Finder 都能看。</li><li><strong>方案 C — debugfs(e2fsprogs)</strong>:完全不掛載,用工具直接讀 ext4。</li></ul><div class=notice style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4)var(--space-5);margin:0 0 var(--space-5)"><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px>為什麼最後選 A</div><div style=color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)>方案 B 的 FUSE 驅動對新版 ext4 特性(metadata_csum 之類)相容性時好時壞、速度也慢;方案 C 的互動介面太陽春,不像真正的 shell。方案 A 用的是<strong>貨真價實的 Linux kernel</strong>,任何 ext4 特性都讀得動,體驗也最接近「登入到 Pi 裡面」。而且筆者的 Docker 本來就開著,幾乎沒有額外成本。</div></div><h2 id=核心做法用-docker-把-image-唯讀掛起來>核心做法:用 Docker 把 image 唯讀掛起來</h2><p>整個流程其實很好懂,先看一張序列圖:</p><div class=mermaid>sequenceDiagram
-participant Mac as macOS(筆者)
-participant Sh as browse-pi-image.sh
-participant Ctn as Docker 容器
-participant Img as image 檔(唯讀)
-Mac->>Sh: ./browse-pi-image.sh
-Sh->>Ctn: docker run --privileged(image 以 :ro 掛入)
-Ctn->>Img: losetup --read-only + mount -o ro
-Ctn-->>Mac: 進入 /rootfs 的互動 shell
-Note over Mac,Img: 全程唯讀,離開自動清理</div><script type=module>
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆 · Yuan のノート</title>
+  <meta name="description" content="手上有一顆 61GB 的 Raspberry Pi disk image,想在 Mac 上翻翻裡面的檔案,卻發現 macOS 根本掛不動 ext4。這篇記錄筆者怎麼用一支 Docker 唯讀掛載的 bash script 解決,以及過程中踩到的兩個坑。">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆">
+  <meta property="og:description" content="手上有一顆 61GB 的 Raspberry Pi disk image,想在 Mac 上翻翻裡面的檔案,卻發現 macOS 根本掛不動 ext4。這篇記錄筆者怎麼用一支 Docker 唯讀掛載的 bash script 解決,以及過程中踩到的兩個坑。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://localhost:3000/posts/macos-readonly-browse-raspberry-pi-image/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="fade-in">
+<div class="container article">
+  <div style="max-width:760px;margin:0 auto">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
+      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 所有文章</a>
+    </div>
+    <div class="article-head">
+      
+      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/embedded-system/">embedded system</a></div>
+      
+      <h1>在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
+        <img class="avatar" width="28" height="28" loading="lazy"
+  style="width:28px;height:28px"
+  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
+  alt="Yuan">
+
+        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
+        <span class="meta" style="margin-left:4px"><span class="mono">2026.07.01</span><span class="dot"></span><span>4 分鐘閱讀</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-layout">
+    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
+      <h2 id="前言">前言</h2>
+<p>某天收到了 Raspberry Pi 的磁碟 image 過來,檔案有 61GB = =<br>
+筆者只是想看看裡面到底放了哪些設定檔、開機腳本、還有塞了什麼程式進去。</p>
+<p>聽起來很單純吧?「掛起來看一下不就好了。」</p>
+<p>結果一到 macOS 上就卡住了 —— Mac <strong>原生掛不動 ext4</strong>。而 Raspberry Pi 的 root filesystem 偏偏就是 ext4。</p>
+<p>於是這一篇就誕生了!我們要做的,是寫一支 bash script,讓筆者可以像登入到 Pi 裡面一樣,用 shell 自由地逛整個檔案系統,而且<strong>全程唯讀</strong>,絕對不弄髒這顆收到的原始 image。</p>
+<p>這篇會從「先搞清楚 image 是什麼」開始,講到三個方案的取捨、最後選定的 Docker 做法,以及過程中踩到的兩個很有代表性的坑。</p>
+<h2 id="先搞清楚這個-image-到底是什麼">先搞清楚:這個 image 到底是什麼</h2>
+<p>在動手之前,先用 <code>file</code> 看清楚它的長相:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">file demo_image</span></span></code></pre></div>
+</div>
+<p>輸出大概長這樣:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">text</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="ln">1</span><span class="cl">DOS/MBR boot sector;
+</span></span><span class="line"><span class="ln">2</span><span class="cl"> partition 1 : ID=0xc  ... startsector 8192,    1048576 sectors
+</span></span><span class="line"><span class="ln">3</span><span class="cl"> partition 2 : ID=0x83 ... startsector 1056768, 119824384 sectors</span></span></code></pre></div>
+</div>
+<p>翻譯一下:</p>
+<ul>
+<li><strong>Partition 1(ID=0x0c)</strong>:FAT32 的 boot 分割區,約 512MB。這個 macOS 可以原生掛。</li>
+<li><strong>Partition 2(ID=0x83)</strong>:Linux ext4 的 root filesystem,約 57GB。<strong>這個才是重點,而 macOS 掛不動。</strong></li>
+</ul>
+<p>所以真正的難題只有一個:怎麼在 Mac 上讀到那個 ext4 分割區。</p>
+<h2 id="為什麼-macos-直接掛不動三個方案的取捨">為什麼 macOS 直接掛不動?三個方案的取捨</h2>
+<p>macOS 的核心沒有內建 ext4 的讀取支援。筆者想到三條路:</p>
+<ul>
+<li><strong>方案 A — Docker 唯讀 loop mount + 互動 shell</strong>:開一個 Linux 容器,用真正的 Linux kernel 把分割區掛起來,再進去用 bash 逛。</li>
+<li><strong>方案 B — macFUSE + fuse-ext2</strong>:裝套件後直接把 ext4 掛到 macOS 的目錄,連 Finder 都能看。</li>
+<li><strong>方案 C — debugfs(e2fsprogs)</strong>:完全不掛載,用工具直接讀 ext4。</li>
+</ul>
+<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">為什麼最後選 A</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">方案 B 的 FUSE 驅動對新版 ext4 特性(metadata_csum 之類)相容性時好時壞、速度也慢;方案 C 的互動介面太陽春,不像真正的 shell。方案 A 用的是<strong>貨真價實的 Linux kernel</strong>,任何 ext4 特性都讀得動,體驗也最接近「登入到 Pi 裡面」。而且筆者的 Docker 本來就開著,幾乎沒有額外成本。</div>
+</div>
+
+<h2 id="核心做法用-docker-把-image-唯讀掛起來">核心做法:用 Docker 把 image 唯讀掛起來</h2>
+<p>整個流程其實很好懂,先看一張序列圖:</p>
+<div class="mermaid">
+    
+sequenceDiagram
+    participant Mac as macOS(筆者)
+    participant Sh as browse-pi-image.sh
+    participant Ctn as Docker 容器
+    participant Img as image 檔(唯讀)
+    Mac->>Sh: ./browse-pi-image.sh
+    Sh->>Ctn: docker run --privileged(image 以 :ro 掛入)
+    Ctn->>Img: losetup --read-only + mount -o ro
+    Ctn-->>Mac: 進入 /rootfs 的互動 shell
+    Note over Mac,Img: 全程唯讀,離開自動清理
+
+</div>
+
+
+
+<script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
     mermaid.initialize({
         startOnLoad: true,
@@ -48,57 +191,241 @@ Note over Mac,Img: 全程唯讀,離開自動清理</div><script type=module>
             tertiaryColor: '#21262d'
         }
     });
-</script><p>在容器裡,關鍵只有兩步:先用 <code>losetup</code> 把 image 變成一個 loop 區塊裝置並偵測分割區,再把第二個分割區(rootfs)唯讀掛起來。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=c1># 自動偵測分割區,不寫死 offset</span>
-</span></span><span class=line><span class=ln>2</span><span class=cl><span class=nv>LOOP</span><span class=o>=</span><span class=k>$(</span>losetup -fP --read-only --show /image.img<span class=k>)</span>
-</span></span><span class=line><span class=ln>3</span><span class=cl>
-</span></span><span class=line><span class=ln>4</span><span class=cl><span class=c1># 把 ext4 rootfs(partition 2)唯讀掛到 /rootfs</span>
-</span></span><span class=line><span class=ln>5</span><span class=cl>mount -o ro <span class=s2>&#34;</span><span class=si>${</span><span class=nv>LOOP</span><span class=si>}</span><span class=s2>p2&#34;</span> /rootfs
-</span></span><span class=line><span class=ln>6</span><span class=cl>
-</span></span><span class=line><span class=ln>7</span><span class=cl><span class=c1># 進去逛</span>
-</span></span><span class=line><span class=ln>8</span><span class=cl><span class=nb>cd</span> /rootfs
-</span></span><span class=line><span class=ln>9</span><span class=cl><span class=nb>exec</span> bash -i</span></span></code></pre></div></div><p>這裡刻意用 <code>losetup -fP</code> <strong>自動偵測</strong>分割區,而不是把「offset = 1056768 × 512」這種魔術數字寫死 —— 換一顆 image 也能用。</p><h2 id=唯讀而且是三層唯讀>唯讀,而且是「三層」唯讀</h2><p>因為這是<strong>收到的原始資料</strong>,筆者最在意的一件事就是:絕對不能改到它。所以唯讀不是掛一層就算了,而是疊了三層互相保險:</p><ul><li><strong>第一層 — bind mount 加 <code>:ro</code></strong>:<code>docker run -v "$IMG:/image.img:ro"</code>,容器層級就不給寫。</li><li><strong>第二層 — <code>losetup --read-only</code></strong>:loop 區塊裝置本身唯讀。</li><li><strong>第三層 — <code>mount -o ro</code></strong>:檔案系統唯讀;萬一 journal 不乾淨,再退一步用 <code>-o ro,noload</code> 跳過 replay,避免任何寫入嘗試。</li></ul><p>驗證也很直接,進去之後 <code>touch</code> 一下就知道:</p><div class=code-block><div class=code-bar><span class=code-lang>text</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=ln>1</span><span class=cl>pi-image:/rootfs# touch test
-</span></span><span class=line><span class=ln>2</span><span class=cl>touch: cannot touch &#39;test&#39;: Read-only file system</span></span></code></pre></div></div><p>看到 <code>Read-only file system</code> 就安心了 —— 原始 image 動不了。至於想留下的檔案,可以另外開一個 <code>_export/</code> 目錄用 rw 掛進去,<code>cp</code> 出來就好,唯一可寫的地方僅此一處。</p><h2 id=第一個坑容器裡沒有-udevpartx-建不出裝置節點>第一個坑:容器裡沒有 udev,partx 建不出裝置節點</h2><p>理論很美好,實際一跑就翻車。<code>losetup -fP</code> 明明成功了,<code>${LOOP}p2</code> 卻不存在。</p><blockquote><p>等一下…… 分割區明明偵測到了,裝置節點怎麼憑空消失?</p></blockquote><p>追下去才發現容器跑在一個 <strong>LinuxKit 的輕量 VM</strong> 裡,而這個 VM <strong>沒有跑 udev</strong>。<code>losetup -fP</code> 只在 kernel 裡登記了分割區,卻沒有人幫忙在 <code>/dev</code> 底下建出 <code>/dev/loopNpN</code> 這些節點。</p><p>解法是自己動手:從 <code>/proc/partitions</code> 讀出 major / minor,再用 <code>mknod</code> 把缺的節點補回來。</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln> 1</span><span class=cl><span class=c1># udev 沒跑時,partx 建不出節點 → 從 /proc/partitions 補建</span>
-</span></span><span class=line><span class=ln> 2</span><span class=cl><span class=k>for</span> _p in <span class=m>1</span> 2<span class=p>;</span> <span class=k>do</span>
-</span></span><span class=line><span class=ln> 3</span><span class=cl>  <span class=nv>_dev</span><span class=o>=</span><span class=s2>&#34;</span><span class=si>${</span><span class=nv>LOOP</span><span class=si>}</span><span class=s2>p</span><span class=si>${</span><span class=nv>_p</span><span class=si>}</span><span class=s2>&#34;</span>
-</span></span><span class=line><span class=ln> 4</span><span class=cl>  <span class=k>if</span> <span class=o>[</span> ! -e <span class=s2>&#34;</span><span class=nv>$_dev</span><span class=s2>&#34;</span> <span class=o>]</span><span class=p>;</span> <span class=k>then</span>
-</span></span><span class=line><span class=ln> 5</span><span class=cl>    <span class=nv>_name</span><span class=o>=</span><span class=s2>&#34;</span><span class=si>${</span><span class=nv>LOOP</span><span class=p>#/dev/</span><span class=si>}</span><span class=s2>p</span><span class=si>${</span><span class=nv>_p</span><span class=si>}</span><span class=s2>&#34;</span>
-</span></span><span class=line><span class=ln> 6</span><span class=cl>    <span class=nv>_maj</span><span class=o>=</span><span class=k>$(</span>awk -v <span class=nv>n</span><span class=o>=</span><span class=s2>&#34;</span><span class=nv>$_name</span><span class=s2>&#34;</span> <span class=s1>&#39;$4==n{print $1}&#39;</span> /proc/partitions<span class=k>)</span>
-</span></span><span class=line><span class=ln> 7</span><span class=cl>    <span class=nv>_min</span><span class=o>=</span><span class=k>$(</span>awk -v <span class=nv>n</span><span class=o>=</span><span class=s2>&#34;</span><span class=nv>$_name</span><span class=s2>&#34;</span> <span class=s1>&#39;$4==n{print $2}&#39;</span> /proc/partitions<span class=k>)</span>
-</span></span><span class=line><span class=ln> 8</span><span class=cl>    <span class=o>[</span> -n <span class=s2>&#34;</span><span class=nv>$_maj</span><span class=s2>&#34;</span> <span class=o>]</span> <span class=o>&amp;&amp;</span> mknod <span class=s2>&#34;</span><span class=nv>$_dev</span><span class=s2>&#34;</span> b <span class=s2>&#34;</span><span class=nv>$_maj</span><span class=s2>&#34;</span> <span class=s2>&#34;</span><span class=nv>$_min</span><span class=s2>&#34;</span> 2&gt;/dev/null <span class=o>||</span> <span class=nb>true</span>
-</span></span><span class=line><span class=ln> 9</span><span class=cl>  <span class=k>fi</span>
-</span></span><span class=line><span class=ln>10</span><span class=cl><span class=k>done</span></span></span></code></pre></div></div><div class=notice style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4)var(--space-5);margin:0 0 var(--space-5)"><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px>為什麼 mknod 不會破壞唯讀</div><div style=color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)>筆者一開始也擔心:自己 <code>mknod</code> 出來的節點是可寫的,會不會開了一條後門?其實不會。唯讀是由 loop 驅動在 kernel 層強制的 —— 只要 loop device 是用 <code>--read-only</code> 建的,就算你的裝置<strong>節點</strong>權限可寫,實際 I/O 依然是唯讀。節點只是個入口,擋讀寫的是背後的 loop 裝置。</div></div><h2 id=第二個坑loop-device-會洩漏>第二個坑:loop device 會「洩漏」</h2><p>以為大功告成,結果在收尾前跑最後一次測試,又炸了:</p><div class=code-block><div class=code-bar><span class=code-lang>text</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=ln>1</span><span class=cl>losetup: /image.img: failed to set up loop device: No such file or directory
-</span></span><span class=line><span class=ln>2</span><span class=cl>losetup: device node /dev/loop5 (7:5) is lost. You may use mknod(1) to recover it.</span></span></code></pre></div></div><p>奇怪的是,前面測了好幾次都好好的,怎麼突然壞掉?進去 VM 一看 <code>losetup -a</code>,真相大白:loop0 到 loop4 <strong>全都還附掛著</strong>,背後指向的都是早就被刪掉的容器。</p><blockquote><p>原來每跑一次,就漏一顆 loop device。</p></blockquote><p>原因是:loop device 是<strong>整個 VM 全域共用</strong>的,不像檔案系統掛載那樣被容器命名空間隔離。<code>docker run --rm</code> 只會移除容器,不會幫你把 loop device 卸掉。跑幾次之後,<code>losetup -f</code> 挑到一個號碼(loop5),但那個號碼在無 udev 的 VM 裡連節點都沒有,於是就掛了。</p><p>修法是加一個 <code>EXIT</code> trap,不管是正常離開、跑完自我測試、還是中途出錯,離開前都把掛載卸掉、把 loop device <code>losetup -d</code> 掉:</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=nv>LOOP</span><span class=o>=</span><span class=s2>&#34;&#34;</span>
-</span></span><span class=line><span class=ln>2</span><span class=cl>cleanup<span class=o>()</span> <span class=o>{</span>
-</span></span><span class=line><span class=ln>3</span><span class=cl>  <span class=o>[</span> -n <span class=s2>&#34;</span><span class=nv>$LOOP</span><span class=s2>&#34;</span> <span class=o>]</span> <span class=o>||</span> <span class=k>return</span> <span class=m>0</span>
-</span></span><span class=line><span class=ln>4</span><span class=cl>  <span class=nb>cd</span> / 2&gt;/dev/null <span class=o>||</span> <span class=nb>true</span>
-</span></span><span class=line><span class=ln>5</span><span class=cl>  umount -R /rootfs 2&gt;/dev/null <span class=o>||</span> <span class=nb>true</span>
-</span></span><span class=line><span class=ln>6</span><span class=cl>  losetup -d <span class=s2>&#34;</span><span class=nv>$LOOP</span><span class=s2>&#34;</span> 2&gt;/dev/null <span class=o>||</span> <span class=nb>true</span>
-</span></span><span class=line><span class=ln>7</span><span class=cl><span class=o>}</span>
-</span></span><span class=line><span class=ln>8</span><span class=cl><span class=nb>trap</span> cleanup EXIT</span></span></code></pre></div></div><p>這裡有個小細節:互動模式原本用的是 <code>exec bash</code>,但 <code>exec</code> 會<strong>取代</strong>目前的行程,trap 就永遠不會觸發。所以要把它改成一般呼叫,讓使用者離開 shell 後,控制權回到腳本、trap 才有機會清理:</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=c1># 從 exec bash ... 改成:</span>
-</span></span><span class=line><span class=ln>2</span><span class=cl>bash --rcfile /root/.browserc -i <span class=o>||</span> true</span></span></code></pre></div></div><div class=notice style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4)var(--space-5);margin:0 0 var(--space-5)"><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px>共用資源的清理,別靠 --rm</div><div style=color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)>這個坑很值得記起來:凡是動到 <strong>VM/主機層級的全域資源</strong>(loop device、network、掛載點……),都不能指望容器的 <code>--rm</code> 幫你收拾,因為那些東西根本不在容器的命名空間裡。自己建的,就自己拆。</div></div><p>驗收方式也很明確 —— 連續跑三次自我測試,而且事後 <code>losetup -a</code> 必須是空的:</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=k>for</span> i in <span class=m>1</span> <span class=m>2</span> 3<span class=p>;</span> <span class=k>do</span> ./browse-pi-image.sh --selftest<span class=p>;</span> <span class=k>done</span>
-</span></span><span class=line><span class=ln>2</span><span class=cl>docker run --rm --privileged debian:stable-slim losetup -a   <span class=c1># 應為空</span></span></span></code></pre></div></div><p>「跑完之後 loop device 歸零」才是這個修正真正該通過的測試,而不只是「這次能跑」。</p><h2 id=完整用法>完整用法</h2><p>最後成品是一支 <a href=./browse-pi-image.sh><code>browse-pi-image.sh</code></a>,用起來就三種姿勢:</p><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl><span class=c1># 進入互動瀏覽(像登入 Pi 一樣逛)</span>
-</span></span><span class=line><span class=ln>2</span><span class=cl>./browse-pi-image.sh
-</span></span><span class=line><span class=ln>3</span><span class=cl>
-</span></span><span class=line><span class=ln>4</span><span class=cl><span class=c1># 非互動自我測試(驗證掛載 / 唯讀 / 匯出)</span>
-</span></span><span class=line><span class=ln>5</span><span class=cl>./browse-pi-image.sh --selftest
-</span></span><span class=line><span class=ln>6</span><span class=cl>
-</span></span><span class=line><span class=ln>7</span><span class=cl><span class=c1># 指定別的 image</span>
-</span></span><span class=line><span class=ln>8</span><span class=cl>./browse-pi-image.sh /path/to/other.img</span></span></code></pre></div></div><p>進去之後 rootfs 就掛在 <code>/rootfs</code>,提示字元是 <code>pi-image:/rootfs#</code>,<code>ls</code> 一下就能看到 <code>bin boot etc home usr var …</code> 一整套熟悉的 Linux 根目錄。想把檔案帶回 Mac 就 <code>cp /rootfs/… /export/</code>。<code>exit</code> 離開後,容器自動移除、loop device 自動 detach。</p><h2 id=小結>小結</h2><p>回顧一下這趟旅程:</p><ul><li>macOS 掛不動 ext4,但我們可以借一個 <strong>Docker 容器的 Linux kernel</strong> 來讀,體驗最接近真機。</li><li>用 <code>losetup -fP</code> <strong>自動偵測</strong>分割區,不寫死 offset,換 image 也能用。</li><li>唯讀要疊<strong>三層</strong>(<code>:ro</code> / <code>losetup --read-only</code> / <code>mount -o ro</code>),對「收到的原始資料」這種場景特別重要。</li><li>Docker Desktop 的 LinuxKit VM <strong>沒有 udev</strong>,要自己 <code>mknod</code> 補裝置節點。</li><li>loop device 是 <strong>VM 全域共用</strong>的,<code>--rm</code> 不會幫你清,得自己用 <code>trap</code> 在離開時 <code>losetup -d</code>,否則會慢慢洩漏。</li></ul><p>其中最讓筆者有感的,是最後那個 loop 洩漏的坑 —— 它是在「收尾閘門」跑最後一次測試時才現形的。這也再次提醒我們:<strong>測試不是為了證明它會動,而是為了逼出那些平常剛好沒踩到的狀態。</strong></p><p>未來如果有機會玩到需要<strong>寫入</strong> image、或想改用 macFUSE 直接掛進 Finder 的版本,或許會再寫一篇續集!</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://www.raspberrypi.com/documentation/computers/os.html>Raspberry Pi — Installing over the network / image 結構說明</a></li><li><a href=https://man7.org/linux/man-pages/man8/losetup.8.html>losetup(8) manual page</a></li><li><a href=https://man7.org/linux/man-pages/man8/partx.8.html>util-linux — partx / 分割區工具</a></li><li><a href=https://docs.docker.com/desktop/>Docker Desktop 與 LinuxKit VM</a></li><li><a href=https://www.kernel.org/doc/html/latest/filesystems/ext4/index.html>ext4 Data Structures and Algorithms (kernel.org)</a></li><li><a href=https://macfuse.github.io/>macFUSE</a></li></ul><div class=chips><a class=chip href=/tags/raspberry-pi/><span class=hash>#</span>raspberry-pi</a>
-<a class=chip href=/tags/docker/><span class=hash>#</span>docker</a>
-<a class=chip href=/tags/ext4/><span class=hash>#</span>ext4</a>
-<a class=chip href=/tags/macos/><span class=hash>#</span>macos</a>
-<a class=chip href=/tags/bash/><span class=hash>#</span>bash</a></div></article><aside><div class=toc><div class=side-title style=margin-bottom:var(--space-3)>本頁目錄</div><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#先搞清楚這個-image-到底是什麼>先搞清楚:這個 image 到底是什麼</a></li><li><a href=#為什麼-macos-直接掛不動三個方案的取捨>為什麼 macOS 直接掛不動?三個方案的取捨</a></li><li><a href=#核心做法用-docker-把-image-唯讀掛起來>核心做法:用 Docker 把 image 唯讀掛起來</a></li><li><a href=#唯讀而且是三層唯讀>唯讀,而且是「三層」唯讀</a></li><li><a href=#第一個坑容器裡沒有-udevpartx-建不出裝置節點>第一個坑:容器裡沒有 udev,partx 建不出裝置節點</a></li><li><a href=#第二個坑loop-device-會洩漏>第二個坑:loop device 會「洩漏」</a></li><li><a href=#完整用法>完整用法</a></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></div></aside></div><div class=adjacent style="max-width:760px;margin:var(--space-8)auto 0"><a class=side-card href=/posts/otp-code-introduction/ style=text-decoration:none><div class=meta style=margin-bottom:6px><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-上一篇</div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>OTP — 一次性密碼的原理與實作</div></a><div></div></div><div style=height:var(--space-10)></div></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
-<a href=/about/>關於</a>
-<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
-<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+</script>
+
+<p>在容器裡,關鍵只有兩步:先用 <code>losetup</code> 把 image 變成一個 loop 區塊裝置並偵測分割區,再把第二個分割區(rootfs)唯讀掛起來。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
 </button>
-<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl"><span class="c1"># 自動偵測分割區,不寫死 offset</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="nv">LOOP</span><span class="o">=</span><span class="k">$(</span>losetup -fP --read-only --show /image.img<span class="k">)</span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl">
+</span></span><span class="line"><span class="ln">4</span><span class="cl"><span class="c1"># 把 ext4 rootfs(partition 2)唯讀掛到 /rootfs</span>
+</span></span><span class="line"><span class="ln">5</span><span class="cl">mount -o ro <span class="s2">&#34;</span><span class="si">${</span><span class="nv">LOOP</span><span class="si">}</span><span class="s2">p2&#34;</span> /rootfs
+</span></span><span class="line"><span class="ln">6</span><span class="cl">
+</span></span><span class="line"><span class="ln">7</span><span class="cl"><span class="c1"># 進去逛</span>
+</span></span><span class="line"><span class="ln">8</span><span class="cl"><span class="nb">cd</span> /rootfs
+</span></span><span class="line"><span class="ln">9</span><span class="cl"><span class="nb">exec</span> bash -i</span></span></code></pre></div>
+</div>
+<p>這裡刻意用 <code>losetup -fP</code> <strong>自動偵測</strong>分割區,而不是把「offset = 1056768 × 512」這種魔術數字寫死 —— 換一顆 image 也能用。</p>
+<h2 id="唯讀而且是三層唯讀">唯讀,而且是「三層」唯讀</h2>
+<p>因為這是<strong>收到的原始資料</strong>,筆者最在意的一件事就是:絕對不能改到它。所以唯讀不是掛一層就算了,而是疊了三層互相保險:</p>
+<ul>
+<li><strong>第一層 — bind mount 加 <code>:ro</code></strong>:<code>docker run -v &quot;$IMG:/image.img:ro&quot;</code>,容器層級就不給寫。</li>
+<li><strong>第二層 — <code>losetup --read-only</code></strong>:loop 區塊裝置本身唯讀。</li>
+<li><strong>第三層 — <code>mount -o ro</code></strong>:檔案系統唯讀;萬一 journal 不乾淨,再退一步用 <code>-o ro,noload</code> 跳過 replay,避免任何寫入嘗試。</li>
+</ul>
+<p>驗證也很直接,進去之後 <code>touch</code> 一下就知道:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">text</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="ln">1</span><span class="cl">pi-image:/rootfs# touch test
+</span></span><span class="line"><span class="ln">2</span><span class="cl">touch: cannot touch &#39;test&#39;: Read-only file system</span></span></code></pre></div>
+</div>
+<p>看到 <code>Read-only file system</code> 就安心了 —— 原始 image 動不了。至於想留下的檔案,可以另外開一個 <code>_export/</code> 目錄用 rw 掛進去,<code>cp</code> 出來就好,唯一可寫的地方僅此一處。</p>
+<h2 id="第一個坑容器裡沒有-udevpartx-建不出裝置節點">第一個坑:容器裡沒有 udev,partx 建不出裝置節點</h2>
+<p>理論很美好,實際一跑就翻車。<code>losetup -fP</code> 明明成功了,<code>${LOOP}p2</code> 卻不存在。</p>
+<blockquote>
+<p>等一下…… 分割區明明偵測到了,裝置節點怎麼憑空消失?</p>
+</blockquote>
+<p>追下去才發現容器跑在一個 <strong>LinuxKit 的輕量 VM</strong> 裡,而這個 VM <strong>沒有跑 udev</strong>。<code>losetup -fP</code> 只在 kernel 裡登記了分割區,卻沒有人幫忙在 <code>/dev</code> 底下建出 <code>/dev/loopNpN</code> 這些節點。</p>
+<p>解法是自己動手:從 <code>/proc/partitions</code> 讀出 major / minor,再用 <code>mknod</code> 把缺的節點補回來。</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="c1"># udev 沒跑時,partx 建不出節點 → 從 /proc/partitions 補建</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="k">for</span> _p in <span class="m">1</span> 2<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">  <span class="nv">_dev</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">LOOP</span><span class="si">}</span><span class="s2">p</span><span class="si">${</span><span class="nv">_p</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">  <span class="k">if</span> <span class="o">[</span> ! -e <span class="s2">&#34;</span><span class="nv">$_dev</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">    <span class="nv">_name</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">LOOP</span><span class="p">#/dev/</span><span class="si">}</span><span class="s2">p</span><span class="si">${</span><span class="nv">_p</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">    <span class="nv">_maj</span><span class="o">=</span><span class="k">$(</span>awk -v <span class="nv">n</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$_name</span><span class="s2">&#34;</span> <span class="s1">&#39;$4==n{print $1}&#39;</span> /proc/partitions<span class="k">)</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">    <span class="nv">_min</span><span class="o">=</span><span class="k">$(</span>awk -v <span class="nv">n</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$_name</span><span class="s2">&#34;</span> <span class="s1">&#39;$4==n{print $2}&#39;</span> /proc/partitions<span class="k">)</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">    <span class="o">[</span> -n <span class="s2">&#34;</span><span class="nv">$_maj</span><span class="s2">&#34;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> mknod <span class="s2">&#34;</span><span class="nv">$_dev</span><span class="s2">&#34;</span> b <span class="s2">&#34;</span><span class="nv">$_maj</span><span class="s2">&#34;</span> <span class="s2">&#34;</span><span class="nv">$_min</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="o">||</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">  <span class="k">fi</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="k">done</span></span></span></code></pre></div>
+</div>
+<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">為什麼 mknod 不會破壞唯讀</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">筆者一開始也擔心:自己 <code>mknod</code> 出來的節點是可寫的,會不會開了一條後門?其實不會。唯讀是由 loop 驅動在 kernel 層強制的 —— 只要 loop device 是用 <code>--read-only</code> 建的,就算你的裝置<strong>節點</strong>權限可寫,實際 I/O 依然是唯讀。節點只是個入口,擋讀寫的是背後的 loop 裝置。</div>
+</div>
+
+<h2 id="第二個坑loop-device-會洩漏">第二個坑:loop device 會「洩漏」</h2>
+<p>以為大功告成,結果在收尾前跑最後一次測試,又炸了:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">text</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="ln">1</span><span class="cl">losetup: /image.img: failed to set up loop device: No such file or directory
+</span></span><span class="line"><span class="ln">2</span><span class="cl">losetup: device node /dev/loop5 (7:5) is lost. You may use mknod(1) to recover it.</span></span></code></pre></div>
+</div>
+<p>奇怪的是,前面測了好幾次都好好的,怎麼突然壞掉?進去 VM 一看 <code>losetup -a</code>,真相大白:loop0 到 loop4 <strong>全都還附掛著</strong>,背後指向的都是早就被刪掉的容器。</p>
+<blockquote>
+<p>原來每跑一次,就漏一顆 loop device。</p>
+</blockquote>
+<p>原因是:loop device 是<strong>整個 VM 全域共用</strong>的,不像檔案系統掛載那樣被容器命名空間隔離。<code>docker run --rm</code> 只會移除容器,不會幫你把 loop device 卸掉。跑幾次之後,<code>losetup -f</code> 挑到一個號碼(loop5),但那個號碼在無 udev 的 VM 裡連節點都沒有,於是就掛了。</p>
+<p>修法是加一個 <code>EXIT</code> trap,不管是正常離開、跑完自我測試、還是中途出錯,離開前都把掛載卸掉、把 loop device <code>losetup -d</code> 掉:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl"><span class="nv">LOOP</span><span class="o">=</span><span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl">cleanup<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl">  <span class="o">[</span> -n <span class="s2">&#34;</span><span class="nv">$LOOP</span><span class="s2">&#34;</span> <span class="o">]</span> <span class="o">||</span> <span class="k">return</span> <span class="m">0</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl">  <span class="nb">cd</span> / 2&gt;/dev/null <span class="o">||</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="ln">5</span><span class="cl">  umount -R /rootfs 2&gt;/dev/null <span class="o">||</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="ln">6</span><span class="cl">  losetup -d <span class="s2">&#34;</span><span class="nv">$LOOP</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="o">||</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="ln">7</span><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="ln">8</span><span class="cl"><span class="nb">trap</span> cleanup EXIT</span></span></code></pre></div>
+</div>
+<p>這裡有個小細節:互動模式原本用的是 <code>exec bash</code>,但 <code>exec</code> 會<strong>取代</strong>目前的行程,trap 就永遠不會觸發。所以要把它改成一般呼叫,讓使用者離開 shell 後,控制權回到腳本、trap 才有機會清理:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl"><span class="c1"># 從 exec bash ... 改成:</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl">bash --rcfile /root/.browserc -i <span class="o">||</span> true</span></span></code></pre></div>
+</div>
+<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">共用資源的清理,別靠 --rm</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">這個坑很值得記起來:凡是動到 <strong>VM/主機層級的全域資源</strong>(loop device、network、掛載點……),都不能指望容器的 <code>--rm</code> 幫你收拾,因為那些東西根本不在容器的命名空間裡。自己建的,就自己拆。</div>
+</div>
+
+<p>驗收方式也很明確 —— 連續跑三次自我測試,而且事後 <code>losetup -a</code> 必須是空的:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl"><span class="k">for</span> i in <span class="m">1</span> <span class="m">2</span> 3<span class="p">;</span> <span class="k">do</span> ./browse-pi-image.sh --selftest<span class="p">;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl">docker run --rm --privileged debian:stable-slim losetup -a   <span class="c1"># 應為空</span></span></span></code></pre></div>
+</div>
+<p>「跑完之後 loop device 歸零」才是這個修正真正該通過的測試,而不只是「這次能跑」。</p>
+<h2 id="完整用法">完整用法</h2>
+<p>最後成品是一支 <a href="./browse-pi-image.sh"><code>browse-pi-image.sh</code></a>,用起來就三種姿勢:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl"><span class="c1"># 進入互動瀏覽(像登入 Pi 一樣逛)</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl">./browse-pi-image.sh
+</span></span><span class="line"><span class="ln">3</span><span class="cl">
+</span></span><span class="line"><span class="ln">4</span><span class="cl"><span class="c1"># 非互動自我測試(驗證掛載 / 唯讀 / 匯出)</span>
+</span></span><span class="line"><span class="ln">5</span><span class="cl">./browse-pi-image.sh --selftest
+</span></span><span class="line"><span class="ln">6</span><span class="cl">
+</span></span><span class="line"><span class="ln">7</span><span class="cl"><span class="c1"># 指定別的 image</span>
+</span></span><span class="line"><span class="ln">8</span><span class="cl">./browse-pi-image.sh /path/to/other.img</span></span></code></pre></div>
+</div>
+<p>進去之後 rootfs 就掛在 <code>/rootfs</code>,提示字元是 <code>pi-image:/rootfs#</code>,<code>ls</code> 一下就能看到 <code>bin boot etc home usr var …</code> 一整套熟悉的 Linux 根目錄。想把檔案帶回 Mac 就 <code>cp /rootfs/… /export/</code>。<code>exit</code> 離開後,容器自動移除、loop device 自動 detach。</p>
+<h2 id="小結">小結</h2>
+<p>回顧一下這趟旅程:</p>
+<ul>
+<li>macOS 掛不動 ext4,但我們可以借一個 <strong>Docker 容器的 Linux kernel</strong> 來讀,體驗最接近真機。</li>
+<li>用 <code>losetup -fP</code> <strong>自動偵測</strong>分割區,不寫死 offset,換 image 也能用。</li>
+<li>唯讀要疊<strong>三層</strong>(<code>:ro</code> / <code>losetup --read-only</code> / <code>mount -o ro</code>),對「收到的原始資料」這種場景特別重要。</li>
+<li>Docker Desktop 的 LinuxKit VM <strong>沒有 udev</strong>,要自己 <code>mknod</code> 補裝置節點。</li>
+<li>loop device 是 <strong>VM 全域共用</strong>的,<code>--rm</code> 不會幫你清,得自己用 <code>trap</code> 在離開時 <code>losetup -d</code>,否則會慢慢洩漏。</li>
+</ul>
+<p>其中最讓筆者有感的,是最後那個 loop 洩漏的坑 —— 它是在「收尾閘門」跑最後一次測試時才現形的。這也再次提醒我們:<strong>測試不是為了證明它會動,而是為了逼出那些平常剛好沒踩到的狀態。</strong></p>
+<p>未來如果有機會玩到需要<strong>寫入</strong> image、或想改用 macFUSE 直接掛進 Finder 的版本,或許會再寫一篇續集!</p>
+<h2 id="參考連結">參考連結</h2>
+<ul>
+<li><a href="https://www.raspberrypi.com/documentation/computers/os.html">Raspberry Pi — Installing over the network / image 結構說明</a></li>
+<li><a href="https://man7.org/linux/man-pages/man8/losetup.8.html">losetup(8) manual page</a></li>
+<li><a href="https://man7.org/linux/man-pages/man8/partx.8.html">util-linux — partx / 分割區工具</a></li>
+<li><a href="https://docs.docker.com/desktop/">Docker Desktop 與 LinuxKit VM</a></li>
+<li><a href="https://www.kernel.org/doc/html/latest/filesystems/ext4/index.html">ext4 Data Structures and Algorithms (kernel.org)</a></li>
+<li><a href="https://macfuse.github.io/">macFUSE</a></li>
+</ul>
+      <div class="chips">
+  
+  <a class="chip" href="/tags/raspberry-pi/"><span class="hash">#</span>raspberry-pi</a>
+  
+  <a class="chip" href="/tags/docker/"><span class="hash">#</span>docker</a>
+  
+  <a class="chip" href="/tags/ext4/"><span class="hash">#</span>ext4</a>
+  
+  <a class="chip" href="/tags/macos/"><span class="hash">#</span>macos</a>
+  
+  <a class="chip" href="/tags/bash/"><span class="hash">#</span>bash</a>
+  
+</div>
+    </article>
+    <aside>
+      
+      <div class="toc">
+        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#先搞清楚這個-image-到底是什麼">先搞清楚:這個 image 到底是什麼</a></li>
+    <li><a href="#為什麼-macos-直接掛不動三個方案的取捨">為什麼 macOS 直接掛不動?三個方案的取捨</a></li>
+    <li><a href="#核心做法用-docker-把-image-唯讀掛起來">核心做法:用 Docker 把 image 唯讀掛起來</a></li>
+    <li><a href="#唯讀而且是三層唯讀">唯讀,而且是「三層」唯讀</a></li>
+    <li><a href="#第一個坑容器裡沒有-udevpartx-建不出裝置節點">第一個坑:容器裡沒有 udev,partx 建不出裝置節點</a></li>
+    <li><a href="#第二個坑loop-device-會洩漏">第二個坑:loop device 會「洩漏」</a></li>
+    <li><a href="#完整用法">完整用法</a></li>
+    <li><a href="#小結">小結</a></li>
+    <li><a href="#參考連結">參考連結</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </aside>
+  </div>
+
+  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
+  
+  <a class="side-card" href="/posts/otp-code-introduction/" style="text-decoration:none">
+    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 上一篇</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">OTP — 一次性密碼的原理與實作</div>
+  </a>
+  
+  
+  <a class="side-card" href="/posts/raspberry-pi-watchdog-sshd/" style="text-align:right;text-decoration:none">
+    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">讓 Raspberry Pi 學會自救:用 Watchdog 監看 sshd</div>
+  </a>
+  
+</div>
+
+  <div style="height:var(--space-10)"></div>
+</div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+</button>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

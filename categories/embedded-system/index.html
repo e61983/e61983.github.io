@@ -1,107 +1,502 @@
-<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Embedded System · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="Embedded System"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="website"><meta property="og:url" content="https://e61983.github.io/categories/embedded-system/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
-</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
-<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
-</span></button>
-<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
-<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class="container container-narrow fade-in"><div class=page-head><div class=eyebrow style=margin-bottom:var(--space-3)>瀏覽</div><h1>分類:Embedded System</h1><p>13 篇文章</p></div><section style=padding-top:var(--space-6)><div class=mono style=font:var(--weight-semibold)var(--text-heading-sm)var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)>2026</div><div class=post-list><article class=post-row><span class=meta><span class=mono>2026.07.01</span>
-<span class=dot></span>
-<span>4 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/macos-readonly-browse-raspberry-pi-image/>在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆</a></h2><p class=excerpt>手上有一顆 61GB 的 Raspberry Pi disk image,想在 Mac 上翻翻裡面的檔案,卻發現 macOS 根本掛不動 ext4。這篇記錄筆者怎麼用一支 Docker 唯讀掛載的 bash script 解決,以及過程中踩到的兩個坑。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/raspberry-pi/><span class=hash>#</span>raspberry-pi</a>
-<a class=chip href=/tags/docker/><span class=hash>#</span>docker</a>
-<a class=chip href=/tags/ext4/><span class=hash>#</span>ext4</a>
-<a class=chip href=/tags/macos/><span class=hash>#</span>macos</a>
-<a class=chip href=/tags/bash/><span class=hash>#</span>bash</a></div><a class=link-arrow href=/posts/macos-readonly-browse-raspberry-pi-image/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article></div></section><section style=padding-top:var(--space-6)><div class=mono style=font:var(--weight-semibold)var(--text-heading-sm)var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)>2021</div><div class=post-list><article class=post-row><span class=meta><span class=mono>2021.09.13</span>
-<span class=dot></span>
-<span>3 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/yocto-with-imx8qxp-4/>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</a></h2><p class=excerpt>前言 為了在之後開發過程中不用反覆燒寫 eMMC 與 SD 卡，本篇會設定 U-Boot 載入 Rootfs 以達到我們的目的。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/i.mx8qxp/><span class=hash>#</span>i.mx8qxp</a>
-<a class=chip href=/tags/u-boot/><span class=hash>#</span>u-boot</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a>
-<a class=chip href=/tags/nfs/><span class=hash>#</span>nfs</a>
-<a class=chip href=/tags/tftp/><span class=hash>#</span>tftp</a></div><a class=link-arrow href=/posts/yocto-with-imx8qxp-4/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.09.07</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/yocto-with-imx8qxp-3/>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 3</a></h2><p class=excerpt>前言 UUU 全名為 Universal Update Utility。對 NXP i.MX 系列熟悉的使用者對 MFGTools 一定不會感到陌生，UUU 就是從 MFGTools 演進而來的，也稱為 MFGTools v3。它是用來進行 Freescale/NXP 晶片的映像檔燒錄。
-本篇將使用 UUU 將我們先 …</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/i.mx8qxp/><span class=hash>#</span>i.mx8qxp</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div><a class=link-arrow href=/posts/yocto-with-imx8qxp-3/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.09.02</span>
-<span class=dot></span>
-<span>7 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/yocto-with-imx8qxp-2/>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 2</a></h2><p class=excerpt>前言 繼上一篇我們建立了可開機的映像檔後，接下來我們要來修改修改預設的除錯埠。從 UART0 改至 UART2。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/i.mx8qxp/><span class=hash>#</span>i.mx8qxp</a>
-<a class=chip href=/tags/device-tree/><span class=hash>#</span>device tree</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div><a class=link-arrow href=/posts/yocto-with-imx8qxp-2/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.09.01</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/yocto-with-imx8qxp/>在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統</a></h2><p class=excerpt>前言 最近剛拿到 NXP 的 i.MAX8 開發板。在測試基本功能之餘，也順手把過程記錄下來。本文僅先建置 Yocto 的開發環境並編譯出可開機的映像檔，最後透過 SD 卡開機。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/i.mx8qxp/><span class=hash>#</span>i.mx8qxp</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div><a class=link-arrow href=/posts/yocto-with-imx8qxp/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.08.12</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/stm32mp-with-yocto-4/>在 STM32MP1 上使用 Yocto 建置 Linux 系統 4</a></h2><p class=excerpt>前言 繼先前建立好基楚的系統後，我們已經加入了 bootlinlabs machine。 本文會接續之前建立的環境，開始加入自訂的 Image。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/stm32mp1/><span class=hash>#</span>stm32mp1</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div><a class=link-arrow href=/posts/stm32mp-with-yocto-4/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.08.12</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/stm32mp-with-yocto-3/>在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</a></h2><p class=excerpt>前言 繼先前建立好基楚的系統後，我們已經加入了 meta-bootlinlabs Layer。 本文會接續之前建立的環境，開始加入自訂的 Machine。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/stm32mp1/><span class=hash>#</span>stm32mp1</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div><a class=link-arrow href=/posts/stm32mp-with-yocto-3/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.08.12</span>
-<span class=dot></span>
-<span>3 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/stm32mp-with-yocto-2/>在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</a></h2><p class=excerpt>前言 繼先前建立好基楚的系統後，我們已經可以順利開機，並從 NFS 載入 rootf filesystem。 本文會接續之前建立的環境，開始加入自製的程式以及自訂的 Layer。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/stm32mp1/><span class=hash>#</span>stm32mp1</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div><a class=link-arrow href=/posts/stm32mp-with-yocto-2/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.08.11</span>
-<span class=dot></span>
-<span>4 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/stm32mp-with-yocto/>在 STM32MP1 上使用 Yocto 建置 Linux 系統</a></h2><p class=excerpt>前言 手邊有一片很久沒有動過的 STM32MP157。剛好最近工作上需要在 imx8 進行開發。本文會照著 Bootlin 的課程進行實作 [2],一方面了解 Yocto 要如何使用，另一方面順便藉此先練練手。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/stm32mp1/><span class=hash>#</span>stm32mp1</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div><a class=link-arrow href=/posts/stm32mp-with-yocto/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.07.30</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/yocto-kernel-menuconfig/>在 Yocto 環境中調整 Linux Kernel</a></h2><p class=excerpt>前言 一般來說，如果想要調整 Linux Kernel 只要在終端機輸入 make menuconfig 這類的指令就可以了。但如果在不同的開發流程中，就不是這麼單純了。
-本文主要是針對 Yocto 開發流進行記錄，未來有機會的話，會再補充 buildroot 的開發方式。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a>
-<a class=chip href=/tags/kernel/><span class=hash>#</span>kernel</a></div><a class=link-arrow href=/posts/yocto-kernel-menuconfig/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.07.28</span>
-<span class=dot></span>
-<span>3 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/yocto-first-layer/>Yocto First Layer</a></h2><p class=excerpt>前言 在準備完開發環境之後，接下來就要開始加上我們的設定、服務或是應用了。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a></div><a class=link-arrow href=/posts/yocto-first-layer/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.07.27</span>
-<span class=dot></span>
-<span>1 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/yocto-introduction/>Yocto 基礎介紹</a></h2><p class=excerpt>前言 先前有接觸過 buildroot 這類的 Linux Distribution 工具，但一直沒有好好的整理起來。
-最近剛好有機會接觸 Yocto，打算在摸索的過程中一並記錄起來。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a></div><a class=link-arrow href=/posts/yocto-introduction/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.07.26</span>
-<span class=dot></span>
-<span>1 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/embedded-system/ style=color:var(--fg-subtle)>embedded system</a></span><h2 class=title><a href=/posts/building-raspberry-pi-systems-with-yocto/>使用 Yocto 打造你的 Raspberry Pi 系統</a></h2><p class=excerpt>前言 手邊有一片很久沒有動過的 Raspberry Pi 3 B+。剛好最近工作上需要在 imx8 進行開發。藉此順便先練練手。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/linux/><span class=hash>#</span>linux</a>
-<a class=chip href=/tags/yocto/><span class=hash>#</span>yocto</a></div><a class=link-arrow href=/posts/building-raspberry-pi-systems-with-yocto/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article></div></section><div style=height:var(--space-10)></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
-<a href=/about/>關於</a>
-<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
-<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Embedded System · Yuan のノート</title>
+  <meta name="description" content="心之所至，隨意亂書">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="Embedded System">
+  <meta property="og:description" content="心之所至，隨意亂書">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://localhost:3000/categories/embedded-system/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="container container-narrow fade-in">
+  <div class="page-head">
+    <div class="eyebrow" style="margin-bottom:var(--space-3)">瀏覽</div>
+    <h1>分類:Embedded System</h1>
+    <p>13 篇文章</p>
+  </div>
+  
+  <section style="padding-top:var(--space-6)">
+    <div class="mono" style="font:var(--weight-semibold) var(--text-heading-sm) var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)">2026</div>
+    <div class="post-list">
+      <article class="post-row">
+  <span class="meta">
+  <span class="mono">2026.07.01</span>
+  <span class="dot"></span>
+  <span>4 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/macos-readonly-browse-raspberry-pi-image/">在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆</a></h2>
+  <p class="excerpt">手上有一顆 61GB 的 Raspberry Pi disk image,想在 Mac 上翻翻裡面的檔案,卻發現 macOS 根本掛不動 ext4。這篇記錄筆者怎麼用一支 Docker 唯讀掛載的 bash script 解決,以及過程中踩到的兩個坑。</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/raspberry-pi/"><span class="hash">#</span>raspberry-pi</a>
+  
+  <a class="chip" href="/tags/docker/"><span class="hash">#</span>docker</a>
+  
+  <a class="chip" href="/tags/ext4/"><span class="hash">#</span>ext4</a>
+  
+  <a class="chip" href="/tags/macos/"><span class="hash">#</span>macos</a>
+  
+  <a class="chip" href="/tags/bash/"><span class="hash">#</span>bash</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/macos-readonly-browse-raspberry-pi-image/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+
+    </div>
+  </section>
+  
+  <section style="padding-top:var(--space-6)">
+    <div class="mono" style="font:var(--weight-semibold) var(--text-heading-sm) var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)">2021</div>
+    <div class="post-list">
+      <article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.09.13</span>
+  <span class="dot"></span>
+  <span>3 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/yocto-with-imx8qxp-4/">在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 4</a></h2>
+  <p class="excerpt">前言 為了在之後開發過程中不用反覆燒寫 eMMC 與 SD 卡，本篇會設定 U-Boot 載入 Rootfs 以達到我們的目的。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/i.mx8qxp/"><span class="hash">#</span>i.mx8qxp</a>
+  
+  <a class="chip" href="/tags/u-boot/"><span class="hash">#</span>u-boot</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+  <a class="chip" href="/tags/nfs/"><span class="hash">#</span>nfs</a>
+  
+  <a class="chip" href="/tags/tftp/"><span class="hash">#</span>tftp</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/yocto-with-imx8qxp-4/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.09.07</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/yocto-with-imx8qxp-3/">在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 3</a></h2>
+  <p class="excerpt">前言 UUU 全名為 Universal Update Utility。對 NXP i.MX 系列熟悉的使用者對 MFGTools 一定不會感到陌生，UUU 就是從 MFGTools 演進而來的，也稱為 MFGTools v3。它是用來進行 Freescale/NXP 晶片的映像檔燒錄。
+本篇將使用 UUU 將我們先 …</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/i.mx8qxp/"><span class="hash">#</span>i.mx8qxp</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/yocto-with-imx8qxp-3/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.09.02</span>
+  <span class="dot"></span>
+  <span>7 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/yocto-with-imx8qxp-2/">在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統 2</a></h2>
+  <p class="excerpt">前言 繼上一篇我們建立了可開機的映像檔後，接下來我們要來修改修改預設的除錯埠。從 UART0 改至 UART2。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/i.mx8qxp/"><span class="hash">#</span>i.mx8qxp</a>
+  
+  <a class="chip" href="/tags/device-tree/"><span class="hash">#</span>device tree</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/yocto-with-imx8qxp-2/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.09.01</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/yocto-with-imx8qxp/">在 i.MX 8QuadXPlus 上使用 Yocto 建置 Linux 系統</a></h2>
+  <p class="excerpt">前言 最近剛拿到 NXP 的 i.MAX8 開發板。在測試基本功能之餘，也順手把過程記錄下來。本文僅先建置 Yocto 的開發環境並編譯出可開機的映像檔，最後透過 SD 卡開機。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/i.mx8qxp/"><span class="hash">#</span>i.mx8qxp</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/yocto-with-imx8qxp/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.08.12</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/stm32mp-with-yocto-4/">在 STM32MP1 上使用 Yocto 建置 Linux 系統 4</a></h2>
+  <p class="excerpt">前言 繼先前建立好基楚的系統後，我們已經加入了 bootlinlabs machine。 本文會接續之前建立的環境，開始加入自訂的 Image。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/stm32mp1/"><span class="hash">#</span>stm32mp1</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/stm32mp-with-yocto-4/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.08.12</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/stm32mp-with-yocto-3/">在 STM32MP1 上使用 Yocto 建置 Linux 系統 3</a></h2>
+  <p class="excerpt">前言 繼先前建立好基楚的系統後，我們已經加入了 meta-bootlinlabs Layer。 本文會接續之前建立的環境，開始加入自訂的 Machine。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/stm32mp1/"><span class="hash">#</span>stm32mp1</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/stm32mp-with-yocto-3/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.08.12</span>
+  <span class="dot"></span>
+  <span>3 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/stm32mp-with-yocto-2/">在 STM32MP1 上使用 Yocto 建置 Linux 系統 2</a></h2>
+  <p class="excerpt">前言 繼先前建立好基楚的系統後，我們已經可以順利開機，並從 NFS 載入 rootf filesystem。 本文會接續之前建立的環境，開始加入自製的程式以及自訂的 Layer。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/stm32mp1/"><span class="hash">#</span>stm32mp1</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/stm32mp-with-yocto-2/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.08.11</span>
+  <span class="dot"></span>
+  <span>4 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/stm32mp-with-yocto/">在 STM32MP1 上使用 Yocto 建置 Linux 系統</a></h2>
+  <p class="excerpt">前言 手邊有一片很久沒有動過的 STM32MP157。剛好最近工作上需要在 imx8 進行開發。本文會照著 Bootlin 的課程進行實作 [2],一方面了解 Yocto 要如何使用，另一方面順便藉此先練練手。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/stm32mp1/"><span class="hash">#</span>stm32mp1</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/stm32mp-with-yocto/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.07.30</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/yocto-kernel-menuconfig/">在 Yocto 環境中調整 Linux Kernel</a></h2>
+  <p class="excerpt">前言 一般來說，如果想要調整 Linux Kernel 只要在終端機輸入 make menuconfig 這類的指令就可以了。但如果在不同的開發流程中，就不是這麼單純了。
+本文主要是針對 Yocto 開發流進行記錄，未來有機會的話，會再補充 buildroot 的開發方式。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+  <a class="chip" href="/tags/kernel/"><span class="hash">#</span>kernel</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/yocto-kernel-menuconfig/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.07.28</span>
+  <span class="dot"></span>
+  <span>3 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/yocto-first-layer/">Yocto First Layer</a></h2>
+  <p class="excerpt">前言 在準備完開發環境之後，接下來就要開始加上我們的設定、服務或是應用了。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/yocto-first-layer/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.07.27</span>
+  <span class="dot"></span>
+  <span>1 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/yocto-introduction/">Yocto 基礎介紹</a></h2>
+  <p class="excerpt">前言 先前有接觸過 buildroot 這類的 Linux Distribution 工具，但一直沒有好好的整理起來。
+最近剛好有機會接觸 Yocto，打算在摸索的過程中一並記錄起來。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/yocto-introduction/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.07.26</span>
+  <span class="dot"></span>
+  <span>1 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/embedded-system/" style="color:var(--fg-subtle)">embedded system</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/building-raspberry-pi-systems-with-yocto/">使用 Yocto 打造你的 Raspberry Pi 系統</a></h2>
+  <p class="excerpt">前言 手邊有一片很久沒有動過的 Raspberry Pi 3 B+。剛好最近工作上需要在 imx8 進行開發。藉此順便先練練手。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+  <a class="chip" href="/tags/yocto/"><span class="hash">#</span>yocto</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/building-raspberry-pi-systems-with-yocto/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+
+    </div>
+  </section>
+  
+  <div style="height:var(--space-10)"></div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
 </button>
-<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

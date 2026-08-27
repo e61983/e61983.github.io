@@ -1,135 +1,394 @@
-<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Go語言、動態連結函式庫與它們的產地 · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="Go語言、動態連結函式庫與它們的產地"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="article"><meta property="og:url" content="https://e61983.github.io/posts/golang-with-shared-library/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
-</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
-<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
-</span></button>
-<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
-<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class=fade-in><div class="container article"><div style="max-width:760px;margin:0 auto"><div style=display:flex;justify-content:center;margin-bottom:var(--space-4)><a class=link-arrow style=color:var(--fg-muted);font-size:var(--text-caption) href=/posts/><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-所有文章</a></div><div class=article-head><div style=display:flex;justify-content:center><a class="badge badge-accent" href=/categories/note/>note</a></div><h1>Go語言、動態連結函式庫與它們的產地</h1><div style=display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)><img class=avatar width=28 height=28 loading=lazy style=width:28px;height:28px src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon" alt=Yuan>
-<span style=font:var(--weight-medium)var(--text-body)var(--font-text);color:var(--fg)>Yuan</span>
-<span class=meta style=margin-left:4px><span class=mono>2022.07.21</span><span class=dot></span><span>2 分鐘閱讀</span></span></div></div></div><div class=post-layout><article class=prose style="max-width:720px;margin:0 auto;width:100%"><h2 id=前言>前言</h2><p>最近寫 Go 時想嘗試使用動態連結函式庫。於是乎這一篇就誔生了。
-本文會試著使用 Go 編出一個動態連結函式庫，並使用 C 語言程式以及 Go 語言程式呼叫它。</p><h2 id=主要內容>主要內容</h2><h3 id=動態連結函式庫>動態連結函式庫</h3><p>官方文件中有提到，可以被呼叫的函式要使用 <code>export 註解</code> 來提示 cgo。</p><blockquote><p>-buildmode=c-shared
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Go語言、動態連結函式庫與它們的產地 · Yuan のノート</title>
+  <meta name="description" content="心之所至，隨意亂書">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="Go語言、動態連結函式庫與它們的產地">
+  <meta property="og:description" content="心之所至，隨意亂書">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://localhost:3000/posts/golang-with-shared-library/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="fade-in">
+<div class="container article">
+  <div style="max-width:760px;margin:0 auto">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
+      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 所有文章</a>
+    </div>
+    <div class="article-head">
+      
+      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/note/">note</a></div>
+      
+      <h1>Go語言、動態連結函式庫與它們的產地</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
+        <img class="avatar" width="28" height="28" loading="lazy"
+  style="width:28px;height:28px"
+  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
+  alt="Yuan">
+
+        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
+        <span class="meta" style="margin-left:4px"><span class="mono">2022.07.21</span><span class="dot"></span><span>2 分鐘閱讀</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-layout">
+    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
+      <h2 id="前言">前言</h2>
+<p>最近寫 Go 時想嘗試使用動態連結函式庫。於是乎這一篇就誔生了。
+本文會試著使用 Go 編出一個動態連結函式庫，並使用 C 語言程式以及 Go 語言程式呼叫它。</p>
+<h2 id="主要內容">主要內容</h2>
+<h3 id="動態連結函式庫">動態連結函式庫</h3>
+<p>官方文件中有提到，可以被呼叫的函式要使用 <code>export 註解</code> 來提示 cgo。</p>
+<blockquote>
+<p>-buildmode=c-shared
 Build the listed main package, plus all packages it imports,
 into a C shared library. The only callable symbols will
 be those functions exported using a cgo //export comment.
-Requires exactly one main package to be listed.</p></blockquote><h4 id=程式碼-hellogo>程式碼 (hello.go)</h4><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=kn>import</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=cp>//export hello</span><span class=w>
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>hello</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>	</span><span class=nb>println</span><span class=p>(</span><span class=s>&#34;Hello, world! Library&#34;</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=cm>/* 
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=cm>   We need the main function to make possible 
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=cm>   cgo compiler to compile the package as c shared 
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=cm>   library.
-</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=cm>*/</span><span class=w>
-</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{}</span></span></span></code></pre></div></div><h4 id=編譯>編譯</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -buildmode<span class=o>=</span>c-shared -o libhello.so hello.go</span></span></code></pre></div></div><h4 id=結果>結果</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>libhello.h libhello.so</span></span></code></pre></div></div><h3 id=c-語言程式>C 語言程式</h3><p>main.c</p><div class=code-block><div class=code-bar><span class=code-lang>c</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=ln>1</span><span class=cl><span class=cp>#import &lt;stdio.h&gt;
-</span></span></span><span class=line><span class=ln>2</span><span class=cl><span class=cp>#import &#34;libhello.h&#34;
-</span></span></span><span class=line><span class=ln>3</span><span class=cl>
-</span></span><span class=line><span class=ln>4</span><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
-</span></span><span class=line><span class=ln>5</span><span class=cl>	<span class=nf>printf</span><span class=p>(</span><span class=s>&#34;Hello world C !</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=ln>6</span><span class=cl>	<span class=nf>hello</span><span class=p>();</span>
-</span></span><span class=line><span class=ln>7</span><span class=cl>	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
-</span></span><span class=line><span class=ln>8</span><span class=cl><span class=p>}</span></span></span></code></pre></div></div><h4 id=編譯-1>編譯</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>gcc -o main_c.out -L. -I. -lhello main.c</span></span></code></pre></div></div><h4 id=結果-1>結果</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>./main_c.out
-</span></span><span class=line><span class=ln>2</span><span class=cl>Hello world C !
-</span></span><span class=line><span class=ln>3</span><span class=cl>Hello, world! Library</span></span></code></pre></div></div><h3 id=go-語言程式-v1>Go 語言程式 v1</h3><p>main.go</p><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=c1>// #cgo LDFLAGS: -lhello -L.</span><span class=w>
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=c1>// #include &lt;libhello.h&gt;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=kn>import</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=kn>import</span><span class=w> </span><span class=s>&#34;fmt&#34;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=w>	</span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;Hello world Go!&#34;</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>	</span><span class=nx>C</span><span class=p>.</span><span class=nf>hello</span><span class=p>()</span><span class=w>
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=p>}</span></span></span></code></pre></div></div><h4 id=編譯-2>編譯</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -o main_go.out  main.go</span></span></code></pre></div></div><h3 id=go-語言程式-v2>Go 語言程式 v2</h3><p>main_dl.go</p><div class=code-block><div class=code-bar><span class=code-lang>go</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=ln> 1</span><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
-</span></span></span><span class=line><span class=ln> 2</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln> 3</span><span class=cl><span class=c1>// #cgo LDFLAGS: -ldl</span><span class=w>
-</span></span></span><span class=line><span class=ln> 4</span><span class=cl><span class=c1>// #include &lt;dlfcn.h&gt;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 5</span><span class=cl><span class=kn>import</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 6</span><span class=cl><span class=kn>import</span><span class=w> </span><span class=p>(</span><span class=w>
-</span></span></span><span class=line><span class=ln> 7</span><span class=cl><span class=w>	</span><span class=s>&#34;fmt&#34;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 8</span><span class=cl><span class=w>	</span><span class=s>&#34;unsafe&#34;</span><span class=w>
-</span></span></span><span class=line><span class=ln> 9</span><span class=cl><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>10</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>11</span><span class=cl><span class=c1>// load dynamic library</span><span class=w>
-</span></span></span><span class=line><span class=ln>12</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>load</span><span class=p>(</span><span class=nx>path</span><span class=w> </span><span class=kt>string</span><span class=p>)</span><span class=w> </span><span class=p>(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>,</span><span class=w> </span><span class=kt>error</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>13</span><span class=cl><span class=w>	</span><span class=nx>handle</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nf>dlopen</span><span class=p>(</span><span class=nx>C</span><span class=p>.</span><span class=nf>CString</span><span class=p>(</span><span class=nx>path</span><span class=p>),</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nx>RTLD_LAZY</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>14</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>15</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=kc>nil</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w>
-</span></span></span><span class=line><span class=ln>16</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>17</span><span class=cl><span class=w>	</span><span class=k>return</span><span class=w> </span><span class=nx>handle</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=w>
-</span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=c1>// get symbol </span><span class=w>
-</span></span></span><span class=line><span class=ln>21</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>findSym</span><span class=p>(</span><span class=nx>lib</span><span class=w> </span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>,</span><span class=w> </span><span class=nx>sym</span><span class=w> </span><span class=kt>string</span><span class=p>)</span><span class=w> </span><span class=p>(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>,</span><span class=w> </span><span class=kt>error</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>22</span><span class=cl><span class=w>	</span><span class=nx>pc</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nf>dlsym</span><span class=p>(</span><span class=nx>lib</span><span class=p>,</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nf>CString</span><span class=p>(</span><span class=nx>sym</span><span class=p>))</span><span class=w>
-</span></span></span><span class=line><span class=ln>23</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>pc</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>24</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=kc>nil</span><span class=p>,</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;find symbol %s failed&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>sym</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>25</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>26</span><span class=cl><span class=w>	</span><span class=k>return</span><span class=w> </span><span class=nx>pc</span><span class=p>,</span><span class=w> </span><span class=kc>nil</span><span class=w>
-</span></span></span><span class=line><span class=ln>27</span><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>28</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>29</span><span class=cl><span class=c1>// unload dynamic library</span><span class=w>
-</span></span></span><span class=line><span class=ln>30</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>unload</span><span class=p>(</span><span class=nx>lib</span><span class=w> </span><span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span><span class=p>)</span><span class=w> </span><span class=kt>error</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>31</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>C</span><span class=p>.</span><span class=nf>dlclose</span><span class=p>(</span><span class=nx>lib</span><span class=p>)</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=mi>0</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>32</span><span class=cl><span class=w>		</span><span class=k>return</span><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;unload library failed&#34;</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>33</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>34</span><span class=cl><span class=w>	</span><span class=k>return</span><span class=w> </span><span class=kc>nil</span><span class=w>
-</span></span></span><span class=line><span class=ln>35</span><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>36</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>37</span><span class=cl><span class=c1>// entry point function</span><span class=w>
-</span></span></span><span class=line><span class=ln>38</span><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>39</span><span class=cl><span class=w>	</span><span class=nb>println</span><span class=p>(</span><span class=s>&#34;Hello World&#34;</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>40</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>41</span><span class=cl><span class=w>	</span><span class=nx>lib</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nf>load</span><span class=p>(</span><span class=s>&#34;./libhello.so&#34;</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>42</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>43</span><span class=cl><span class=w>		</span><span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>44</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>45</span><span class=cl><span class=w>	</span><span class=k>defer</span><span class=w> </span><span class=nf>unload</span><span class=p>(</span><span class=nx>lib</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>46</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>47</span><span class=cl><span class=w>	</span><span class=nx>addr</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nf>findSym</span><span class=p>(</span><span class=nx>lib</span><span class=p>,</span><span class=w> </span><span class=s>&#34;hello&#34;</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>48</span><span class=cl><span class=w>	</span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=ln>49</span><span class=cl><span class=w>		</span><span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=ln>50</span><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=ln>51</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>52</span><span class=cl><span class=w>	</span><span class=kd>var</span><span class=w> </span><span class=nx>hello</span><span class=w> </span><span class=kd>func</span><span class=p>()</span><span class=w>
-</span></span></span><span class=line><span class=ln>53</span><span class=cl><span class=w>
-</span></span></span><span class=line><span class=ln>54</span><span class=cl><span class=w>	</span><span class=nx>p</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=o>&amp;</span><span class=nx>addr</span><span class=w>
-</span></span></span><span class=line><span class=ln>55</span><span class=cl><span class=w>	</span><span class=nx>hello</span><span class=w> </span><span class=p>=</span><span class=w> </span><span class=o>*</span><span class=p>(</span><span class=o>*</span><span class=kd>func</span><span class=p>())(</span><span class=nx>unsafe</span><span class=p>.</span><span class=nf>Pointer</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>p</span><span class=p>))</span><span class=w>
-</span></span></span><span class=line><span class=ln>56</span><span class=cl><span class=w>	
-</span></span></span><span class=line><span class=ln>57</span><span class=cl><span class=w>	</span><span class=nf>hello</span><span class=p>()</span><span class=w>
-</span></span></span><span class=line><span class=ln>58</span><span class=cl><span class=p>}</span></span></span></code></pre></div></div><h4 id=編譯-3>編譯</h4><div class=code-block><div class=code-bar><span class=code-lang>bash</span>
-<button class=code-copy type=button aria-label=複製><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></button></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=ln>1</span><span class=cl>go build -o main_go_dl.out  main_dl.go</span></span></code></pre></div></div><h2 id=小結>小結</h2><p>原本也想試試 Node.js 的使用動態連結函式庫的部份。但是相關的函式庫 <code>ffi</code> 一直無法正常的安裝，最後就沒有往下測了。</p><h2 id=參考連結>參考連結</h2><ul><li><a href=https://pkg.go.dev/cmd/go#hdr-Build_modes>go build mode</a></li><li><a href=https://www.twblogs.net/a/5b7d13442b71770a43ddcac9>Golang生成共享庫(shared library)以及Golang生成C可調用的動態庫.so和靜態庫.a</a></li><li><a href=https://github.com/vladimirvivien/go-cshared-examples>vladimirvivien/go-cshared-examples</a></li></ul><div class=chips><a class=chip href=/tags/go/><span class=hash>#</span>go</a>
-<a class=chip href=/tags/c/><span class=hash>#</span>c</a>
-<a class=chip href=/tags/library/><span class=hash>#</span>library</a></div></article><aside><div class=toc><div class=side-title style=margin-bottom:var(--space-3)>本頁目錄</div><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#主要內容>主要內容</a><ul><li><a href=#動態連結函式庫>動態連結函式庫</a></li><li><a href=#c-語言程式>C 語言程式</a></li><li><a href=#go-語言程式-v1>Go 語言程式 v1</a></li><li><a href=#go-語言程式-v2>Go 語言程式 v2</a></li></ul></li><li><a href=#小結>小結</a></li><li><a href=#參考連結>參考連結</a></li></ul></nav></div></aside></div><div class=adjacent style="max-width:760px;margin:var(--space-8)auto 0"><a class=side-card href=/posts/how-to-use-vue-electron-and-go-to-build-an-app/ style=text-decoration:none><div class=meta style=margin-bottom:6px><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-上一篇</div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>使用 Vue、Electron 以及 Go 建立一個小工具</div></a><a class=side-card href=/posts/go-module-using-private-repository/ style=text-align:right;text-decoration:none><div class=meta style=margin-bottom:6px;justify-content:flex-end>下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div style=font:var(--weight-semibold)var(--text-body)var(--font-sans);color:var(--fg)>Go 語言使用私有 Git Repository</div></a></div><div style=height:var(--space-10)></div></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
-<a href=/about/>關於</a>
-<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
-<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+Requires exactly one main package to be listed.</p>
+</blockquote>
+<h4 id="程式碼-hellogo">程式碼 (hello.go)</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
 </button>
-<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="s">&#34;C&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="cp">//export hello</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">hello</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w">	</span><span class="nb">println</span><span class="p">(</span><span class="s">&#34;Hello, world! Library&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="cm">/* 
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="cm">   We need the main function to make possible 
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="cm">   cgo compiler to compile the package as c shared 
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="cm">   library.
+</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="cm">*/</span><span class="w">
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span></span></span></code></pre></div>
+</div>
+<h4 id="編譯">編譯</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">go build -buildmode<span class="o">=</span>c-shared -o libhello.so hello.go</span></span></code></pre></div>
+</div>
+<h4 id="結果">結果</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">libhello.h libhello.so</span></span></code></pre></div>
+</div>
+<h3 id="c-語言程式">C 語言程式</h3>
+<p>main.c</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">c</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="ln">1</span><span class="cl"><span class="cp">#import &lt;stdio.h&gt;
+</span></span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="cp">#import &#34;libhello.h&#34;
+</span></span></span><span class="line"><span class="ln">3</span><span class="cl">
+</span></span><span class="line"><span class="ln">4</span><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">5</span><span class="cl">	<span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Hello world C !</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">6</span><span class="cl">	<span class="nf">hello</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">7</span><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">8</span><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+</div>
+<h4 id="編譯-1">編譯</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">gcc -o main_c.out -L. -I. -lhello main.c</span></span></code></pre></div>
+</div>
+<h4 id="結果-1">結果</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">./main_c.out
+</span></span><span class="line"><span class="ln">2</span><span class="cl">Hello world C !
+</span></span><span class="line"><span class="ln">3</span><span class="cl">Hello, world! Library</span></span></code></pre></div>
+</div>
+<h3 id="go-語言程式-v1">Go 語言程式 v1</h3>
+<p>main.go</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="c1">// #cgo LDFLAGS: -lhello -L.</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="c1">// #include &lt;libhello.h&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="s">&#34;C&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="s">&#34;fmt&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Hello world Go!&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="w">	</span><span class="nx">C</span><span class="p">.</span><span class="nf">hello</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+</div>
+<h4 id="編譯-2">編譯</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">go build -o main_go.out  main.go</span></span></code></pre></div>
+</div>
+<h3 id="go-語言程式-v2">Go 語言程式 v2</h3>
+<p>main_dl.go</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">go</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="c1">// #cgo LDFLAGS: -ldl</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="c1">// #include &lt;dlfcn.h&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="s">&#34;C&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="w">	</span><span class="s">&#34;fmt&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="w">	</span><span class="s">&#34;unsafe&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="c1">// load dynamic library</span><span class="w">
+</span></span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="nx">path</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="w">	</span><span class="nx">handle</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">C</span><span class="p">.</span><span class="nf">dlopen</span><span class="p">(</span><span class="nx">C</span><span class="p">.</span><span class="nf">CString</span><span class="p">(</span><span class="nx">path</span><span class="p">),</span><span class="w"> </span><span class="nx">C</span><span class="p">.</span><span class="nx">RTLD_LAZY</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w">
+</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">17</span><span class="cl"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="nx">handle</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="w">
+</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="c1">// get symbol </span><span class="w">
+</span></span></span><span class="line"><span class="ln">21</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">findSym</span><span class="p">(</span><span class="nx">lib</span><span class="w"> </span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span><span class="w"> </span><span class="nx">sym</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">22</span><span class="cl"><span class="w">	</span><span class="nx">pc</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">C</span><span class="p">.</span><span class="nf">dlsym</span><span class="p">(</span><span class="nx">lib</span><span class="p">,</span><span class="w"> </span><span class="nx">C</span><span class="p">.</span><span class="nf">CString</span><span class="p">(</span><span class="nx">sym</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="ln">23</span><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">pc</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">24</span><span class="cl"><span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;find symbol %s failed&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">sym</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">25</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">26</span><span class="cl"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="nx">pc</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="w">
+</span></span></span><span class="line"><span class="ln">27</span><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">28</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">29</span><span class="cl"><span class="c1">// unload dynamic library</span><span class="w">
+</span></span></span><span class="line"><span class="ln">30</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">unload</span><span class="p">(</span><span class="nx">lib</span><span class="w"> </span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">31</span><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">C</span><span class="p">.</span><span class="nf">dlclose</span><span class="p">(</span><span class="nx">lib</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">32</span><span class="cl"><span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;unload library failed&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">33</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">34</span><span class="cl"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span><span class="w">
+</span></span></span><span class="line"><span class="ln">35</span><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">36</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">37</span><span class="cl"><span class="c1">// entry point function</span><span class="w">
+</span></span></span><span class="line"><span class="ln">38</span><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">39</span><span class="cl"><span class="w">	</span><span class="nb">println</span><span class="p">(</span><span class="s">&#34;Hello World&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">40</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">41</span><span class="cl"><span class="w">	</span><span class="nx">lib</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="s">&#34;./libhello.so&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">42</span><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">43</span><span class="cl"><span class="w">		</span><span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">44</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">45</span><span class="cl"><span class="w">	</span><span class="k">defer</span><span class="w"> </span><span class="nf">unload</span><span class="p">(</span><span class="nx">lib</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">46</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">47</span><span class="cl"><span class="w">	</span><span class="nx">addr</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nf">findSym</span><span class="p">(</span><span class="nx">lib</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;hello&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">48</span><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="ln">49</span><span class="cl"><span class="w">		</span><span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="ln">50</span><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="ln">51</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">52</span><span class="cl"><span class="w">	</span><span class="kd">var</span><span class="w"> </span><span class="nx">hello</span><span class="w"> </span><span class="kd">func</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="ln">53</span><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="ln">54</span><span class="cl"><span class="w">	</span><span class="nx">p</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">addr</span><span class="w">
+</span></span></span><span class="line"><span class="ln">55</span><span class="cl"><span class="w">	</span><span class="nx">hello</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="kd">func</span><span class="p">())(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">p</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="ln">56</span><span class="cl"><span class="w">	
+</span></span></span><span class="line"><span class="ln">57</span><span class="cl"><span class="w">	</span><span class="nf">hello</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="ln">58</span><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+</div>
+<h4 id="編譯-3">編譯</h4>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">go build -o main_go_dl.out  main_dl.go</span></span></code></pre></div>
+</div>
+<h2 id="小結">小結</h2>
+<p>原本也想試試 Node.js 的使用動態連結函式庫的部份。但是相關的函式庫 <code>ffi</code> 一直無法正常的安裝，最後就沒有往下測了。</p>
+<h2 id="參考連結">參考連結</h2>
+<ul>
+<li><a href="https://pkg.go.dev/cmd/go#hdr-Build_modes">go build mode</a></li>
+<li><a href="https://www.twblogs.net/a/5b7d13442b71770a43ddcac9">Golang生成共享庫(shared library)以及Golang生成C可調用的動態庫.so和靜態庫.a</a></li>
+<li><a href="https://github.com/vladimirvivien/go-cshared-examples">vladimirvivien/go-cshared-examples</a></li>
+</ul>
+      <div class="chips">
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/c/"><span class="hash">#</span>c</a>
+  
+  <a class="chip" href="/tags/library/"><span class="hash">#</span>library</a>
+  
+</div>
+    </article>
+    <aside>
+      
+      <div class="toc">
+        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#主要內容">主要內容</a>
+      <ul>
+        <li><a href="#動態連結函式庫">動態連結函式庫</a></li>
+        <li><a href="#c-語言程式">C 語言程式</a></li>
+        <li><a href="#go-語言程式-v1">Go 語言程式 v1</a></li>
+        <li><a href="#go-語言程式-v2">Go 語言程式 v2</a></li>
+      </ul>
+    </li>
+    <li><a href="#小結">小結</a></li>
+    <li><a href="#參考連結">參考連結</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </aside>
+  </div>
+
+  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
+  
+  <a class="side-card" href="/posts/how-to-use-vue-electron-and-go-to-build-an-app/" style="text-decoration:none">
+    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 上一篇</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">使用 Vue、Electron 以及 Go 建立一個小工具</div>
+  </a>
+  
+  
+  <a class="side-card" href="/posts/go-module-using-private-repository/" style="text-align:right;text-decoration:none">
+    <div class="meta" style="margin-bottom:6px;justify-content:flex-end">下一篇 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">Go 語言使用私有 Git Repository</div>
+  </a>
+  
+</div>
+
+  <div style="height:var(--space-10)"></div>
+</div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+</button>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

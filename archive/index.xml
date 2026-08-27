@@ -1,1 +1,17 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Archive on Yuan のノート</title><link>https://e61983.github.io/archive/</link><description>Recent content in Archive on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate/><atom:link href="https://e61983.github.io/archive/index.xml" rel="self" type="application/rss+xml"/></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Archive on Yuan のノート</title>
+		<link>http://localhost:3000/archive/</link>
+		<description>Recent content in Archive on Yuan のノート</description>
+		<generator>Hugo</generator>
+		<language>zh-tw</language>
+		
+		
+		
+		
+			<lastBuildDate></lastBuildDate>
+		
+			<atom:link href="http://localhost:3000/archive/index.xml" rel="self" type="application/rss+xml" />
+	</channel>
+</rss>

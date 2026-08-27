@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>讓 Raspberry Pi 學會自救:用 Watchdog 監看 sshd · Yuan のノート</title>
+  <meta name="description" content="在 Raspberry Pi OS Bookworm 上啟用硬體 watchdog,並用 watchdog daemon 監看 sshd:掛掉先嘗試重啟,救不回來才重開機。">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="讓 Raspberry Pi 學會自救:用 Watchdog 監看 sshd">
+  <meta property="og:description" content="在 Raspberry Pi OS Bookworm 上啟用硬體 watchdog,並用 watchdog daemon 監看 sshd:掛掉先嘗試重啟,救不回來才重開機。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://localhost:3000/posts/raspberry-pi-watchdog-sshd/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="fade-in">
+<div class="container article">
+  <div style="max-width:760px;margin:0 auto">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-4)">
+      <a class="link-arrow" style="color:var(--fg-muted);font-size:var(--text-caption)" href="/posts/"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 所有文章</a>
+    </div>
+    <div class="article-head">
+      
+      <div style="display:flex;justify-content:center"><a class="badge badge-accent" href="/categories/note/">note</a></div>
+      
+      <h1>讓 Raspberry Pi 學會自救:用 Watchdog 監看 sshd</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:var(--space-5)">
+        <img class="avatar" width="28" height="28" loading="lazy"
+  style="width:28px;height:28px"
+  src="https://www.gravatar.com/avatar/1de829f84243bf6dd7f417f3ee5543be?s=56&d=identicon"
+  alt="Yuan">
+
+        <span style="font:var(--weight-medium) var(--text-body) var(--font-text);color:var(--fg)">Yuan</span>
+        <span class="meta" style="margin-left:4px"><span class="mono">2026.08.26</span><span class="dot"></span><span>3 分鐘閱讀</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-layout">
+    <article class="prose" style="max-width:720px;margin:0 auto;width:100%">
+      <h2 id="前言">前言</h2>
+<p>筆者家裡有一台 Raspberry Pi,插在電視櫃後面的插座上,沒接螢幕也沒接鍵盤,全靠 SSH 遠端進去做事。</p>
+<p>平常它安安靜靜的,直到某天心血來潮想連上去看看,<code>ssh</code> 卻只回給我一片沉默。</p>
+<p>於是只好蹲下去、把櫃子拉開、把電源拔掉再插回去——如果那天人不在家,那就更尷尬了。</p>
+<p>sshd 一旦掛掉,我們就等於失去了唯一的一道門。所以這篇文章就來做一件事:<strong>讓 Raspberry Pi 學會自救</strong>。用 Watchdog(看門狗)盯著 sshd,發現它不見了先試著把它叫醒;真的叫不醒,就乾脆整台重開,回到乾淨狀態。</p>
+<p>本文會從觀念、安裝、設定一路走到實際驗證,最後附上兩個筆者踩過的坑。</p>
+<blockquote>
+<p>本文環境:<strong>Raspberry Pi OS(Bookworm)</strong>、<strong>watchdog 套件 5.16</strong>,不限定機型。
+內容以官方 man page 與套件原始碼交叉查證,若你的系統版本較舊,部分路徑與行為可能會不同。</p>
+</blockquote>
+<h2 id="主要內容">主要內容</h2>
+<h3 id="watchdog-到底是誰在看誰">Watchdog 到底是誰在看誰</h3>
+<p>動手之前,先把名詞釐清。我們口中的「watchdog」其實是<strong>兩個不同層次的東西</strong>:</p>
+<ul>
+<li><strong>硬體 watchdog（Hardware Watchdog)</strong>:Raspberry Pi 的 SoC 裡內建一個倒數計時器(<code>bcm2835_wdt</code>)。一旦啟動,就必須有人定期「餵狗」——也就是寫入 <code>/dev/watchdog</code>;超過時限沒人餵,硬體就強制 reset。就算整個 Linux 已經 hang 到動不了,它照樣會動作。</li>
+<li><strong>watchdog daemon(使用者空間的服務)</strong>:負責定期餵狗,順便做各種健康檢查。本文的主角就是它的 <code>pidfile</code> 檢查,用來監看 sshd。</li>
+</ul>
+<p>再把 systemd 本來就會做的事算進來,整套自救機制其實是<strong>三層防線</strong>:</p>
+<ol>
+<li><strong>第一層 — systemd</strong>:Debian 的 <code>ssh.service</code> 內建 <code>Restart=on-failure</code>,sshd 異常退出時,systemd 幾秒內就把它拉起來。</li>
+<li><strong>第二層 — watchdog daemon</strong>:如果 sshd 掛到連 systemd 都救不動(例如重啟次數已達上限),watchdog 會發現 pid 消失,改執行我們寫的修復腳本;修不好,就重開機。</li>
+<li><strong>第三層 — 硬體 watchdog</strong>:如果整台機器 hang 死,連 watchdog daemon 都沒辦法餵狗,硬體計時器逾時,強制 reset。</li>
+</ol>
+<div class="mermaid">
+    
+flowchart TD
+    A[watchdog daemon<br>每隔 interval 秒檢查] --> B{sshd 還活著?}
+    B -- 是 --> C[餵狗:寫入 /dev/watchdog]
+    C --> A
+    B -- 否 --> D[執行 repair script<br>systemctl restart ssh]
+    D --> E{修好了?}
+    E -- 是 --> A
+    E -- 否 --> F[重開機]
+    G[整台機器 hang 住] -.-> H[沒人餵狗]
+    H -.-> I[硬體 watchdog<br>逾時強制 reset]
+
+</div>
+
+
+
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+            primaryColor: '#bb2528',
+            primaryTextColor: '#fff',
+            primaryBorderColor: '#7C0000',
+            lineColor: '#F8B229',
+            background: '#0d1117',
+            mainBkg: '#161b22',
+            secondBkg: '#21262d',
+            tertiaryColor: '#21262d'
+        }
+    });
+</script>
+
+<p>三層各管一段:<strong>systemd 管秒級的行程重啟,watchdog daemon 管服務層的修復與重開機,硬體 watchdog 管整台機器的死當</strong>。</p>
+<h3 id="第一步確認硬體-watchdog-存在">第一步:確認硬體 watchdog 存在</h3>
+<p>先看看裝置檔在不在:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">ls -l /dev/watchdog*</span></span></code></pre></div>
+</div>
+<p>正常會看到 <code>/dev/watchdog</code> 跟 <code>/dev/watchdog0</code> 兩個檔案。它們其實指向同一顆硬體 watchdog,而且<strong>同一時間只能被一個程式持有</strong>——這點等一下會變成一個坑,先記著。</p>
+<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">舊教學的 dtparam=watchdog=on 已經不需要了</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">網路上不少 Buster 時代的文章會要你在 <code>config.txt</code> 加上 <code>dtparam=watchdog=on</code> 再重開機。在 Bookworm 上,kernel 預設就會載入 <code>bcm2835_wdt</code>,<code>/dev/watchdog</code> 開機即存在,這一步可以直接省略。順帶一提,Bookworm 的 <code>config.txt</code> 也搬家到 <code>/boot/firmware/config.txt</code> 了。</div>
+</div>
+
+<p>要注意的是,<strong>裝置存在不代表計時器已經在跑</strong>。它現在只是待命,要等到有程式打開 <code>/dev/watchdog</code> 才會開始倒數。接下來就讓 watchdog daemon 來當這個持有者。</p>
+<h3 id="第二步安裝-watchdog-daemon">第二步:安裝 watchdog daemon</h3>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sudo apt install watchdog</span></span></code></pre></div>
+</div>
+<p>Debian 的慣例是裝完就自動 enable 並啟動。不過先別緊張——預設的 <code>/etc/watchdog.conf</code> 幾乎每一項檢查都是註解掉的,現在還不會發生任何事。</p>
+<p>這個套件其實裝了<strong>兩個</strong>服務:</p>
+<ul>
+<li><strong><code>watchdog.service</code></strong>:主角。做檢查、餵狗。</li>
+<li><strong><code>wd_keepalive.service</code></strong>:備援。只餵狗、不做檢查。兩者互斥(<code>Conflicts=</code>),當主角異常退出時由它接手餵狗,免得機器莫名其妙被硬體重開。這部分套件都幫我們設好了,不用動。</li>
+</ul>
+<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">/dev/watchdog 只能有一個持有者</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">如果你曾經照其他教學在 <code>/etc/systemd/system.conf</code> 設過 <code>RuntimeWatchdogSec</code>,請先把它註解掉。systemd 跟 watchdog daemon 會互搶 <code>/dev/watchdog</code>,後開的那個會拿到 <code>EBUSY</code> 直接失敗。一台機器,一種餵狗方式就好。</div>
+</div>
+
+<h3 id="第三步設定-watchdogconf">第三步:設定 watchdog.conf</h3>
+<p>編輯 <code>/etc/watchdog.conf</code>,加入(或取消註解)以下設定:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">ini</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="c1"># 硬體 watchdog 裝置與逾時秒數(bcm2835 的硬體上限是 15 秒)</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="na">watchdog-device</span>  <span class="o">=</span> <span class="s">/dev/watchdog</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="na">watchdog-timeout</span> <span class="o">=</span> <span class="s">15</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="c1"># 每隔幾秒做一次檢查,必須遠小於 watchdog-timeout</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="na">interval</span> <span class="o">=</span> <span class="s">4</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="c1"># 監看 sshd:pid file 打不開、或裡面的 process 不存在,都算故障</span>
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="na">pidfile</span> <span class="o">=</span> <span class="s">/run/sshd.pid</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">
+</span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="c1"># 故障時先執行修復腳本,修不好才重開機</span>
+</span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="na">repair-binary</span>  <span class="o">=</span> <span class="s">/usr/local/sbin/repair-sshd.sh</span>
+</span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="na">repair-timeout</span> <span class="o">=</span> <span class="s">10</span>
+</span></span><span class="line"><span class="ln">14</span><span class="cl">
+</span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="c1"># 同一個故障最多嘗試修復幾次,超過就直接重開機</span>
+</span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="na">repair-maximum</span> <span class="o">=</span> <span class="s">3</span>
+</span></span><span class="line"><span class="ln">17</span><span class="cl">
+</span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="c1"># 把 daemon 鎖進記憶體,避免系統高負載時自己被 swap 出去</span>
+</span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="na">realtime</span> <span class="o">=</span> <span class="s">yes</span>
+</span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="na">priority</span> <span class="o">=</span> <span class="s">1</span></span></span></code></pre></div>
+</div>
+<p>有幾個值得單獨拿出來說:</p>
+<ul>
+<li><strong><code>pidfile = /run/sshd.pid</code></strong>:watchdog 會讀出檔案裡的 pid,再用 <code>kill(pid, 0)</code> 確認這個 process 還在。Bookworm 的 <code>ssh.service</code> 雖然是以 <code>sshd -D</code> 前景執行,但 sshd 依然會寫出這個 pid file(只有 debug 模式的 <code>-d</code> 才不寫),所以放心監看。</li>
+<li><strong><code>watchdog-timeout = 15</code></strong>:Raspberry Pi 的 <code>bcm2835_wdt</code> 硬體上限就是 <strong>15 秒</strong>。舊 kernel 上設更大的值會得到 <code>cannot set timeout 60 (errno = 22)</code> 之類的錯誤;新 kernel(6.1 之後)雖然肯收下更大的值,但硬體真正的 reset 上限仍在 15 秒左右。老實設 15,最不會出意外。</li>
+<li><strong><code>repair-timeout = 10</code></strong>:修復腳本執行的期間,daemon 是<strong>不會餵狗</strong>的。所以這個值務必小於 <code>watchdog-timeout</code>,否則腳本跑到一半,硬體 watchdog 就先把機器重開了。</li>
+</ul>
+<h3 id="第四步撰寫修復腳本">第四步:撰寫修復腳本</h3>
+<p>再來是「先救救看」的主角。watchdog 呼叫 repair binary 時會帶兩個參數:<code>$1</code> 是錯誤碼,<code>$2</code> 是觸發故障的監看對象(以我們的設定來說就是 <code>/run/sshd.pid</code>)。</p>
+<p>規則很單純:腳本<strong>回傳 0 代表修好了</strong>,watchdog 會繼續監看;<strong>回傳非 0,watchdog 就重開機</strong>。</p>
+<p>建立 <code>/usr/local/sbin/repair-sshd.sh</code>:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="c1"># $1: 錯誤碼(errno)</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="c1"># $2: 觸發故障的監看對象</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl"><span class="c1"># 1) 只處理 sshd 的故障</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$2</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;/run/sshd.pid&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">    <span class="c1"># 2) 嘗試重啟 sshd,成功就回報「修好了」</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">    <span class="k">if</span> /usr/bin/systemctl restart ssh<span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">        <span class="nb">exit</span> <span class="m">0</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="ln">12</span><span class="cl">
+</span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="c1"># 3) 修不好、或不認識的故障:交給 watchdog 重開機</span>
+</span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="nb">exit</span> <span class="m">1</span></span></span></code></pre></div>
+</div>
+<p>別忘了加上執行權限:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sudo chmod +x /usr/local/sbin/repair-sshd.sh</span></span></code></pre></div>
+</div>
+<p>這個設計的精神是:<strong>能在服務層解決,就不要動整台機器;真的救不回來,重開機才是最後手段</strong>——這也正是 <code>repair-maximum = 3</code> 的用意,同一個毛病修了三次都沒用,就別再掙扎了。</p>
+<h3 id="第五步啟動與驗證">第五步:啟動與驗證</h3>
+<p>設定完成,重啟服務讓它生效:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sudo systemctl restart watchdog
+</span></span><span class="line"><span class="ln">2</span><span class="cl">systemctl status watchdog</span></span></code></pre></div>
+</div>
+<p>看到 <code>active (running)</code>、而且沒有跳出裝置相關的錯誤訊息,就代表 watchdog 已經拿到 <code>/dev/watchdog</code>,開始餵狗了。</p>
+<p>接著來驗證監看有沒有真的生效。開兩個 SSH 視窗,第一個先掛著看 log:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">journalctl -u watchdog -f</span></span></code></pre></div>
+</div>
+<p>第二個視窗直接把 sshd 停掉,模擬它掛了:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">sudo systemctl stop ssh</span></span></code></pre></div>
+</div>
+<blockquote>
+<p>等一下… 把 sshd 停掉,不就連不上了嗎?</p>
+</blockquote>
+<p>別擔心,<strong>已經建立的連線不會斷</strong>,只是新的連線進不來而已。</p>
+<p>幾秒之內(最多一個 <code>interval</code>),log 視窗就會看到 watchdog 抱怨 pid 檢查失敗、接著呼叫修復腳本。然後回頭看一眼:</p>
+<div class="code-block">
+  <div class="code-bar">
+    <span class="code-lang">bash</span>
+    <button class="code-copy" type="button" aria-label="複製"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+</button>
+  </div>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="ln">1</span><span class="cl">systemctl status ssh</span></span></code></pre></div>
+</div>
+<p>sshd 又活過來了! ✅</p>
+<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">要維護 sshd,記得先讓狗休息</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">從此之後,手動 <code>systemctl stop ssh</code> 都會在幾秒內被 watchdog 救回來。哪天真的要停用 sshd 做維護,記得先 <code>sudo systemctl stop watchdog</code>,做完再啟動回來,不然你會跟一隻盡忠職守的狗打起來。</div>
+</div>
+
+<div class="notice" style="border:1px solid var(--line);border-left:3px solid var(ZgotmplZ);background:var(ZgotmplZ);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin:0 0 var(--space-5)"><div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(ZgotmplZ);margin-bottom:6px">測試前先確認修復腳本正常</div><div style="color:var(--fg);font-size:var(--text-body);line-height:var(--leading-normal)">如果 <code>repair-binary</code> 指到的腳本不存在、沒有執行權限、或執行失敗,watchdog 的下一步就是<strong>直接重開機</strong>。在有重要工作正在跑的機器上操作之前,請務必先確認腳本的路徑與權限無誤。</div>
+</div>
+
+<h2 id="小結">小結</h2>
+<ul>
+<li>Raspberry Pi 的自救機制有三層:<strong>systemd 的 <code>Restart=on-failure</code></strong>、<strong>watchdog daemon 的檢查與修復</strong>、<strong>硬體 watchdog 的強制 reset</strong>,各管一段。</li>
+<li>Bookworm 上 <code>/dev/watchdog</code> 開機即存在,舊教學的 <code>dtparam=watchdog=on</code> 不用再設。</li>
+<li>用 <code>pidfile = /run/sshd.pid</code> 監看 sshd,搭配 <code>repair-binary</code> 先試 <code>systemctl restart ssh</code>,修不好才重開機。</li>
+<li>兩個最容易踩的坑:<code>watchdog-timeout</code> 的硬體上限是 <strong>15 秒</strong>;<code>repair-timeout</code> 一定要小於它,不然修到一半就被硬體重開。</li>
+</ul>
+<p>這套機制上線之後,筆者總算不用再擔心哪天 SSH 不上 Pi、還得跑一趟電視櫃後面了。</p>
+<p>除了 <code>pidfile</code>,watchdog 還能監看網路連通性(<code>ping</code>)、系統負載、檔案更新時間等等,有興趣的同學可以翻翻 <code>watchdog.conf(5)</code> 的 man page。未來如果有新的玩法,或許會繼續更新!</p>
+<h2 id="參考連結">參考連結</h2>
+<ul>
+<li><a href="https://dri.es/keeping-your-raspberry-pi-online-with-watchdogs">Keeping your Raspberry Pi online with watchdogs — dri.es</a></li>
+<li><a href="https://medium.com/@arslion/enabling-watchdog-on-raspberry-pi-b7e574dcba6b">Enabling Watchdog on Raspberry Pi — Medium</a></li>
+<li><a href="https://manpages.debian.org/bookworm/watchdog/watchdog.8.en.html">watchdog(8) — Debian Manpages</a></li>
+<li><a href="https://manpages.debian.org/bookworm/watchdog/watchdog.conf.5.en.html">watchdog.conf(5) — Debian Manpages</a></li>
+<li><a href="https://forums.raspberrypi.com/viewtopic.php?t=362755">watchdog on 64 bit bookworm — Raspberry Pi Forums</a></li>
+</ul>
+      <div class="chips">
+  
+  <a class="chip" href="/tags/raspberry-pi/"><span class="hash">#</span>raspberry-pi</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+  <a class="chip" href="/tags/watchdog/"><span class="hash">#</span>watchdog</a>
+  
+  <a class="chip" href="/tags/ssh/"><span class="hash">#</span>ssh</a>
+  
+</div>
+    </article>
+    <aside>
+      
+      <div class="toc">
+        <div class="side-title" style="margin-bottom:var(--space-3)">本頁目錄</div>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#主要內容">主要內容</a>
+      <ul>
+        <li><a href="#watchdog-到底是誰在看誰">Watchdog 到底是誰在看誰</a></li>
+        <li><a href="#第一步確認硬體-watchdog-存在">第一步:確認硬體 watchdog 存在</a></li>
+        <li><a href="#第二步安裝-watchdog-daemon">第二步:安裝 watchdog daemon</a></li>
+        <li><a href="#第三步設定-watchdogconf">第三步:設定 watchdog.conf</a></li>
+        <li><a href="#第四步撰寫修復腳本">第四步:撰寫修復腳本</a></li>
+        <li><a href="#第五步啟動與驗證">第五步:啟動與驗證</a></li>
+      </ul>
+    </li>
+    <li><a href="#小結">小結</a></li>
+    <li><a href="#參考連結">參考連結</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </aside>
+  </div>
+
+  <div class="adjacent" style="max-width:760px;margin:var(--space-8) auto 0">
+  
+  <a class="side-card" href="/posts/macos-readonly-browse-raspberry-pi-image/" style="text-decoration:none">
+    <div class="meta" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+ 上一篇</div>
+    <div style="font:var(--weight-semibold) var(--text-body) var(--font-sans);color:var(--fg)">在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆</div>
+  </a>
+  
+  <div></div>
+</div>
+
+  <div style="height:var(--space-10)"></div>
+</div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+</button>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

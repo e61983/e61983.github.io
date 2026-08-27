@@ -1,91 +1,495 @@
-<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Note · Yuan のノート</title><meta name=description content="心之所至，隨意亂書"><meta name=author content="Yuan"><meta property="og:site_name" content="Yuan のノート"><meta property="og:title" content="Note"><meta property="og:description" content="心之所至，隨意亂書"><meta property="og:type" content="website"><meta property="og:url" content="https://e61983.github.io/categories/note/"><meta name=twitter:card content="summary"><meta name=theme-color content="#0B0B0C"><link rel=icon href=/favicon.svg type=image/svg+xml><script>(function(){try{var e=localStorage.getItem("yuan-theme")||"dark";document.documentElement.setAttribute("data-theme",e)}catch{document.documentElement.setAttribute("data-theme","dark")}})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"><link rel=stylesheet href=/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0="></head><body><div class=app-shell><header class=nav><div class="container nav-inner"><a href=/ class=nav-brand aria-label="Yuan のノート"><span class=mark><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/></svg>
-</span><span class=word>Yuan のノート</span></a><nav class=nav-links><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav><div class=nav-right><a class="icon-btn nav-rss" href=/index.xml title=RSS aria-label=RSS><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
-</a><button class=icon-btn id=theme-toggle type=button aria-label=切換配色>
-<span class=icon-sun><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2m0 15.6V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2m15.6.0H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
-</span><span class=icon-moon><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg>
-</span></button>
-<button class="icon-btn nav-toggle" id=nav-toggle type=button aria-label=選單 aria-expanded=false>
-<span class=nav-toggle-open><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-</span><span class=nav-toggle-close><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span></button></div></div><div class=nav-scrim id=nav-scrim hidden></div><nav class=nav-menu id=nav-menu hidden><a href=/ class=nav-link>首頁</a>
-<a href=/posts/ class=nav-link>文章</a>
-<a href=/categories/ class=nav-link>分類</a>
-<a href=/tags/ class=nav-link>標籤</a>
-<a href=/archive/ class=nav-link>歸檔</a>
-<a href=/about/ class=nav-link>關於</a></nav></header><div style="flex:1 0 auto"><div class="container container-narrow fade-in"><div class=page-head><div class=eyebrow style=margin-bottom:var(--space-3)>瀏覽</div><h1>分類:Note</h1><p>10 篇文章</p></div><section style=padding-top:var(--space-6)><div class=mono style=font:var(--weight-semibold)var(--text-heading-sm)var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)>2025</div><div class=post-list><article class=post-row><span class=meta><span class=mono>2025.08.26</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/security/ style=color:var(--fg-subtle)>security</a></span><h2 class=title><a href=/posts/otp-code-introduction/>OTP — 一次性密碼的原理與實作</a></h2><p class=excerpt>深入了解 OTP（一次性密碼）的運作原理，包含 TOTP 與 HOTP 的差異，以及在 Go 中的實作範例。從序列圖到程式碼，完整解析二階段驗證的核心機制。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/go/><span class=hash>#</span>go</a>
-<a class=chip href=/tags/otp/><span class=hash>#</span>otp</a>
-<a class=chip href=/tags/totp/><span class=hash>#</span>totp</a>
-<a class=chip href=/tags/hotp/><span class=hash>#</span>hotp</a>
-<a class=chip href=/tags/security/><span class=hash>#</span>security</a>
-<a class=chip href=/tags/authentication/><span class=hash>#</span>authentication</a>
-<a class=chip href=/tags/2fa/><span class=hash>#</span>2fa</a>
-<a class=chip href=/tags/backend/><span class=hash>#</span>backend</a></div><a class=link-arrow href=/posts/otp-code-introduction/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article></div></section><section style=padding-top:var(--space-6)><div class=mono style=font:var(--weight-semibold)var(--text-heading-sm)var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)>2022</div><div class=post-list><article class=post-row><span class=meta><span class=mono>2022.08.09</span>
-<span class=dot></span>
-<span>3 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/note/ style=color:var(--fg-subtle)>note</a></span><h2 class=title><a href=/posts/go-and-protobuf/>在 Go 中與 Protobuf 共舞 ？！</a></h2><p class=excerpt>前言 會有這一篇的誕生是因為原本在寫 gRPC 的筆記時發現篇幅太長，想說還是拆開寫好了。於是乎這一篇就出現了。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/go/><span class=hash>#</span>go</a>
-<a class=chip href=/tags/protobuf/><span class=hash>#</span>protobuf</a></div><a class=link-arrow href=/posts/go-and-protobuf/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2022.08.02</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/note/ style=color:var(--fg-subtle)>note</a></span><h2 class=title><a href=/posts/use-iperf-on-synology-nas/>在 Synology NAS 開啟 iperf 伺服器</a></h2><p class=excerpt>前言 最近發現家中的 NAS 速度 &ldquo;好像&rdquo; 沒有達到筆者的預期。所以想來實際測看看可以目前的網路環境可以跑到什麼程度。於似乎這一篇就誕生了。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/synology/><span class=hash>#</span>synology</a>
-<a class=chip href=/tags/nas/><span class=hash>#</span>nas</a>
-<a class=chip href=/tags/iperf/><span class=hash>#</span>iperf</a></div><a class=link-arrow href=/posts/use-iperf-on-synology-nas/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2022.07.30</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/note/ style=color:var(--fg-subtle)>note</a></span><h2 class=title><a href=/posts/go-module-using-private-repository/>Go 語言使用私有 Git Repository</a></h2><p class=excerpt>前言 最近終於有時間整裡筆者家中的 NAS 。先前筆者已經架設好了 Gitea，但一直沒有時間把整個開發環境串起來。這篇文章記錄了如何在 go 中使用自架的 Git Repository。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/go/><span class=hash>#</span>go</a>
-<a class=chip href=/tags/git/><span class=hash>#</span>git</a>
-<a class=chip href=/tags/ssh/><span class=hash>#</span>ssh</a></div><a class=link-arrow href=/posts/go-module-using-private-repository/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2022.07.21</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/note/ style=color:var(--fg-subtle)>note</a></span><h2 class=title><a href=/posts/golang-with-shared-library/>Go語言、動態連結函式庫與它們的產地</a></h2><p class=excerpt>前言 最近寫 Go 時想嘗試使用動態連結函式庫。於是乎這一篇就誔生了。 本文會試著使用 Go 編出一個動態連結函式庫，並使用 C 語言程式以及 Go 語言程式呼叫它。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/go/><span class=hash>#</span>go</a>
-<a class=chip href=/tags/c/><span class=hash>#</span>c</a>
-<a class=chip href=/tags/library/><span class=hash>#</span>library</a></div><a class=link-arrow href=/posts/golang-with-shared-library/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2022.07.15</span>
-<span class=dot></span>
-<span>5 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/note/ style=color:var(--fg-subtle)>note</a></span><h2 class=title><a href=/posts/how-to-use-vue-electron-and-go-to-build-an-app/>使用 Vue、Electron 以及 Go 建立一個小工具</a></h2><p class=excerpt>前言 最近剛好有機會要寫有圖形化介面的程式。想來想去感覺可以寫寫看 Electron！於是乎本篇就這樣誕生了。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/go/><span class=hash>#</span>go</a>
-<a class=chip href=/tags/vue/><span class=hash>#</span>vue</a>
-<a class=chip href=/tags/electron/><span class=hash>#</span>electron</a></div><a class=link-arrow href=/posts/how-to-use-vue-electron-and-go-to-build-an-app/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2022.06.22</span>
-<span class=dot></span>
-<span>1 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/note/ style=color:var(--fg-subtle)>note</a></span><h2 class=title><a href=/posts/macos-hold-a-key-and-repeat-it-in-vscode/>如何解決在 MacOS VS Code/Cursor 按鍵無法連續輸入的問題</a></h2><p class=excerpt>前言 筆者已經習慣 vim 的輸入模式。所以在使用 VS Code 或 Cursor 時，會安裝 vim 輸入模式的外掛。在鍵盤按鍵接住時，這些編輯器卻不會連續輸入。本文主要就是要來解決這個問題。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/vscode/><span class=hash>#</span>VSCode</a>
-<a class=chip href=/tags/cursor/><span class=hash>#</span>Cursor</a>
-<a class=chip href=/tags/macos/><span class=hash>#</span>MacOS</a>
-<a class=chip href=/tags/osascript/><span class=hash>#</span>osascript</a></div><a class=link-arrow href=/posts/macos-hold-a-key-and-repeat-it-in-vscode/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article></div></section><section style=padding-top:var(--space-6)><div class=mono style=font:var(--weight-semibold)var(--text-heading-sm)var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)>2021</div><div class=post-list><article class=post-row><span class=meta><span class=mono>2021.09.02</span>
-<span class=dot></span>
-<span>1 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/note/ style=color:var(--fg-subtle)>note</a></span><h2 class=title><a href=/posts/cli-remove-pdf-password/>使用 qpdf 來合併 PDF 與移除密碼保護</a></h2><p class=excerpt>前言 突然有了移除 PDF 密碼保護的需求。在查找相關的資料時，順手記錄下來。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/cli/><span class=hash>#</span>cli</a>
-<a class=chip href=/tags/pdf/><span class=hash>#</span>pdf</a></div><a class=link-arrow href=/posts/cli-remove-pdf-password/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.08.01</span>
-<span class=dot></span>
-<span>2 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/note/ style=color:var(--fg-subtle)>note</a></span><h2 class=title><a href=/posts/coscup-2021-day-2/>COSCUP 2021 Day 2</a></h2><p class=excerpt>前言 今年的 COSCUP 因應 COVID-19 疫情，所以以線上直播的方式進行。本篇主要是記錄大會第二天有興趣的議程以及關鍵字。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/mysql/><span class=hash>#</span>mysql</a>
-<a class=chip href=/tags/acl/><span class=hash>#</span>acl</a>
-<a class=chip href=/tags/chatbot/><span class=hash>#</span>chatbot</a>
-<a class=chip href=/tags/liff/><span class=hash>#</span>liff</a>
-<a class=chip href=/tags/coscup/><span class=hash>#</span>coscup</a></div><a class=link-arrow href=/posts/coscup-2021-day-2/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article><article class=post-row><span class=meta><span class=mono>2021.07.31</span>
-<span class=dot></span>
-<span>1 分鐘閱讀</span>
-<span class=dot></span>
-<a href=/categories/note/ style=color:var(--fg-subtle)>note</a></span><h2 class=title><a href=/posts/coscup-2021-day-1/>COSCUP 2021 Day 1</a></h2><p class=excerpt>前言 今年的 COSCUP 因應 COVID-19 疫情，所以以線上直播的方式進行。本篇主要是記錄大會第一天有興趣的議程以及關鍵字。</p><div style=display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)><div class=chips><a class=chip href=/tags/gcc/><span class=hash>#</span>gcc</a>
-<a class=chip href=/tags/go/><span class=hash>#</span>go</a>
-<a class=chip href=/tags/linux/><span class=hash>#</span>linux</a>
-<a class=chip href=/tags/coscup/><span class=hash>#</span>coscup</a></div><a class=link-arrow href=/posts/coscup-2021-day-1/>繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article></div></section><div style=height:var(--space-10)></div></div></div><footer class=site-footer><div class="container footer-inner"><div class=copy>© 2026 Yuan. All rights reserved. · Powered by Hugo & Yuan Theme</div><div class=footer-links><a href=/posts/>文章</a>
-<a href=/about/>關於</a>
-<a href=https://github.com/e61983 target=_blank rel=noreferrer>GitHub</a>
-<a href=/index.xml>RSS</a></div></div></footer></div><button id=to-top class=to-top type=button aria-label=回到頂端><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=3000&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Note · Yuan のノート</title>
+  <meta name="description" content="心之所至，隨意亂書">
+  <meta name="author" content="Yuan">
+  <meta property="og:site_name" content="Yuan のノート">
+  <meta property="og:title" content="Note">
+  <meta property="og:description" content="心之所至，隨意亂書">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://localhost:3000/categories/note/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>(function(){try{var t=localStorage.getItem('yuan-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  
+  <link rel="stylesheet" href="/yuan/css/bundle.min.0ba5c97027608d64455ddef111c7911f1b92f70e60f0b6c33e3cf701eb3213fd.css" integrity="sha256-C6XJcCdgjWRFXd7xEceRHxuS9w5g8LbDPjz3AesyE/0=">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-brand" aria-label="Yuan のノート">
+      <span class="mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 5l7 9 7-9" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 14v6" stroke="var(--surface-page)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="word">Yuan のノート</span>
+    </a>
+    <nav class="nav-links">
+      
+      <a href="/" class="nav-link">首頁</a>
+      
+      <a href="/posts/" class="nav-link">文章</a>
+      
+      <a href="/categories/" class="nav-link">分類</a>
+      
+      <a href="/tags/" class="nav-link">標籤</a>
+      
+      <a href="/archive/" class="nav-link">歸檔</a>
+      
+      <a href="/about/" class="nav-link">關於</a>
+      
+    </nav>
+    <div class="nav-right">
+      <a class="icon-btn nav-rss" href="/index.xml" title="RSS" aria-label="RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>
+</a>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切換配色">
+        <span class="icon-sun"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2 12h2.2M19.8 12H22M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>
+</span>
+        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>
+</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="選單" aria-expanded="false">
+        <span class="nav-toggle-open"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</span>
+        <span class="nav-toggle-close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+  <nav class="nav-menu" id="nav-menu" hidden>
+    
+    <a href="/" class="nav-link">首頁</a>
+    
+    <a href="/posts/" class="nav-link">文章</a>
+    
+    <a href="/categories/" class="nav-link">分類</a>
+    
+    <a href="/tags/" class="nav-link">標籤</a>
+    
+    <a href="/archive/" class="nav-link">歸檔</a>
+    
+    <a href="/about/" class="nav-link">關於</a>
+    
+  </nav>
+</header>
+
+    <div style="flex:1 0 auto">
+      
+<div class="container container-narrow fade-in">
+  <div class="page-head">
+    <div class="eyebrow" style="margin-bottom:var(--space-3)">瀏覽</div>
+    <h1>分類:Note</h1>
+    <p>12 篇文章</p>
+  </div>
+  
+  <section style="padding-top:var(--space-6)">
+    <div class="mono" style="font:var(--weight-semibold) var(--text-heading-sm) var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)">2026</div>
+    <div class="post-list">
+      <article class="post-row">
+  <span class="meta">
+  <span class="mono">2026.08.26</span>
+  <span class="dot"></span>
+  <span>3 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/raspberry-pi-watchdog-sshd/">讓 Raspberry Pi 學會自救:用 Watchdog 監看 sshd</a></h2>
+  <p class="excerpt">在 Raspberry Pi OS Bookworm 上啟用硬體 watchdog,並用 watchdog daemon 監看 sshd:掛掉先嘗試重啟,救不回來才重開機。</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/raspberry-pi/"><span class="hash">#</span>raspberry-pi</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+  <a class="chip" href="/tags/watchdog/"><span class="hash">#</span>watchdog</a>
+  
+  <a class="chip" href="/tags/ssh/"><span class="hash">#</span>ssh</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/raspberry-pi-watchdog-sshd/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+
+    </div>
+  </section>
+  
+  <section style="padding-top:var(--space-6)">
+    <div class="mono" style="font:var(--weight-semibold) var(--text-heading-sm) var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)">2025</div>
+    <div class="post-list">
+      <article class="post-row">
+  <span class="meta">
+  <span class="mono">2025.08.26</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/security/" style="color:var(--fg-subtle)">security</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/otp-code-introduction/">OTP — 一次性密碼的原理與實作</a></h2>
+  <p class="excerpt">深入了解 OTP（一次性密碼）的運作原理，包含 TOTP 與 HOTP 的差異，以及在 Go 中的實作範例。從序列圖到程式碼，完整解析二階段驗證的核心機制。</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/otp/"><span class="hash">#</span>otp</a>
+  
+  <a class="chip" href="/tags/totp/"><span class="hash">#</span>totp</a>
+  
+  <a class="chip" href="/tags/hotp/"><span class="hash">#</span>hotp</a>
+  
+  <a class="chip" href="/tags/security/"><span class="hash">#</span>security</a>
+  
+  <a class="chip" href="/tags/authentication/"><span class="hash">#</span>authentication</a>
+  
+  <a class="chip" href="/tags/2fa/"><span class="hash">#</span>2fa</a>
+  
+  <a class="chip" href="/tags/backend/"><span class="hash">#</span>backend</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/otp-code-introduction/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+
+    </div>
+  </section>
+  
+  <section style="padding-top:var(--space-6)">
+    <div class="mono" style="font:var(--weight-semibold) var(--text-heading-sm) var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)">2022</div>
+    <div class="post-list">
+      <article class="post-row">
+  <span class="meta">
+  <span class="mono">2022.08.22</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/how-to-use-redis-with-go/">如何在 Go 中使用 Redis</a></h2>
+  <p class="excerpt">前言 最近想試著使用 Redis ，於是乎這一篇就誕生了！
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/redis/"><span class="hash">#</span>redis</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/how-to-use-redis-with-go/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2022.08.09</span>
+  <span class="dot"></span>
+  <span>3 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/go-and-protobuf/">在 Go 中與 Protobuf 共舞 ？！</a></h2>
+  <p class="excerpt">前言 會有這一篇的誕生是因為原本在寫 gRPC 的筆記時發現篇幅太長，想說還是拆開寫好了。於是乎這一篇就出現了。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/protobuf/"><span class="hash">#</span>protobuf</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/go-and-protobuf/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2022.08.02</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/use-iperf-on-synology-nas/">在 Synology NAS 開啟 iperf 伺服器</a></h2>
+  <p class="excerpt">前言 最近發現家中的 NAS 速度 &ldquo;好像&rdquo; 沒有達到筆者的預期。所以想來實際測看看可以目前的網路環境可以跑到什麼程度。於似乎這一篇就誕生了。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/synology/"><span class="hash">#</span>synology</a>
+  
+  <a class="chip" href="/tags/nas/"><span class="hash">#</span>nas</a>
+  
+  <a class="chip" href="/tags/iperf/"><span class="hash">#</span>iperf</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/use-iperf-on-synology-nas/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2022.07.30</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/go-module-using-private-repository/">Go 語言使用私有 Git Repository</a></h2>
+  <p class="excerpt">前言 最近終於有時間整裡筆者家中的 NAS 。先前筆者已經架設好了 Gitea，但一直沒有時間把整個開發環境串起來。這篇文章記錄了如何在 go 中使用自架的 Git Repository。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/git/"><span class="hash">#</span>git</a>
+  
+  <a class="chip" href="/tags/ssh/"><span class="hash">#</span>ssh</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/go-module-using-private-repository/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2022.07.21</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/golang-with-shared-library/">Go語言、動態連結函式庫與它們的產地</a></h2>
+  <p class="excerpt">前言 最近寫 Go 時想嘗試使用動態連結函式庫。於是乎這一篇就誔生了。 本文會試著使用 Go 編出一個動態連結函式庫，並使用 C 語言程式以及 Go 語言程式呼叫它。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/c/"><span class="hash">#</span>c</a>
+  
+  <a class="chip" href="/tags/library/"><span class="hash">#</span>library</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/golang-with-shared-library/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2022.07.15</span>
+  <span class="dot"></span>
+  <span>5 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/how-to-use-vue-electron-and-go-to-build-an-app/">使用 Vue、Electron 以及 Go 建立一個小工具</a></h2>
+  <p class="excerpt">前言 最近剛好有機會要寫有圖形化介面的程式。想來想去感覺可以寫寫看 Electron！於是乎本篇就這樣誕生了。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/vue/"><span class="hash">#</span>vue</a>
+  
+  <a class="chip" href="/tags/electron/"><span class="hash">#</span>electron</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/how-to-use-vue-electron-and-go-to-build-an-app/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2022.06.22</span>
+  <span class="dot"></span>
+  <span>1 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/macos-hold-a-key-and-repeat-it-in-vscode/">如何解決在 MacOS VS Code/Cursor 按鍵無法連續輸入的問題</a></h2>
+  <p class="excerpt">前言 筆者已經習慣 vim 的輸入模式。所以在使用 VS Code 或 Cursor 時，會安裝 vim 輸入模式的外掛。在鍵盤按鍵接住時，這些編輯器卻不會連續輸入。本文主要就是要來解決這個問題。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/vscode/"><span class="hash">#</span>VSCode</a>
+  
+  <a class="chip" href="/tags/cursor/"><span class="hash">#</span>Cursor</a>
+  
+  <a class="chip" href="/tags/macos/"><span class="hash">#</span>MacOS</a>
+  
+  <a class="chip" href="/tags/osascript/"><span class="hash">#</span>osascript</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/macos-hold-a-key-and-repeat-it-in-vscode/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+
+    </div>
+  </section>
+  
+  <section style="padding-top:var(--space-6)">
+    <div class="mono" style="font:var(--weight-semibold) var(--text-heading-sm) var(--font-mono);color:var(--fg-subtle);margin-bottom:var(--space-2)">2021</div>
+    <div class="post-list">
+      <article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.09.02</span>
+  <span class="dot"></span>
+  <span>1 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/cli-remove-pdf-password/">使用 qpdf 來合併 PDF 與移除密碼保護</a></h2>
+  <p class="excerpt">前言 突然有了移除 PDF 密碼保護的需求。在查找相關的資料時，順手記錄下來。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/cli/"><span class="hash">#</span>cli</a>
+  
+  <a class="chip" href="/tags/pdf/"><span class="hash">#</span>pdf</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/cli-remove-pdf-password/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.08.01</span>
+  <span class="dot"></span>
+  <span>2 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/coscup-2021-day-2/">COSCUP 2021 Day 2</a></h2>
+  <p class="excerpt">前言 今年的 COSCUP 因應 COVID-19 疫情，所以以線上直播的方式進行。本篇主要是記錄大會第二天有興趣的議程以及關鍵字。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/mysql/"><span class="hash">#</span>mysql</a>
+  
+  <a class="chip" href="/tags/acl/"><span class="hash">#</span>acl</a>
+  
+  <a class="chip" href="/tags/chatbot/"><span class="hash">#</span>chatbot</a>
+  
+  <a class="chip" href="/tags/liff/"><span class="hash">#</span>liff</a>
+  
+  <a class="chip" href="/tags/coscup/"><span class="hash">#</span>coscup</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/coscup-2021-day-2/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+<article class="post-row">
+  <span class="meta">
+  <span class="mono">2021.07.31</span>
+  <span class="dot"></span>
+  <span>1 分鐘閱讀</span>
+  
+  <span class="dot"></span>
+  <a href="/categories/note/" style="color:var(--fg-subtle)">note</a>
+  
+</span>
+
+  <h2 class="title"><a href="/posts/coscup-2021-day-1/">COSCUP 2021 Day 1</a></h2>
+  <p class="excerpt">前言 今年的 COSCUP 因應 COVID-19 疫情，所以以線上直播的方式進行。本篇主要是記錄大會第一天有興趣的議程以及關鍵字。
+</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+    <div class="chips">
+  
+  <a class="chip" href="/tags/gcc/"><span class="hash">#</span>gcc</a>
+  
+  <a class="chip" href="/tags/go/"><span class="hash">#</span>go</a>
+  
+  <a class="chip" href="/tags/linux/"><span class="hash">#</span>linux</a>
+  
+  <a class="chip" href="/tags/coscup/"><span class="hash">#</span>coscup</a>
+  
+</div>
+    <a class="link-arrow" href="/posts/coscup-2021-day-1/">繼續閱讀 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+  </div>
+</article>
+
+    </div>
+  </section>
+  
+  <div style="height:var(--space-10)"></div>
+</div>
+
+    </div>
+    <footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="copy">© 2026 Yuan. All rights reserved. · Powered by Hugo &amp; Yuan Theme</div>
+    <div class="footer-links">
+      <a href="/posts/">文章</a>
+      <a href="/about/">關於</a>
+      <a href="https://github.com/e61983" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="/index.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <button id="to-top" class="to-top" type="button" aria-label="回到頂端"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
 </button>
-<script src=/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js integrity="sha256-t6CyOlB+WWbFd8pqFAn0aSVkEGOL2CNhNGT+ZfQa058=" defer></script></body></html>
+  
+  <script src="/yuan/js/main.min.b7a0b23a507e5966c577ca6a1409f469256410638bd823613464fe65f41ad39f.js" integrity="sha256-t6CyOlB&#43;WWbFd8pqFAn0aSVkEGOL2CNhNGT&#43;ZfQa058=" defer></script>
+  
+</body>
+</html>

@@ -1,6 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Bash on Yuan のノート</title><link>https://e61983.github.io/tags/bash/</link><description>Recent content in Bash on Yuan のノート</description><generator>Hugo</generator><language>zh-tw</language><lastBuildDate>Wed, 01 Jul 2026 13:30:00 +0800</lastBuildDate><atom:link href="https://e61983.github.io/tags/bash/index.xml" rel="self" type="application/rss+xml"/><item><title>在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆</title><link>https://e61983.github.io/posts/macos-readonly-browse-raspberry-pi-image/</link><pubDate>Wed, 01 Jul 2026 13:30:00 +0800</pubDate><guid>https://e61983.github.io/posts/macos-readonly-browse-raspberry-pi-image/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
-&lt;p&gt;某天收到了 Raspberry Pi 的磁碟 image 過來,檔案有 61GB = =&lt;br&gt;
-筆者只是想看看裡面到底放了哪些設定檔、開機腳本、還有塞了什麼程式進去。&lt;/p&gt;
-&lt;p&gt;聽起來很單純吧?「掛起來看一下不就好了。」&lt;/p&gt;
-&lt;p&gt;結果一到 macOS 上就卡住了 —— Mac &lt;strong&gt;原生掛不動 ext4&lt;/strong&gt;。而 Raspberry Pi 的 root filesystem 偏偏就是 ext4。&lt;/p&gt;
-&lt;p&gt;於是這一篇就誕生了!我們要做的,是寫一支 bash script,讓筆者可以像登入到 Pi 裡面一樣,用 shell 自由地逛整個檔案系統,而且&lt;strong&gt;全程唯讀&lt;/strong&gt;,絕對不弄髒這顆收到的原始 image。&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Bash on Yuan のノート</title>
+		<link>http://localhost:3000/tags/bash/</link>
+		<description>Recent content in Bash on Yuan のノート</description>
+		<generator>Hugo</generator>
+		<language>zh-tw</language>
+		
+		
+		
+		
+			<lastBuildDate>Wed, 01 Jul 2026 13:30:00 +0800</lastBuildDate>
+		
+			<atom:link href="http://localhost:3000/tags/bash/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>在 macOS 上唯讀瀏覽 Raspberry Pi image — 用 Docker 繞過 ext4 的圍牆</title>
+				<link>http://localhost:3000/posts/macos-readonly-browse-raspberry-pi-image/</link>
+				<pubDate>Wed, 01 Jul 2026 13:30:00 +0800</pubDate>
+				<guid>http://localhost:3000/posts/macos-readonly-browse-raspberry-pi-image/</guid>
+				<description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;&#xA;&lt;p&gt;某天收到了 Raspberry Pi 的磁碟 image 過來,檔案有 61GB = =&lt;br&gt;&#xA;筆者只是想看看裡面到底放了哪些設定檔、開機腳本、還有塞了什麼程式進去。&lt;/p&gt;&#xA;&lt;p&gt;聽起來很單純吧?「掛起來看一下不就好了。」&lt;/p&gt;&#xA;&lt;p&gt;結果一到 macOS 上就卡住了 —— Mac &lt;strong&gt;原生掛不動 ext4&lt;/strong&gt;。而 Raspberry Pi 的 root filesystem 偏偏就是 ext4。&lt;/p&gt;&#xA;&lt;p&gt;於是這一篇就誕生了!我們要做的,是寫一支 bash script,讓筆者可以像登入到 Pi 裡面一樣,用 shell 自由地逛整個檔案系統,而且&lt;strong&gt;全程唯讀&lt;/strong&gt;,絕對不弄髒這顆收到的原始 image。&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>
