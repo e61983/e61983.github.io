@@ -1,0 +1,257 @@
+---
+date: 2026-09-03T12:27:00+08:00
+title: "lookup redis: i/o timeout — 追一個 podman 容器 DNS 突然異常的 bug"
+description: "在 RHEL 9 上,每次跑完安裝腳本,容器內的 DNS 就會壞掉。這到底是為什麼呢..."
+author: "Yuan"
+draft: true
+tags: ["podman", "netavark", "firewalld", "dns", "rhel", "linux"]
+keywords: []
+categories: ["note"]
+---
+
+## 前言
+
+最近筆者在把一套 docker compose 的服務移植到 RHEL 9 + Podman 上,並且自己寫安裝腳本。
+
+功能都好好的,唯獨有一件怪事:**每次升級安裝完,一登入就噴錯**。
+
+```json
+{
+  "code": 400,
+  "msg": "failed to set salt: dial tcp: lookup redis: i/o timeout"
+}
+```
+
+更怪的是 workaround 簡單到不可思議——把 redis 這個 container 停掉重啟,就全好了:
+
+```bash
+docker-compose -f compose.yaml stop redis
+docker-compose -f compose.yaml up -d redis
+```
+
+> 等一下⋯⋯壞掉的是 API Gateway 查不到 redis,為什麼重啟「redis」就能修好「別人」的 DNS?
+
+這個違和感就是整篇文章的起點。接下來筆者會把追兇過程記錄下來。
+
+<!--more-->
+
+本文環境:RHEL 9.8、podman 5.8.2、netavark 1.17.2、aardvark-dns 1.17.1,compose provider 是 docker-compose 走 rootful podman.sock。
+
+## 背景:Podman 的容器 DNS 是怎麼運作的
+
+要追這隻 bug,得先知道容器內的 `redis` 這種名字是誰在解析。
+
+在 Podman(netavark backend)的世界裡,每個啟用 DNS 的 bridge 網路都有一隻 **aardvark-dns**,聽在 bridge gateway IP 的 53 port 上。容器的 `/etc/resolv.conf` 只有一行 nameserver,指向這個 gateway:
+
+```text
+search dns.podman
+nameserver 10.89.0.1
+```
+
+{{< mermaid >}}
+sequenceDiagram
+    participant App as 應用容器
+    participant AD as aardvark-dns（10.89.0.1:53）
+    participant UP as 上游 DNS
+    App->>AD: redis 的 A record？
+    AD-->>App: 10.89.0.2（同網路的容器名，它自己就會答）
+    App->>AD: www.example.com？
+    AD->>UP: 不認識的名字，轉發給上游
+    UP-->>AD: 93.184.216.34
+    AD-->>App: 93.184.216.34
+{{< /mermaid >}}
+
+`容器名解析走的是「容器 → bridge gateway:53」這條路`。記住這條路,等等它會是關鍵。
+
+而幫 aardvark-dns 維護資料、設定網路的,是每次容器啟動/停止時都會執行一次的 **netavark**。
+
+## 案發現場
+
+回到症狀本身,把已知線索排開:
+
+* 升級流程大致是:停掉整個 stack → 載入新 image → 跑 migration → `up -d` 全部啟動起來 → 設定 firewalld
+* 登入頁面本身正常(`GET /status` 回 200),只有登入這個動作爆 `lookup redis: i/o timeout`
+* bounce 一下 redis,**整個系統**就恢復正常
+
+第三點透露了很重要的訊息:重啟任何一個容器,netavark 都會重跑一次 network setup。所以「重啟 redis 修好一切」極可能不是 redis 的功勞,而是 **netavark setup 順手把某個網路層的東西修回來了**。
+
+## 假說一:firewalld reload 把 netavark 的規則洗掉?
+
+看安裝腳本,筆者注意到一個順序問題:`up -d` 把服務啟動起來之後,最後一步才執行 `firewall-cmd --reload`。
+
+「firewalld reload 會把容器網路的防火牆規則沖掉」是江湖上流傳已久的坑,一切看起來都對上了:reload 洗掉規則 → DNS 封包被丟 → timeout;重啟容器 → netavark 重建規則 → 復活。
+
+於是設計實驗:在系統正常時手動 `sudo firewall-cmd --reload`,再登入看看。
+
+結果——**登入完全正常**。假說一卒。
+
+> 先破個梗:這個實驗其實是 false negative,後面會揭曉為什麼。但當下筆者是真心以為方向錯了。
+
+## 假說二:aardvark-dns 的紀錄檔少了 redis?
+
+換個方向。aardvark-dns 的資料就放在一個純文字檔裡,直接看:
+
+```bash
+sudo cat /run/containers/networks/aardvark-dns/idearoomx_default
+```
+
+在壞掉狀態下,redis 那行**好端端地在**:
+
+```text
+10.89.0.1
+51fcbe7ba365... 10.89.0.229  idearoomx-redis-1,redis,...
+ef1fba5a0c9d... 10.89.0.248  idearoomx-API Gateway-1,API Gateway,...
+（其餘省略）
+```
+
+假說二也陣亡了。不過這輪收集資料時撈到兩條重要線索:
+
+* **錯誤是 `lookup redis: i/o timeout`,不是 `dial tcp 10.89.0.x:6379: i/o timeout`**——前者是「解析階段」就失敗,後者才是「拿到 IP 但連不上」。問題在 DNS 這一層,無誤。
+* 升級前後 container ID 完全相同——容器沒有被重建,只是重新啟動、換了 IP。
+
+{{< notice tip "讀錯誤訊息的小技巧" >}}
+Go 程式的網路錯誤會把失敗的階段寫進訊息裡:`lookup <name>` 是 DNS 解析失敗,`dial tcp <ip>:<port>` 是連線失敗。一個字之差,查案方向完全不同。
+{{< /notice >}}
+
+## 假說三:aardvark-dns 錯過了 reload 通知?
+
+檔案是對的、查詢卻 timeout,那會不會是 aardvark-dns 的**記憶體狀態**跟磁碟脫節了?netavark 每次改完紀錄檔會發 SIGHUP 通知 aardvark-dns 重讀,萬一通知遺失⋯⋯
+
+驗證方式也直觀:直接從 host 問它,再補一發 SIGHUP。
+
+```bash
+dig @10.89.0.1 redis +time=2 +tries=1
+# ;; ANSWER SECTION:
+# redis.  0  IN  A  10.89.0.2      ← 秒答,而且是對的
+
+sudo kill -HUP "$(pgrep aardvark-dns)"
+# 登入依然噴 lookup redis: i/o timeout
+```
+
+假說三也出局。但這一輪的收穫是整個案件的轉捩點:
+
+**host 上查 aardvark-dns 一切正常,容器內查同一台 server 卻 timeout。** server 沒問題,問題在「容器到 gateway:53」這段路上。
+
+## 假說四:防火牆把容器的 DNS 封包擋下來了
+
+host 走的是本機路徑,容器走的是 veth → bridge → netfilter。兩者的差別就是防火牆。
+
+先看 netavark 的 nftables table:
+
+```bash
+sudo nft list table inet netavark
+# Error: No such file or directory
+```
+
+> 咦,table 不存在?
+
+原來 RHEL 9 上的 netavark 預設走的是 **iptables driver**,規則在 `NETAVARK_*` 這些 iptables chain 裡。那就 dump 出來,修好前後各存一份來 diff:
+
+```bash
+sudo iptables -S | tee /tmp/iptables-broken.txt
+sudo podman network reload --all        # ← 這個指令會重建容器網路的防火牆狀態
+sudo iptables -S | tee /tmp/iptables-fixed.txt
+diff /tmp/iptables-broken.txt /tmp/iptables-fixed.txt
+```
+
+三個結果:
+
+1. `podman network reload --all` **真的修好了**——不用碰任何容器
+2. 但 broken 和 fixed 的 iptables 規則 **一模一樣**,連 `--dport 53 ACCEPT` 都好好的
+3. 壞掉時在容器內做查詢,錯誤訊息長這樣:
+
+```bash
+sudo podman exec idearoomx-redis-1 nslookup redis 10.89.0.1
+# ;; connection timed out; no servers could be reached
+# nslookup: write to '10.89.0.1': Host is unreachable
+```
+
+`Host is unreachable`(EHOSTUNREACH)是很有指紋的錯誤:封包不是被**默默丟掉**(那只會 timeout),而是被人**明著拒絕**——對方回了 ICMP。而 firewalld 預設的 REJECT 正是回 `icmp-host-prohibited`。
+
+iptables 放行了,卻還是被拒絕;`network reload` 修好了,iptables 卻沒變。結論只有一個:**netavark 管理的防火牆狀態不只 iptables,還有另一塊——而被弄壞的是那一塊。**
+
+## 兇手:firewalld 的 runtime 與 permanent 落差
+
+答案是 firewalld 的 **trusted zone**。
+
+netavark(iptables driver)在容器啟動時,除了 iptables 規則外,還會透過 D-Bus 把容器子網加進 firewalld trusted zone 的 source——**但只加在 runtime,不寫進 permanent**。
+
+而 `firewall-cmd --reload` 做的事,正是「把 runtime 狀態重置回 permanent 設定」。
+
+兩件事疊在一起,案情全貌就出來了:
+
+{{< mermaid >}}
+sequenceDiagram
+    participant IN as 安裝腳本
+    participant NV as netavark
+    participant FW as firewalld
+    participant App as 應用容器
+    IN->>IN: up -d 啟動所有容器
+    NV->>FW: 把 10.89.0.0/24 加進 trusted zone（runtime）
+    IN->>FW: firewall-cmd --reload（最後一步）
+    FW->>FW: runtime 重置回 permanent，trusted source 消失
+    App->>FW: DNS 查詢 → gateway:53
+    FW-->>App: ICMP host-prohibited（拒絕）
+    Note over App: lookup redis: i/o timeout
+{{< /mermaid >}}
+
+安裝腳本的最後一步 reload,每次都準時把 netavark 剛註冊好的 trusted source 洗掉。**每次升級必壞,分毫不差。**
+
+重新驗證:
+
+```bash
+sudo firewall-cmd --zone=trusted --list-sources   # 10.89.0.0/24 ✅
+sudo firewall-cmd --reload
+sudo firewall-cmd --zone=trusted --list-sources   # （空的!)
+sudo podman exec idearoomx-redis-1 nslookup redis 10.89.0.1
+# nslookup: write to '10.89.0.1': Host is unreachable
+
+sudo podman network reload --all
+sudo firewall-cmd --zone=trusted --list-sources   # 10.89.0.0/24 回來了 🎉
+```
+
+這也順便解開了前面兩個懸案:
+
+* **為什麼 bounce redis 能修好一切**:netavark setup 重跑,把 trusted source 重新註冊回去。修好的從來不是 redis,是整個網路。
+* **為什麼假說一的實驗沒壞**:當時登入用的 redis 連線是連線池裡的**既有連線**,根本不需要重新做 DNS 解析,於是「看起來」沒壞。用 `nslookup` 直接戳 DNS 就不會被連線池騙到。
+
+{{< notice warning "小心 false negative" >}}
+驗證網路假說時,盡量用「每次都會真的走過該路徑」的工具(如 `nslookup`、`dig`)直接測,不要透過應用程式的行為間接觀察——連線池、cache 都會幫倒忙,讓你太早排除正確答案。
+{{< /notice >}}
+
+## 修法:三層防禦
+
+確診之後,安裝腳本補上三層:
+
+1. **調整順序**:`firewall-cmd --reload` 移到**啟動服務之前**。reload 發生在沒有任何容器的時刻,之後 `up -d` 才註冊 trusted source,自然不會被洗掉。
+2. **啟用 `netavark-firewalld-reload.service`**:netavark 附的官方保險,監聽 firewalld 的 reload 事件、自動重新註冊。防的是日後管理者手動 reload 再踩一次。
+3. **啟動後 DNS 自檢**:stack 啟動後,進容器 `nslookup redis` 走一次真實路徑,失敗就 `podman network reload --all` 補救。不管未來哪種機制再弄壞 runtime 狀態,都會在使用者看到之前被修好。
+
+第一層治本、第二層防人、第三層兜底。網路這種「狀態會被別人改掉」的東西,單靠一層防禦筆者是不敢睡的。
+
+## 小結
+
+回顧這場追兇,幾個值得帶走的重點:
+
+* **`lookup x: i/o timeout` 和 `dial tcp ip: timeout` 是兩個案子**:前者卡在 DNS 解析,後者才是連線問題。
+* **`Host is unreachable` 是 ICMP 拒絕的指紋**:被防火牆 REJECT(而非 DROP)才會這樣,timeout 則多半是默默丟包或沒人回應。
+* **Podman 容器 DNS 的路徑是「容器 → bridge gateway:53 → aardvark-dns」**:host 上查得到、容器內查不到,問題就在中間那段 netfilter。
+* **firewalld 的 runtime 與 permanent 是兩個世界**:`--reload` 會把別人動態加進 runtime 的東西全部洗掉,netavark 的 trusted zone source 正是受害者。
+* **「重啟某個容器就好了」通常不是那個容器的問題**:netavark setup 的副作用才是真正的解藥,這種線索值得多想一層。
+* **驗證假說要走真實路徑**:連線池與 cache 製造的 false negative,差點讓筆者與正解擦身而過。
+
+被自己推翻三次的過程雖然狼狽,但每次實驗都把包圍圈縮小一點,最後的四步驗證才能一槍斃命。未來如果 netavark 在 EL9 預設啟用 firewalld reload 監聽,這篇也許就功成身退了——在那之前,希望能幫到同樣被容器 DNS 陰過的同學!
+
+## 參考連結
+
+- [Podman][1]
+- [netavark（GitHub）][2]
+- [aardvark-dns（GitHub）][3]
+- [podman network reload — man page][4]
+- [firewalld — Runtime vs Permanent][5]
+
+[1]:https://podman.io/
+[2]:https://github.com/containers/netavark
+[3]:https://github.com/containers/aardvark-dns
+[4]:https://docs.podman.io/en/latest/markdown/podman-network-reload.1.html
+[5]:https://firewalld.org/documentation/howto/
